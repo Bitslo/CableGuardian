@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{750737CC-297A-4513-B898-867275AF98EC}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CableGuardian</RootNamespace>
+    <AssemblyName>CableGuardian</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Art\CG.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FormsAndControls\FormHelp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\FormHelp.Designer.cs">
+      <DependentUpon>FormHelp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormsAndControls\TriggeredActionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\TriggeredActionControl.Designer.cs">
+      <DependentUpon>TriggeredActionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormsAndControls\WaveActionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\WaveActionControl.Designer.cs">
+      <DependentUpon>WaveActionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Actions\RotationCondition.cs" />
+    <Compile Include="AudioDevices\AudioDevicePool.cs" />
+    <Compile Include="FormsAndControls\ConditionEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\ConditionEditor.Designer.cs">
+      <DependentUpon>ConditionEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config\Config.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\FileIO.cs" />
+    <Compile Include="FormsAndControls\WaveEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\WaveEditor.Designer.cs">
+      <DependentUpon>WaveEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormsAndControls\TriggerEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\TriggerEditor.Designer.cs">
+      <DependentUpon>TriggerEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormsAndControls\FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Actions\CGAction.cs" />
+    <Compile Include="Config\Profile.cs" />
+    <Compile Include="FormsAndControls\ProfileEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\ProfileEditor.Designer.cs">
+      <DependentUpon>ProfileEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OpenVR\openvr_api_edit.cs" />
+    <Compile Include="Tracking\VRObserver.cs" />
+    <Compile Include="OculusWrap\Base\DetectResult.cs" />
+    <Compile Include="OculusWrap\Base\ErrorInfo.cs" />
+    <Compile Include="OculusWrap\Base\FovPort.cs" />
+    <Compile Include="OculusWrap\Base\GraphicsLuid.cs" />
+    <Compile Include="OculusWrap\Base\HmdCaps.cs" />
+    <Compile Include="OculusWrap\Base\HmdDesc.cs" />
+    <Compile Include="OculusWrap\Base\HmdDesc64.cs" />
+    <Compile Include="OculusWrap\Base\HmdType.cs" />
+    <Compile Include="OculusWrap\Base\InitFlags.cs" />
+    <Compile Include="OculusWrap\Base\InitParams.cs" />
+    <Compile Include="OculusWrap\Base\LogCallback.cs" />
+    <Compile Include="OculusWrap\Base\LogLevel.cs" />
+    <Compile Include="OculusWrap\Base\Posef.cs" />
+    <Compile Include="OculusWrap\Base\PoseStatef.cs" />
+    <Compile Include="OculusWrap\Base\Quaternionf.cs" />
+    <Compile Include="OculusWrap\Base\Result.cs" />
+    <Compile Include="OculusWrap\Base\SessionStatus.cs" />
+    <Compile Include="OculusWrap\Base\Sizei.cs" />
+    <Compile Include="OculusWrap\Base\StatusBits.cs" />
+    <Compile Include="OculusWrap\Base\TrackingCaps.cs" />
+    <Compile Include="OculusWrap\Base\TrackingState.cs" />
+    <Compile Include="OculusWrap\Base\Vector3f.cs" />
+    <Compile Include="OculusWrap\OculusWrap.cs" />
+    <Compile Include="OculusWrap\OculusNative32.cs" />
+    <Compile Include="OculusWrap\OculusNative64.cs" />
+    <Compile Include="Tracking\OculusConnection.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tracking\OpenVRConnection.cs" />
+    <Compile Include="Tracking\VRConnection.cs" />
+    <Compile Include="Tracking\YawTracker.cs" />
+    <Compile Include="Actions\CGActionWave.cs" />
+    <Compile Include="Actions\Trigger.cs" />
+    <Compile Include="AudioDevices\WaveOutDevice.cs" />
+    <Compile Include="Actions\TriggeredAction.cs" />
+    <EmbeddedResource Include="FormsAndControls\FormHelp.resx">
+      <DependentUpon>FormHelp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\TriggeredActionControl.resx">
+      <DependentUpon>TriggeredActionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\WaveActionControl.resx">
+      <DependentUpon>WaveActionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\ConditionEditor.resx">
+      <DependentUpon>ConditionEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\WaveEditor.resx">
+      <DependentUpon>WaveEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\TriggerEditor.resx">
+      <DependentUpon>TriggerEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\ProfileEditor.resx">
+      <DependentUpon>ProfileEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Art\CG.ico" />
+    <None Include="Art\Close.png" />
+    <None Include="Art\Minimize.png" />
+    <None Include="Art\CGLogo.png" />
+    <None Include="Art\CG_error.ico" />
+    <None Include="Art\Play.png" />
+    <None Include="Art\Minus3.png" />
+    <None Include="Art\Plus3.png" />
+    <None Include="Art\MinusSmall.png" />
+    <None Include="Art\PlusSmall.png" />
+    <None Include="Art\Help.png" />
+    <None Include="Art\HelpForm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

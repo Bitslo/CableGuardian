@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CableGuardian", "CableGuardian.csproj", "{750737CC-297A-4513-B898-867275AF98EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{750737CC-297A-4513-B898-867275AF98EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{750737CC-297A-4513-B898-867275AF98EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{750737CC-297A-4513-B898-867275AF98EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{750737CC-297A-4513-B898-867275AF98EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72492971-7AF0-484D-A0B0-77F71B49432E}
+	EndGlobalSection
+EndGlobal
