@@ -1,0 +1,2 @@
+Extract the zip to a folder of your choice. Launch with CableGuardian.exe.
+Optional: Copy your custom wave (*.wav) files into that same folder.
