@@ -73,9 +73,9 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(512, 245);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(149, 13);
+            this.label2.Size = new System.Drawing.Size(155, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Cable Guardian v.1.0 by Bitslo";
+            this.label2.Text = "Cable Guardian v.1.01 by Bitslo";
             // 
             // textBox1
             // 
