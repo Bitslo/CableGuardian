@@ -16,20 +16,17 @@ namespace CableGuardian
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
-        int PollInterval = 1000;
+        int PollInterval = 100; // needs to be quick enough to catch the quit message from steamvr
         EVRInitError LastOpenVRError = EVRInitError.None;
         CVRSystem VRSys = null;
         string LastExceptionMessage { get; set; }
         string LastStopMessage { get; set; }       
         VREvent_t NextVREvent = new VREvent_t();
-        TrackedDevicePose_t[] PoseArray;
-        double LatestValidYaw = 0;
-        bool SteamVRRequestedQuit = false;
-        bool StopRequested = false;
-        int _HmdPollCounter = 0;
-        int HmdPollCounter { get { return _HmdPollCounter; } set { _HmdPollCounter = (_HmdPollCounter >= 100) ? 1 : value; } }
+        TrackedDevicePose_t[] PoseArray;        
+        bool StopRequested = false;       
         uint HmdIndex = 0;
-        
+        int _KeepAliveCounter = 0;
+        int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 100) ? 1 : value; } }
 
 
         /// <summary>
@@ -177,22 +174,21 @@ namespace CableGuardian
 
         void KeepAlive()
         {
+            KeepAliveCounter++;
+
             if (StopRequested)
             {
                 Stop();
                 return;
             }
-
-            if (SteamVRRequestedQuit)
+            
+            if (VRSys == null) 
             {
-                EndCurrentSession();
-                OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit;
-                SteamVRRequestedQuit = false;
-                Thread.Sleep(7000);
-            }
+                if (KeepAliveCounter % 10 != 0) // initialization attempt on only every tenth lap
+                    return; 
 
-            if (VRSys == null)
-            {                
+                // ***** INITIALIZATION ******
+
                 //if (!OpenVR.IsHmdPresent()) // Note that this also leaks memory
                 
                 // To avoid a memory leak, check that SteamVR is running before trying to Initialize                
@@ -237,19 +233,28 @@ namespace CableGuardian
                         PoseArray[i] = new TrackedDevicePose_t();
                     }
 
+                    OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
                 }
                 else
                 {
                     OpenVRConnStatus = OpenVRConnectionStatus.NoSteamVR;
                 }
             }
-            else
+            else // VRSys != null (connection has been initialized)
             {
-                if (OpenVRConnStatus != OpenVRConnectionStatus.AllOK)
+                // Check quit request
+                VRSys.PollNextEvent(ref NextVREvent, (uint)System.Runtime.InteropServices.Marshal.SizeOf(NextVREvent));
+                // this doesn't always work... I suppose the quit event can fly by when the poll rate is relatively low
+                // It seems that SteamVR kills the VR processes that don't get Quit event with PollNextEvent().                 
+                if (NextVREvent.eventType == (uint)EVREventType.VREvent_Quit)
                 {
-                    OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
+                    OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // to immediately prevent native methods from being called
+                    EndCurrentSession();
+                    OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // again to get correct status (changed in EndCurrentSession())
+                    // a good sleep before starting to poll steamvr -process again
+                    Thread.Sleep(15000);
                 }
-            }     
+            }    
         }
 
         void EndCurrentSession()
@@ -292,31 +297,17 @@ namespace CableGuardian
             InvokeStatusChanged();
         }
 
-        public override double GetHmdYaw()
+        public override bool GetHmdYaw(ref double yaw)
         {
-            HmdPollCounter++; 
-                        
-            if (SteamVRRequestedQuit)
-                return 0;
-
-            if (HmdPollCounter % 2 == 0)
-            {   
-                VRSys.PollNextEvent(ref NextVREvent, (uint)System.Runtime.InteropServices.Marshal.SizeOf(NextVREvent));
-                // this doesn't always work... I suppose the quit event can fly by when the poll rate is relatively low
-                // If VRSys methods are accessed after SteamVR has quit, Cable Guardian just crashes silently.
-                if (NextVREvent.eventType == (uint)EVREventType.VREvent_Quit)
-                {   
-                    SteamVRRequestedQuit = true;
-                    return 0;
-                }
-            }
+            if (OpenVRConnStatus != OpenVRConnectionStatus.AllOK)                            
+                return false;            
 
             VRSys.GetDeviceToAbsoluteTrackingPose(ETrackingUniverseOrigin.TrackingUniverseStanding, 0, PoseArray);
-            if (!PoseArray[HmdIndex].bPoseIsValid)
-                return LatestValidYaw;
-
-            LatestValidYaw = GetYawFromOrientation(GetOrientation(PoseArray[HmdIndex].mDeviceToAbsoluteTracking));
-            return LatestValidYaw;
+            if (!PoseArray[HmdIndex].bPoseIsValid)            
+                return false;            
+            
+            yaw = GetYawFromOrientation(GetOrientation(PoseArray[HmdIndex].mDeviceToAbsoluteTracking));
+            return true;            
         }
 
 

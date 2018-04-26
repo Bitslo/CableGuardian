@@ -17,8 +17,13 @@ namespace CableGuardian
         /// <summary>
         /// Returns the wave out device index used by the VR API
         /// </summary>
-        public abstract int WaveOutDeviceNumber { get; }        
-        public abstract double GetHmdYaw();
+        public abstract int WaveOutDeviceNumber { get; }
+        /// <summary>
+        /// returns true when yaw contains a valid value
+        /// </summary>
+        /// <param name="yaw"></param>
+        /// <returns></returns>
+        public abstract bool GetHmdYaw(ref double yaw);
         /// <summary>
         /// Returns true if connection was opened for listening to VR API.
         /// NOTE that this does not mean that the API connection is ok. Check Status for that.

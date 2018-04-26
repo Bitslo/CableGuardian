@@ -79,12 +79,10 @@ namespace CableGuardian
         void DoWork(object sender, DoWorkEventArgs e)
         {
             while (StopFlag == false)
-            {
-                if (VR.Status == VRConnectionStatus.AllOK)
-                {
-                    HmdYaw = VR.GetHmdYaw();
+            {                
+                if(VR.GetHmdYaw(ref HmdYaw))
                     Worker.ReportProgress(0, null);
-                }
+               
                 Thread.Sleep(PollInterval);
             }            
         }

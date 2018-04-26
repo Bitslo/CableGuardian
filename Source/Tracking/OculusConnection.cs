@@ -23,14 +23,13 @@ namespace CableGuardian
         bool SessionCreated = false;
         bool SuppressStatusEvents = false;
         bool StopFlag = false;
-        int PollInterval = 1000;
+        int PollInterval = 100;
         IntPtr SessionPtr;
         GraphicsLuid pLuid;
         BackgroundWorker Worker = new BackgroundWorker();
         public bool RequireHome { get; set; }
         bool StopRequested = false;
-        SessionStatus SesStatus = new SessionStatus();
-        double LastValidYaw = 0;
+        SessionStatus SesStatus = new SessionStatus();       
         bool HomePresent = false;
         int _KeepAliveCounter = 0;
         int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 100) ? 1 : value; } }
@@ -219,7 +218,7 @@ namespace CableGuardian
 
             if (RequireHome)
             {
-                if (KeepAliveCounter % 2 == 0) // to save CPU, check only every second lap
+                if (KeepAliveCounter % 20 == 0) // to save CPU, check only every 2 secs
                 {
                     if (System.Diagnostics.Process.GetProcessesByName(Config.OculusHomeProcessName).Any() == false)
                     {
@@ -242,10 +241,23 @@ namespace CableGuardian
             }  
 
             if (OculusStatus == OculusConnectionStatus.AllOk)
-            {               
+            {
+                // poll quit message on every lap
+                LastOculusResult = OculusWrap.GetSessionStatus(SessionPtr, ref SesStatus);
+                if (!OculusWrap.OVR_SUCCESS(LastOculusResult) || (SesStatus.ShouldQuit || SesStatus.DisplayLost || !SesStatus.HmdPresent))
+                {
+                    StopRequested = true;                    
+                }
                 return;
-            }       
-            
+            }
+
+
+            // This point is reached only when connection not yet created 
+            // ******** INITIALIZATION & CREATION ***********
+
+            if (KeepAliveCounter % 10 != 0) // try initialization one per second
+                return;
+
             if (OculusStatus == OculusConnectionStatus.Initialized)
             {
                 LastOculusResult = OculusWrap.Create(ref SessionPtr, ref pLuid);
@@ -329,24 +341,18 @@ namespace CableGuardian
             StopRequested = true;       
         }
         
-        public override double GetHmdYaw()
+        public override bool GetHmdYaw(ref double yaw)
         {
             if (StopRequested)
-                return 0;
+                return false;
 
-            LastOculusResult = OculusWrap.GetSessionStatus(SessionPtr, ref SesStatus);
-            if (!OculusWrap.OVR_SUCCESS(LastOculusResult) || (SesStatus.ShouldQuit || SesStatus.DisplayLost || !SesStatus.HmdPresent))
-            {
-                StopRequested = true;
-                    return 0;
-            }
+            if (OculusStatus != OculusConnectionStatus.AllOk)            
+                return false;        
 
-            TrackingState ts = OculusWrap.GetTrackingState(SessionPtr, 0, false);
-            
+            TrackingState ts = OculusWrap.GetTrackingState(SessionPtr, 0, false);            
             // I suppose for Oculus there is no need to check if the received orientation is valid... (compare to OpenVR)
-
-            LastValidYaw = GetYawFromOrientation(ts.HeadPose.ThePose.Orientation);
-            return LastValidYaw;
+            yaw = GetYawFromOrientation(ts.HeadPose.ThePose.Orientation);
+            return true;
         }
 
         double GetYawFromOrientation(Quaternionf orientation)
