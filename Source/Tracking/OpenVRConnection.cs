@@ -61,7 +61,7 @@ namespace CableGuardian
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.SteamVRQuit)
                     {
-                        StatusMessage = "SteamVR requested quit.";
+                        StatusMessage = "SteamVR requested quit. Waiting to reconnect...";
                         Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.Stopped)

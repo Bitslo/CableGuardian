@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 namespace CableGuardian
 {
-    public enum OculusConnectionStatus { AllOk, Initialized, NoHMD, NoService, InitFail, CreateFail, UnexpectedError, Stopped, Initializing, Resurrecting, WaitingHome }
+    public enum OculusConnectionStatus { AllOk, Initialized, NoHMD, NoService, InitFail, CreateFail, UnexpectedError, Stopped, Initializing, Resurrecting, WaitingHome, OculusVRQuit }
 
     /// <summary>
     /// Provides an Oculus HMD connection that is automatically polled and kept alive.
@@ -82,6 +82,11 @@ namespace CableGuardian
                     {
                         StatusMessage = $"Unexpected error when connecting to Oculus HMD. {LastExceptionMessage ?? ""}";
                         Status = VRConnectionStatus.UnknownError;
+                    }
+                    else if (_OculusStatus == OculusConnectionStatus.OculusVRQuit)
+                    {
+                        StatusMessage = "OculusVR service requested quit. Waiting to reconnect...";
+                        Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OculusStatus == OculusConnectionStatus.Stopped)
                     {
@@ -246,7 +251,12 @@ namespace CableGuardian
                 LastOculusResult = OculusWrap.GetSessionStatus(SessionPtr, ref SesStatus);
                 if (!OculusWrap.OVR_SUCCESS(LastOculusResult) || (SesStatus.ShouldQuit || SesStatus.DisplayLost || !SesStatus.HmdPresent))
                 {
-                    StopRequested = true;                    
+                    //StopRequested = true;
+                    OculusStatus = OculusConnectionStatus.OculusVRQuit; // to immediately prevent native methods from being called
+                    EndCurrentSession();
+                    OculusStatus = OculusConnectionStatus.OculusVRQuit;  // again to get correct status (changed in EndCurrentSession())
+                    // a good sleep before starting to poll OculusVR again
+                    Thread.Sleep(15000);
                 }
                 return;
             }

@@ -20,6 +20,11 @@ namespace CableGuardian
             buttonClose.Click += ButtonClose_Click;
             labelCopyDll.Text = $"If you get a dll-error: Try copying LibOVRRT64_1.dll and LibOVRRT32_1.dll from {Environment.NewLine} " +
                                 $"\".\\Oculus\\Support\\oculus-runtime\" into: \"{Config.ExeFolder}\"";
+
+            labelVersion.Text = Config.ProgramTitle + " v." +
+                                System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
+                                " \u00A9 Bitslo";
+
         }
 
         private void ButtonClose_Click(object sender, EventArgs e)
