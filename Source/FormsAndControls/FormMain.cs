@@ -36,6 +36,7 @@ namespace CableGuardian
         public FormMain()
         {
             InitializeComponent();
+            Environment.CurrentDirectory = Config.ExeFolder; // always run from exe folder to avoid problems with dlls
             Minimize();
 
             comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
