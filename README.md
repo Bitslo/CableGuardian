@@ -5,10 +5,7 @@ Rotation (yaw) tracker for VR headsets
 
 The purpose of the application is to prevent excessive twisting of the headset cable and thus:  
      - improve the lifetime of the cable  
-     - improve the VR experience as you don't have to:  
-          - actively monitor your turning direction during gameplay  
-          - peek for orientation  
-          - remove the headset to straighten out the cable  
+     - improve the VR experience as you don't have to actively monitor your turning direction or peek for orientation during gameplay
 
 Cable Guardian uses customizable audio notifications, featuring:   
     - audio device selection  
@@ -17,6 +14,5 @@ Cable Guardian uses customizable audio notifications, featuring:
     - support for custom sounds (by copying wave (*.wav) files to the executable directory)  
     - user profiles  
 
-Cable Guardian runs in the background with minimal CPU usage and doesn't render anything on the HMD.
-
+Cable Guardian runs in the background with minimal CPU usage and doesn't render anything on the HMD.  
 For help, click the question mark "?" in the upper right corner of the GUI.
