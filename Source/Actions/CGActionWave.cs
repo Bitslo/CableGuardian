@@ -50,6 +50,7 @@ namespace CableGuardian
         BackgroundWorker Worker = new BackgroundWorker();
 
         int WaveDurationMs = 0;
+        public int LoopCount { get; set; } = 1;
 
         int _Pan = 0;
         /// <summary>
@@ -157,14 +158,18 @@ namespace CableGuardian
         {
             try
             {
-                MixedWave.Position = 0;
-                WaveOut.Play();                
-                if (WaveDurationMs < 5000) // in case wave length is reported incorrectly or a long sound is loaded
-                    Thread.Sleep(WaveDurationMs);
-                else
-                    Thread.Sleep(5000);
+                for (int i = 0; i < LoopCount; i++)
+                {
+                    MixedWave.Position = 0;
+                    WaveOut.Play();
+                    if (WaveDurationMs < 5000) // in case wave length is reported incorrectly or a long sound is loaded
+                        Thread.Sleep(WaveDurationMs);
+                    else
+                        Thread.Sleep(5000);
 
-                WaveOut.Stop();
+                    WaveOut.Stop();
+                    Thread.Sleep(20);
+                }
             }
             catch (Exception)
             {
@@ -214,8 +219,7 @@ namespace CableGuardian
 
             // add internal default waves... pistä pilkkua nimeen tai jotain 
         }
-
-
+                        
         public void Play()
         {
             if (!Error && !String.IsNullOrWhiteSpace(Wave) && Enabled)
@@ -243,6 +247,11 @@ namespace CableGuardian
                 Wave = xCGActionWaveFile.GetElementValueTrimmed("Wave");
                 Pan = xCGActionWaveFile.GetElementValueInt("Pan");
                 Volume = xCGActionWaveFile.GetElementValueInt("Volume");
+                LoopCount = xCGActionWaveFile.GetElementValueInt("LoopCount");
+                if (LoopCount < 1)
+                    LoopCount = 1;
+                if (LoopCount > 9)
+                    LoopCount = 9;
             }
         }
 
@@ -252,7 +261,8 @@ namespace CableGuardian
                                     base.GetXml().Elements(),
                                     new XElement("Wave", Wave),
                                     new XElement("Pan", Pan),
-                                    new XElement("Volume", Volume));            
+                                    new XElement("Volume", Volume),
+                                    new XElement("LoopCount", LoopCount));
         }
 
 

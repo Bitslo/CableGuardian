@@ -148,7 +148,7 @@ namespace CableGuardian
         /// Returns the current number of full rotations away from ResetPosition.         
         /// Use GetRotationSide() to check direction.
         /// </summary>
-        uint GetFullRotations()
+        public uint GetFullRotations()
         {
             return (uint)Math.Abs((CurrentLap < 0) ? CurrentLap + 1 : CurrentLap - 1);
         }
@@ -157,7 +157,7 @@ namespace CableGuardian
         /// Rotation offset direction from ResetPosition ( = Yaw0 @ zero full rotations).
         ///  = the direction where rotation accumulates.
         /// </summary>
-        Direction GetRotationSide()
+        public Direction GetRotationSide()
         {            
             if (CurrentLap < 0)
                 return Direction.Right;

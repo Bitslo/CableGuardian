@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 
 
-
 namespace CableGuardian
 {
     public enum VRAPI { OculusVR, OpenVR }
@@ -18,6 +17,17 @@ namespace CableGuardian
     public partial class FormMain : Form
     {
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
+        ContextMenuStrip TrayMenu = new ContextMenuStrip();
+        ToolStripLabel TrayMenuTitle = new ToolStripLabel(Config.ProgramTitle);
+        ToolStripLabel TrayMenuRotations = new ToolStripLabel("Full rotations: 00000000");
+        ToolStripMenuItem TrayMenuReset = new ToolStripMenuItem("Reset rotation counter");
+        ToolStripSeparator TrayMenuSeparator1 = new ToolStripSeparator();
+        ToolStripMenuItem TrayMenuAlarmIn = new ToolStripMenuItem("Alarm me in");
+        ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at");
+        ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm");
+        ToolStripSeparator TrayMenuSeparator2 = new ToolStripSeparator();
+        ToolStripMenuItem TrayMenuGUI = new ToolStripMenuItem("GUI");
+        ToolStripMenuItem TrayMenuExit = new ToolStripMenuItem("Exit");
         public static bool RunFromDesigner { get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); } }
 
         internal static YawTracker Tracker { get; private set; }
@@ -26,12 +36,17 @@ namespace CableGuardian
         internal static AudioDevicePool WaveOutPool { get; private set; } = new AudioDevicePool(OculusConn);
         VRObserver Observer;
         VRConnection ActiveConnection;
-        
+        Timer AlarmTimer = new Timer();        
+        DateTime AlarmTime;
+        int TimerHours = 0;
+        int TimerMinutes = 0;
+
         Point MouseDragPosOnForm = new Point(0, 0);        
         bool UpdateYawToForm = false;
         bool SkipFlaggedEventHandlers = false;
         bool ProfilesSaved = false;
         bool MouseDownOnComboBox = false;
+        bool APIChangedByUser = false;
 
         public FormMain()
         {
@@ -46,9 +61,12 @@ namespace CableGuardian
             Observer = new VRObserver(OculusConn, 180);
             Observer.Start();
             Tracker = new YawTracker(Observer);
-
-            if (!RunFromDesigner)            
+                        
+            if (!RunFromDesigner)
+            {
+                InitializeTrayMenu();
                 InitializeAppearance();
+            }
             
             AddEventHandlers();
 
@@ -66,6 +84,17 @@ namespace CableGuardian
 
         void ReadConfigAndProfilesFromFile()
         {
+            try
+            {
+                Config.CheckDefaultSounds();
+            }
+            catch (Exception ex)
+            {
+                string msg = String.Format("Unable* to load default sounds.  {0}{0} * {1}", Environment.NewLine, ex.Message);
+                Restore();
+                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             try
             {
                 ReadConfigFromFile();
@@ -96,6 +125,8 @@ namespace CableGuardian
             checkBoxStartMinimized.Checked = Config.StartMinimized;
             checkBoxHome.Checked = Config.RequireHome;
             OculusConn.RequireHome = Config.RequireHome;
+            checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
+            checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;
             SkipFlaggedEventHandlers = false;
             LoadProfile(startProf);
 
@@ -110,18 +141,90 @@ namespace CableGuardian
 
         }
 
+        void InitializeTrayMenu()
+        {
+            TrayMenuTitle.Font = new Font(TrayMenuTitle.Font, FontStyle.Bold);
+            TrayMenuTitle.ForeColor = Config.CGErrorColor;
+            TrayMenuRotations.Font = new Font(TrayMenuRotations.Font, FontStyle.Bold);
+
+            notifyIcon1.ContextMenuStrip = TrayMenu;
+            TrayMenu.Items.Add(TrayMenuTitle);
+            TrayMenu.Items.Add(TrayMenuRotations);            
+            TrayMenu.Items.Add(TrayMenuReset);            
+            TrayMenu.Items.Add(TrayMenuSeparator1);
+            TrayMenu.Items.Add(TrayMenuAlarmIn);
+            TrayMenu.Items.Add(TrayMenuAlarmAt);
+            TrayMenu.Items.Add(TrayMenuAlarmClear);            
+            TrayMenu.Items.Add(TrayMenuSeparator2);
+            TrayMenu.Items.Add(TrayMenuGUI);
+            TrayMenu.Items.Add(TrayMenuExit);
+
+            BuilAlarmMenu();
+        }
+
+        void BuilAlarmMenu()
+        {
+            ToolStripMenuItem itemAM = new ToolStripMenuItem("AM");            
+            TrayMenuAlarmAt.DropDownItems.Add(itemAM);
+
+            ToolStripMenuItem itemPM = new ToolStripMenuItem("PM");            
+            TrayMenuAlarmAt.DropDownItems.Add(itemPM);
+
+            for (int i = 0; i < 12; i++)
+            {
+                ToolStripMenuItem itemH = new ToolStripMenuItem(i.ToString() + "h");                
+                itemH.Tag = i;
+                TrayMenuAlarmIn.DropDownItems.Add(itemH);
+
+                int ath = (i == 0) ? 12 : i;  // to get 12 first since it actually represents zero in the AM/PM system
+
+                ToolStripMenuItem itemAMH = new ToolStripMenuItem(ath.ToString());
+                itemAMH.Tag = (ath == 12) ? 0 : ath;
+                itemAM.DropDownItems.Add(itemAMH);
+                                
+                ToolStripMenuItem itemPMH = new ToolStripMenuItem(ath.ToString());                
+                itemPMH.Tag = (ath == 12) ? ath : ath + 12;
+                itemPM.DropDownItems.Add(itemPMH);
+
+                for (int j = 0; j < 60; j += 5)
+                {
+                    ToolStripMenuItem itemM = new ToolStripMenuItem(i.ToString() + "h " + j.ToString() + "min");
+                    itemM.Tag = j;
+                    itemH.DropDownItems.Add(itemM);
+                    itemM.Click += TrayMenuAlarmInItem_Click;
+
+                    ToolStripMenuItem itemAMM = new ToolStripMenuItem(ath.ToString() + ":" + ((j < 10) ? "0" : "") + j.ToString() + " AM");
+                    itemAMM.Tag = j;
+                    itemAMH.DropDownItems.Add(itemAMM);
+                    itemAMM.Click += TrayMenuAlarmAtItem_Click;
+
+                    ToolStripMenuItem itemPMM = new ToolStripMenuItem(ath.ToString() + ":" + ((j < 10) ? "0" : "") + j.ToString() + " PM");
+                    itemPMM.Tag = j;
+                    itemPMH.DropDownItems.Add(itemPMM);
+                    itemPMM.Click += TrayMenuAlarmAtItem_Click;
+                }
+            }
+        }        
+
+               
         void InitializeAppearance()
         {
             InitializeAppearanceCommon(this);
 
             StartPosition = FormStartPosition.CenterScreen;
             notifyIcon1.Text = Config.ProgramTitle;
+            notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;            
+            Icon = CableGuardian.Properties.Resources.CG_error;
             TTip.SetToolTip(pictureBoxPlus, "Add a new profile");
             TTip.SetToolTip(pictureBoxMinus, "Delete profile");
             TTip.SetToolTip(checkBoxHome, $"When checked, HMD is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +
                 $"On the flip side, the presence of Home is polled once in two seconds, requiring some CPU time during tracking.");
             TTip.SetToolTip(comboBoxAPI, $"This is a one time setting for most. Choose {VRAPI.OculusVR} for Oculus headsets, {VRAPI.OpenVR} for others.");
-
+            TTip.SetToolTip(checkBoxConnLost, $"Show Windows notification when connection to the VR headset changes from OK to NOT OK.{Environment.NewLine}" + 
+                                                "This can happen for example when the VR-drivers are updated.");
+            TTip.SetToolTip(buttonReset, $"NOTE that the reset can also be done from the {Config.ProgramTitle} tray icon.");
+            TTip.SetToolTip(buttonAlarm, $"Adjust the alarm sound here. Use the {Config.ProgramTitle} tray icon to set the alarm.");
+            TTip.SetToolTip(checkBoxTrayNotifications, $"When checked, a Windows notification is displayed when you make selections in the {Config.ProgramTitle} tray menu. (for feedback)");
 
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
@@ -169,7 +272,8 @@ namespace CableGuardian
 
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
-            buttonRetry.Click += ButtonRetry_Click; ;
+            buttonRetry.Click += ButtonRetry_Click;
+            buttonAlarm.Click += ButtonAlarm_Click;
 
             comboBoxProfile.SelectedIndexChanged += ComboBoxProfile_SelectedIndexChanged;
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
@@ -177,6 +281,8 @@ namespace CableGuardian
             checkBoxStartMinimized.CheckedChanged += CheckBoxStartMinimized_CheckedChanged;
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxHome.CheckedChanged += CheckBoxHome_CheckedChanged;
+            checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
+            checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;
 
             Observer.StateRefreshed += Observer_StateRefreshed;
             Tracker.FullRotationsChanged += OnFullRotationsChanged;
@@ -185,8 +291,19 @@ namespace CableGuardian
             OculusConn.StatusChanged += OnVRConnectionStatusChanged;
             OpenVRConn.StatusChanged += OnVRConnectionStatusChanged;
             OculusConn.StatusChangedToAllOK += (s,e) => { WaveOutPool.SendDeviceRefreshRequest(); };
+            OculusConn.StatusChangedToNotOK += OnVRConnectionLost;
+            OpenVRConn.StatusChangedToNotOK += OnVRConnectionLost;
+
+            TrayMenuReset.Click += TrayMenutReset_Click;
+            TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
+            TrayMenuGUI.Click += (s,e) => { Restore();};
+            TrayMenuExit.Click += (s, e) => { Close(); };
+            TrayMenu.Opening += TrayMenu_Opening;
+
+            AlarmTimer.Tick += AlarmTimer_Tick;
         }
 
+       
         void AddEventHandlersCommon(Control ctl)
         {
             if (ctl is ComboBox)
@@ -200,6 +317,129 @@ namespace CableGuardian
             }
         }
 
+        private void TrayMenu_Opening(object sender, CancelEventArgs e)
+        {
+            uint fullRot = Tracker.GetFullRotations();
+            Direction rotSide = Tracker.GetRotationSide();
+            TrayMenuRotations.Text = "Full rotations: " + fullRot.ToString() + ((fullRot > 0) ? " (" + rotSide.ToString() + ")" : "");
+
+            if (TimerHours == 0 && TimerMinutes == 0)
+            {
+                TrayMenuAlarmIn.Text = $"Alarm me in";                
+                TrayMenuAlarmIn.ForeColor = Color.Empty;
+                TrayMenuAlarmAt.Text = $"Alarm me @";
+                TrayMenuAlarmAt.ForeColor = Color.Empty;
+                TrayMenuAlarmClear.Text = $"Cancel alarm";
+                TrayMenuAlarmClear.Enabled = false;
+            }
+            else
+            {   
+                TimeSpan remain = AlarmTime.Subtract(DateTime.Now);
+                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min";                
+                TrayMenuAlarmIn.ForeColor = Config.CGColor;
+                TrayMenuAlarmAt.Text = $"Alarm me @ {AlarmTime.ToShortTimeString()}";
+                TrayMenuAlarmAt.ForeColor = Config.CGColor;
+                TrayMenuAlarmClear.Text = $"Cancel alarm";
+                TrayMenuAlarmClear.Enabled = true;
+            }            
+        }
+
+        private void TrayMenutReset_Click(object sender, EventArgs e)
+        {
+            Tracker.Reset();
+            labelFullRot.Text = "0";
+            if (Config.TrayMenuNotifications)
+            {
+                notifyIcon1.ShowBalloonTip(2000, Config.ProgramTitle, "Reset successfull. Full rotations = 0.", ToolTipIcon.None);
+                // to clear the notification from the list:
+                notifyIcon1.Visible = false;
+                notifyIcon1.Visible = true;
+            }
+        }
+
+        private void TrayMenuAlarmInItem_Click(object sender, EventArgs e)
+        {
+            AlarmTimer.Stop();
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
+            TimerHours = (int)parent.Tag;
+            TimerMinutes = (int)item.Tag;
+            AlarmTime = DateTime.Now.AddHours(TimerHours);
+            AlarmTime = AlarmTime.AddMinutes(TimerMinutes);
+
+            //int interval = (hours * 3600 * 1000) + (minutes * 60 * 1000);
+            int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10);
+
+            SetAlarm(interval);
+        }
+
+        private void TrayMenuAlarmAtItem_Click(object sender, EventArgs e)
+        {            
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
+            int hours = (int)parent.Tag;
+            int minutes = (int)item.Tag;
+            DateTime now = DateTime.Now;
+            AlarmTime = new DateTime(now.Year,now.Month,now.Day,hours,minutes,0);
+
+            if (AlarmTime < now)
+                AlarmTime = AlarmTime.AddDays(1);
+
+            TimerHours = (AlarmTime - now).Hours;
+            TimerMinutes = (AlarmTime - now).Minutes;
+
+            //int interval = (hours * 3600 * 1000) + (minutes * 60 * 1000);
+            int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10);
+           
+            SetAlarm(interval);         
+        }
+
+                        
+        void SetAlarm(int interval)
+        {
+            AlarmTimer.Stop();
+            if (interval > 0)
+            {
+                AlarmTimer.Interval = interval;
+                AlarmTimer.Start();
+                if (Config.TrayMenuNotifications)
+                {
+                    notifyIcon1.ShowBalloonTip(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min (@ {AlarmTime.ToShortTimeString()}).", ToolTipIcon.None);
+                    // to clear the notification from the list:
+                    notifyIcon1.Visible = false;
+                    notifyIcon1.Visible = true;
+                }
+            }
+            else
+            {
+                PlayAlarm();
+            }
+        }
+
+        private void TrayMenuAlarmClear_Click(object sender, EventArgs e)
+        {
+            AlarmTimer.Stop();
+            TimerHours = TimerMinutes = 0;
+            if (Config.TrayMenuNotifications)
+            {
+                notifyIcon1.ShowBalloonTip(2000, Config.ProgramTitle, "Alarm cancelled.", ToolTipIcon.None);
+                // to clear the notification from the list:
+                notifyIcon1.Visible = false;
+                notifyIcon1.Visible = true;
+            }            
+        }
+        
+        private void AlarmTimer_Tick(object sender, EventArgs e)
+        {
+            PlayAlarm();
+        }
+
+        private void PlayAlarm()
+        {
+            AlarmTimer.Stop();
+            TimerHours = TimerMinutes = 0;
+            Config.Alarm.Play();
+        }
 
         private void CheckBoxHome_CheckedChanged(object sender, EventArgs e)
         {
@@ -208,6 +448,24 @@ namespace CableGuardian
 
             OculusConn.RequireHome = (checkBoxHome.Checked);
             Config.RequireHome = (checkBoxHome.Checked);
+            SaveConfigurationToFile();
+        }
+
+        private void CheckBoxConnLost_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+                        
+            Config.NotifyWhenVRConnectionLost = (checkBoxConnLost.Checked);
+            SaveConfigurationToFile();
+        }
+                
+        private void CheckBoxTrayNotifications_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.TrayMenuNotifications = (checkBoxTrayNotifications.Checked);
             SaveConfigurationToFile();
         }
 
@@ -260,8 +518,24 @@ namespace CableGuardian
             SaveProfilesToFile();
         }
 
-        
-       
+
+        private void ButtonAlarm_Click(object sender, EventArgs e)
+        {
+            OpenAlarmSettings();   
+        }
+
+        private void OpenAlarmSettings()
+        {
+            FormAlarm al = new FormAlarm();
+            al.StartPosition = FormStartPosition.Manual;
+            al.Location = PointToScreen(new Point(buttonAlarm.Location.X - 2, buttonAlarm.Location.Y - 2));
+            SkipFlaggedEventHandlers = true;            
+            TrayMenu.Enabled = false;
+            al.ShowDialog(this);            
+            TrayMenu.Enabled = true;
+            SkipFlaggedEventHandlers = false;
+            SaveConfigurationToFile();
+        }
 
         private void ComboBoxAPI_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -280,6 +554,8 @@ namespace CableGuardian
                     return;
                 }
             }
+
+            APIChangedByUser = true;
 
             Enabled = false;
             
@@ -508,21 +784,34 @@ namespace CableGuardian
 
             if (conn.Status != VRConnectionStatus.AllOK)
             {
+                Icon = CableGuardian.Properties.Resources.CG_error;
                 labelStatus.ForeColor = Config.CGErrorColor;
                 notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.API} - {conn.Status.ToString()}";
+                TrayMenuTitle.ForeColor = Config.CGErrorColor;
+                TrayMenuTitle.Text = Config.ProgramTitle + " - NOT OK";
             }
             else
             {
+                Icon = CableGuardian.Properties.Resources.CG;
                 labelStatus.ForeColor = Config.CGColor;
                 notifyIcon1.Icon = CableGuardian.Properties.Resources.CG;
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.API} - {conn.Status.ToString()}";
+                TrayMenuTitle.ForeColor = Config.CGColor;
+                TrayMenuTitle.Text = Config.ProgramTitle + " - All OK";
             }
 
             labelStatus.Text = $"VR Headset Connection Status:{Environment.NewLine}{Environment.NewLine}" + conn.StatusMessage;
                        
-            buttonRetry.Visible = (conn.Status == VRConnectionStatus.Closed);
-           
+            buttonRetry.Visible = (conn.Status == VRConnectionStatus.Closed);           
+        }
+
+        void OnVRConnectionLost(object sender, EventArgs e)
+        {
+            if (Config.NotifyWhenVRConnectionLost && !APIChangedByUser)
+                notifyIcon1.ShowBalloonTip(2000, Config.ProgramTitle, $"VR headset connection lost. {Config.ProgramTitle} offline.", ToolTipIcon.Warning);
+
+            APIChangedByUser = false;
         }
 
         private void PictureBoxClose_MouseClick(object sender, MouseEventArgs e)
@@ -591,6 +880,7 @@ namespace CableGuardian
                 OpenVRConn.StatusChanged -= OnVRConnectionStatusChanged;
                 OpenVRConn?.Dispose();
                 OculusConn?.Dispose();
+                AlarmTimer.Dispose();
             }
         }
 

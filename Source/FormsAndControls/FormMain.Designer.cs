@@ -54,6 +54,9 @@
             this.buttonRetry = new System.Windows.Forms.Button();
             this.labelMount = new System.Windows.Forms.Label();
             this.checkBoxHome = new System.Windows.Forms.CheckBox();
+            this.checkBoxConnLost = new System.Windows.Forms.CheckBox();
+            this.buttonAlarm = new System.Windows.Forms.Button();
+            this.checkBoxTrayNotifications = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -68,11 +71,11 @@
             this.labelFullRotTitle.AutoSize = true;
             this.labelFullRotTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelFullRotTitle.ForeColor = System.Drawing.Color.White;
-            this.labelFullRotTitle.Location = new System.Drawing.Point(5, 291);
+            this.labelFullRotTitle.Location = new System.Drawing.Point(5, 298);
             this.labelFullRotTitle.Name = "labelFullRotTitle";
-            this.labelFullRotTitle.Size = new System.Drawing.Size(115, 20);
+            this.labelFullRotTitle.Size = new System.Drawing.Size(108, 20);
             this.labelFullRotTitle.TabIndex = 7;
-            this.labelFullRotTitle.Text = "Full Rotations: ";
+            this.labelFullRotTitle.Text = "Full rotations: ";
             this.labelFullRotTitle.Visible = false;
             // 
             // labelFullRot
@@ -80,7 +83,7 @@
             this.labelFullRot.AutoSize = true;
             this.labelFullRot.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelFullRot.ForeColor = System.Drawing.Color.White;
-            this.labelFullRot.Location = new System.Drawing.Point(119, 291);
+            this.labelFullRot.Location = new System.Drawing.Point(110, 298);
             this.labelFullRot.Name = "labelFullRot";
             this.labelFullRot.Size = new System.Drawing.Size(18, 20);
             this.labelFullRot.TabIndex = 9;
@@ -92,10 +95,10 @@
             this.buttonReset.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
-            this.buttonReset.Location = new System.Drawing.Point(176, 226);
+            this.buttonReset.Location = new System.Drawing.Point(176, 249);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(143, 23);
-            this.buttonReset.TabIndex = 12;
+            this.buttonReset.TabIndex = 20;
             this.buttonReset.Text = "Reset rotation counter";
             this.buttonReset.UseVisualStyleBackColor = true;
             // 
@@ -103,7 +106,7 @@
             // 
             this.labelYaw.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelYaw.ForeColor = System.Drawing.Color.White;
-            this.labelYaw.Location = new System.Drawing.Point(5, 273);
+            this.labelYaw.Location = new System.Drawing.Point(5, 280);
             this.labelYaw.Name = "labelYaw";
             this.labelYaw.Size = new System.Drawing.Size(128, 20);
             this.labelYaw.TabIndex = 0;
@@ -195,7 +198,7 @@
             // labelDataWarning
             // 
             this.labelDataWarning.ForeColor = System.Drawing.Color.White;
-            this.labelDataWarning.Location = new System.Drawing.Point(6, 310);
+            this.labelDataWarning.Location = new System.Drawing.Point(6, 317);
             this.labelDataWarning.Name = "labelDataWarning";
             this.labelDataWarning.Size = new System.Drawing.Size(313, 44);
             this.labelDataWarning.TabIndex = 36;
@@ -211,7 +214,7 @@
             this.buttonSave.Location = new System.Drawing.Point(783, 10);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(150, 23);
-            this.buttonSave.TabIndex = 18;
+            this.buttonSave.TabIndex = 44;
             this.buttonSave.Text = "Save profiles to disk";
             this.buttonSave.UseVisualStyleBackColor = true;
             // 
@@ -244,7 +247,7 @@
             this.comboBoxProfile.Location = new System.Drawing.Point(391, 11);
             this.comboBoxProfile.Name = "comboBoxProfile";
             this.comboBoxProfile.Size = new System.Drawing.Size(176, 21);
-            this.comboBoxProfile.TabIndex = 16;
+            this.comboBoxProfile.TabIndex = 40;
             // 
             // pictureBoxMinus
             // 
@@ -276,7 +279,7 @@
             this.comboBoxAPI.Location = new System.Drawing.Point(224, 364);
             this.comboBoxAPI.Name = "comboBoxAPI";
             this.comboBoxAPI.Size = new System.Drawing.Size(95, 21);
-            this.comboBoxAPI.TabIndex = 16;
+            this.comboBoxAPI.TabIndex = 32;
             // 
             // label1
             // 
@@ -296,7 +299,7 @@
             this.buttonRetry.Location = new System.Drawing.Point(9, 362);
             this.buttonRetry.Name = "buttonRetry";
             this.buttonRetry.Size = new System.Drawing.Size(155, 23);
-            this.buttonRetry.TabIndex = 15;
+            this.buttonRetry.TabIndex = 28;
             this.buttonRetry.Text = "Retry VR connection";
             this.buttonRetry.UseVisualStyleBackColor = true;
             this.buttonRetry.Visible = false;
@@ -305,7 +308,7 @@
             // 
             this.labelMount.AutoSize = true;
             this.labelMount.ForeColor = System.Drawing.Color.White;
-            this.labelMount.Location = new System.Drawing.Point(6, 341);
+            this.labelMount.Location = new System.Drawing.Point(6, 345);
             this.labelMount.Name = "labelMount";
             this.labelMount.Size = new System.Drawing.Size(303, 13);
             this.labelMount.TabIndex = 56;
@@ -320,10 +323,44 @@
             this.checkBoxHome.Location = new System.Drawing.Point(9, 253);
             this.checkBoxHome.Name = "checkBoxHome";
             this.checkBoxHome.Size = new System.Drawing.Size(130, 17);
-            this.checkBoxHome.TabIndex = 14;
+            this.checkBoxHome.TabIndex = 16;
             this.checkBoxHome.Text = "Require Oculus Home";
             this.checkBoxHome.UseVisualStyleBackColor = true;
             this.checkBoxHome.Visible = false;
+            // 
+            // checkBoxConnLost
+            // 
+            this.checkBoxConnLost.AutoSize = true;
+            this.checkBoxConnLost.ForeColor = System.Drawing.Color.White;
+            this.checkBoxConnLost.Location = new System.Drawing.Point(13, 463);
+            this.checkBoxConnLost.Name = "checkBoxConnLost";
+            this.checkBoxConnLost.Size = new System.Drawing.Size(239, 17);
+            this.checkBoxConnLost.TabIndex = 36;
+            this.checkBoxConnLost.Text = "Show notification when VR connection is lost";
+            this.checkBoxConnLost.UseVisualStyleBackColor = true;
+            // 
+            // buttonAlarm
+            // 
+            this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonAlarm.ForeColor = System.Drawing.Color.White;
+            this.buttonAlarm.Location = new System.Drawing.Point(176, 272);
+            this.buttonAlarm.Name = "buttonAlarm";
+            this.buttonAlarm.Size = new System.Drawing.Size(143, 23);
+            this.buttonAlarm.TabIndex = 24;
+            this.buttonAlarm.Text = "Alarm clock settings...";
+            this.buttonAlarm.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxTrayNotifications
+            // 
+            this.checkBoxTrayNotifications.AutoSize = true;
+            this.checkBoxTrayNotifications.ForeColor = System.Drawing.Color.White;
+            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(176, 230);
+            this.checkBoxTrayNotifications.Name = "checkBoxTrayNotifications";
+            this.checkBoxTrayNotifications.Size = new System.Drawing.Size(135, 17);
+            this.checkBoxTrayNotifications.TabIndex = 12;
+            this.checkBoxTrayNotifications.Text = "Tray menu notifications";
+            this.checkBoxTrayNotifications.UseVisualStyleBackColor = true;
             // 
             // profileEditor
             // 
@@ -333,7 +370,7 @@
             this.profileEditor.Location = new System.Drawing.Point(328, 38);
             this.profileEditor.Name = "profileEditor";
             this.profileEditor.Size = new System.Drawing.Size(695, 445);
-            this.profileEditor.TabIndex = 22;
+            this.profileEditor.TabIndex = 48;
             // 
             // FormMain
             // 
@@ -342,6 +379,9 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.checkBoxTrayNotifications);
+            this.Controls.Add(this.buttonAlarm);
+            this.Controls.Add(this.checkBoxConnLost);
             this.Controls.Add(this.checkBoxHome);
             this.Controls.Add(this.labelMount);
             this.Controls.Add(this.buttonRetry);
@@ -369,7 +409,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.Name = "FormMain";
-            this.Text = "Form1";
+            this.Text = "Cable Guardian";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
@@ -407,6 +447,9 @@
         private System.Windows.Forms.Button buttonRetry;
         private System.Windows.Forms.Label labelMount;
         private System.Windows.Forms.CheckBox checkBoxHome;
+        private System.Windows.Forms.CheckBox checkBoxConnLost;
+        private System.Windows.Forms.Button buttonAlarm;
+        private System.Windows.Forms.CheckBox checkBoxTrayNotifications;
     }
 }
 

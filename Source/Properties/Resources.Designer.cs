@@ -61,6 +61,24 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream Beep_classic {
+            get {
+                return ResourceManager.GetStream("Beep_classic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream Bilibom {
+            get {
+                return ResourceManager.GetStream("Bilibom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon CG {
@@ -87,6 +105,30 @@ namespace CableGuardian.Properties {
             get {
                 object obj = ResourceManager.GetObject("CGLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;CGProfiles&gt;
+        ///  &lt;StartupProfile /&gt;
+        ///  &lt;Profiles&gt;
+        ///    &lt;Profile&gt;
+        ///      &lt;Name&gt;Simple&lt;/Name&gt;
+        ///      &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///      &lt;WaveOutDeviceSource&gt;Oculus&lt;/WaveOutDeviceSource&gt;
+        ///      &lt;WaveOutDeviceName /&gt;
+        ///      &lt;Actions&gt;
+        ///        &lt;TriggeredAction&gt;
+        ///          &lt;Trigger&gt;
+        ///            &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///            &lt;RotationCondition&gt;
+        ///              &lt;TargetRotationSide&gt;E [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CGProfiles {
+            get {
+                return ResourceManager.GetString("CGProfiles", resourceCulture);
             }
         }
         
@@ -187,6 +229,15 @@ namespace CableGuardian.Properties {
             get {
                 object obj = ResourceManager.GetObject("Refresh24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream TickTock {
+            get {
+                return ResourceManager.GetStream("TickTock", resourceCulture);
             }
         }
     }

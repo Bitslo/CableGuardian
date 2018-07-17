@@ -28,11 +28,15 @@ namespace CableGuardian
 
         public static bool StartMinimized { get; set; } = false;
         public static bool RequireHome { get; set; } = false;
+        public static bool NotifyWhenVRConnectionLost { get; set; } = true;
+        public static bool TrayMenuNotifications { get; set; } = true;
+        public static CGActionWave Alarm { get; private set; } = new CGActionWave(FormMain.WaveOutPool);        
         public static VRAPI API { get; set; } = VRAPI.OculusVR;
         public static List<Profile> Profiles { get; private set; } = new List<Profile>();
         public static Profile StartUpProfile { get; set; }
         static Profile ActiveProfile { get; set; }
         public static int ProfilesFileBackupCount { get; set; } = 5;
+        public static bool WaveComboRefreshRequired { get; set; }  = false;
         
         static Config()
         {
@@ -81,7 +85,45 @@ namespace CableGuardian
         {
             Profiles.Remove(profile);            
         }
-        
+
+        public static void CheckDefaultSounds()
+        {
+            // default sounds
+            string wavePath = ExeFolder + $@"\TickTock.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.TickTock.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.TickTock.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true; // a bit unfortunate gimmick, but whatever
+            }
+            wavePath = ExeFolder + $@"\Bilibom.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.Bilibom.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.Bilibom.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+            wavePath = ExeFolder + $@"\Beep_classic.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.Beep_classic.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.Beep_classic.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+
+            // default alarm:
+            Alarm.Wave = "TickTock";
+            Alarm.Pan = 0;
+            Alarm.Volume = 100;
+            Alarm.LoopCount = 2;
+        }
+
         public static void WriteConfigToFile()
         {
             XDocument xCableGuardian =
@@ -123,25 +165,28 @@ namespace CableGuardian
                 }
             }                       
         }
-
+           
         public static void ReadProfilesFromFile()
         {
+            XDocument XmlProfiles;
+
             if (File.Exists(ProfilesFile))
             {
-                XDocument XmlProfiles = XDocument.Load(ProfilesFile, LoadOptions.PreserveWhitespace);
-
-                if (XmlProfiles != null)
-                {
-                    XElement xBase = XmlProfiles.Element(ProfilesName);
-                    if (xBase != null)
-                    {
-                        LoadProfilesFromXml(xBase);                        
-                    }
-                }
+                XmlProfiles = XDocument.Load(ProfilesFile, LoadOptions.PreserveWhitespace);
             }
             else
             {
-                throw new Exception($"Profiles file not found! ({Config.ProfilesFile})");
+                // default profile              
+                XmlProfiles = XDocument.Parse(CableGuardian.Properties.Resources.CGProfiles, LoadOptions.PreserveWhitespace);                
+            }
+
+            if (XmlProfiles != null)
+            {
+                XElement xBase = XmlProfiles.Element(ProfilesName);
+                if (xBase != null)
+                {
+                    LoadProfilesFromXml(xBase);
+                }
             }
         }
 
@@ -151,6 +196,12 @@ namespace CableGuardian
             {
                 StartMinimized = xConfig.GetElementValueBool("StartMinimized");
                 RequireHome = xConfig.GetElementValueBool("RequireHome");
+                NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
+                TrayMenuNotifications = xConfig.GetElementValueBool("TrayMenuNotifications", true);
+
+                XElement xAlarm = xConfig.Element("Alarm");               
+                Alarm.LoadFromXml(xAlarm?.Element("CGActionWaveFile"));
+                                
 
                 XElement cons = xConfig.Element("CONSTANTS");
                 string temp = cons.GetElementValueTrimmed("OculusHomeProcessName");
@@ -188,7 +239,10 @@ namespace CableGuardian
             return new XElement(ConfigName, 
                                 new XElement("StartMinimized", StartMinimized),
                                 new XElement("RequireHome", RequireHome),
+                                new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
+                                new XElement("TrayMenuNotifications", TrayMenuNotifications),
                                 new XElement("API", API),
+                                new XElement("Alarm", Alarm.GetXml()),                                
                                 new XElement("CONSTANTS",
                                 new XComment("These are for future proofing. In case SteamVR or Oculus Home processes are named differently in an update (unlikely)."),
                                 new XElement("OculusHomeProcessName", OculusHomeProcessName),

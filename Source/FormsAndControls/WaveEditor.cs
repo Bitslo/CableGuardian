@@ -28,7 +28,8 @@ namespace CableGuardian
                 comboBoxWave.DataSource = CGActionWave.AvailableWaves;
                 TTip.SetToolTip(pictureBoxRefresh, $"Scan for wave files (*.wav) in: \"{Config.ExeFolder}\"");
                 TTip.SetToolTip(labelNoWaves, $"Please add wave files (*.wav) to \"{Config.ExeFolder}\" and click the refresh button.");
-                TTip.SetToolTip(comboBoxWave, $"Due to audio implementation, max length for a wave is 5 seconds.");
+                TTip.SetToolTip(comboBoxWave, $"Select the wave file to play. Due to audio implementation, only the first 5 seconds of the wave will be played.");
+                TTip.SetToolTip(numericUpDownLoop, $"Loop count. How many times the wave is played in succession per single trigger. Max=9.");
 
                 InitializeAppearance();
             }
@@ -53,7 +54,8 @@ namespace CableGuardian
         {
             comboBoxWave.SelectedIndexChanged += ComboBoxWave_SelectedIndexChanged;
             trackBarVolume.ValueChanged += TrackBarVolume_ValueChanged;
-            trackBarPan.ValueChanged += TrackBarPan_ValueChanged;            
+            trackBarPan.ValueChanged += TrackBarPan_ValueChanged;
+            numericUpDownLoop.ValueChanged += NumericUpDownLoop_ValueChanged;
             pictureBoxPlay.Click += PictureBoxPlay_Click;
             pictureBoxRefresh.Click += PictureBoxRefresh_Click;
 
@@ -81,6 +83,12 @@ namespace CableGuardian
         {
             SkipFlaggedEventHandlers = true;
 
+            if (Config.WaveComboRefreshRequired)  // needed when loading default profiles & sounds. A bit gimmicky.
+            {
+                RefreshWaveCombo();
+                Config.WaveComboRefreshRequired = false;
+            }
+
             string wave = TheWave.Wave;
             if (!String.IsNullOrWhiteSpace(wave) && comboBoxWave.Items.Contains(wave))
                 comboBoxWave.SelectedItem = wave;
@@ -92,6 +100,7 @@ namespace CableGuardian
 
             trackBarVolume.Value = TheWave.Volume;
             trackBarPan.Value = TheWave.Pan;
+            numericUpDownLoop.Value = TheWave.LoopCount;
 
             SkipFlaggedEventHandlers = false;
 
@@ -119,6 +128,15 @@ namespace CableGuardian
             TheWave.Pan = trackBarPan.Value;
             SetPanLabelText();
             InvokeChangeMade(new ChangeEventArgs(trackBarPan));
+        }
+
+        private void NumericUpDownLoop_ValueChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            TheWave.LoopCount = (int)numericUpDownLoop.Value;
+            InvokeChangeMade(new ChangeEventArgs(numericUpDownLoop));
         }
 
         void SetVolumeLabelText()
@@ -161,6 +179,10 @@ namespace CableGuardian
             if (selectedItem != null && comboBoxWave.Items.Contains(selectedItem))
             {
                 comboBoxWave.SelectedItem = selectedItem;
+            }
+            else if (TheWave.Wave != null && comboBoxWave.Items.Contains(TheWave.Wave))
+            {
+                comboBoxWave.SelectedItem = TheWave.Wave;
             }
             else if (comboBoxWave.SelectedItem != null)
             {

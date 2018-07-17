@@ -12,7 +12,9 @@ namespace CableGuardian
     {
         public EventHandler<EventArgs> StatusChanged;
         public EventHandler<EventArgs> StatusChangedToAllOK;
+        public EventHandler<EventArgs> StatusChangedToNotOK;
         public abstract VRConnectionStatus Status { get; protected set; }
+        private VRConnectionStatus PreviousStatus { get; set; } = VRConnectionStatus.Closed;
         public string StatusMessage { get; protected set; }
         /// <summary>
         /// Returns the wave out device index used by the VR API
@@ -52,6 +54,13 @@ namespace CableGuardian
             {
                 StatusChangedToAllOK(this, new EventArgs());
             }
+
+            if (PreviousStatus == VRConnectionStatus.AllOK && Status != VRConnectionStatus.AllOK && StatusChangedToNotOK != null)
+            {
+                StatusChangedToNotOK(this, new EventArgs());
+            }
+
+            PreviousStatus = Status;
         }
 
     }

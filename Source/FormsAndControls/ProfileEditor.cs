@@ -35,6 +35,7 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxStartup,"Load this profile when program starts");
             TTip.SetToolTip(checkBoxFreeze, "Freeze profile to prevent accidental changes");
             TTip.SetToolTip(pictureBoxPlus, "Add a new action");
+            TTip.SetToolTip(pictureBoxMinus, "Remove the selected action");
             TTip.SetToolTip(comboBoxDeviceSource, "How to determine the audio device for playing the waves: Oculus Home, Windows or manual setting.");
             TTip.SetToolTip(labelOcuChanges, $"Changes in Oculus Home audio settings are only updated to {Config.ProgramTitle} when you change the audio settings in {Config.ProgramTitle}  ");
 

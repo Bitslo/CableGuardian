@@ -41,10 +41,13 @@
             this.pictureBoxRefresh = new System.Windows.Forms.PictureBox();
             this.pictureBoxPlay = new System.Windows.Forms.PictureBox();
             this.labelNoWaves = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numericUpDownLoop = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarPan)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRefresh)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLoop)).BeginInit();
             this.SuspendLayout();
             // 
             // trackBarVolume
@@ -180,11 +183,46 @@
             this.labelNoWaves.Text = "NO WAVES FOUND";
             this.labelNoWaves.Visible = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(95, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(14, 13);
+            this.label3.TabIndex = 61;
+            this.label3.Tag = "";
+            this.label3.Text = "X";
+            // 
+            // numericUpDownLoop
+            // 
+            this.numericUpDownLoop.Location = new System.Drawing.Point(110, 3);
+            this.numericUpDownLoop.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.numericUpDownLoop.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDownLoop.Name = "numericUpDownLoop";
+            this.numericUpDownLoop.Size = new System.Drawing.Size(37, 20);
+            this.numericUpDownLoop.TabIndex = 60;
+            this.numericUpDownLoop.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // WaveEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.numericUpDownLoop);
             this.Controls.Add(this.labelNoWaves);
             this.Controls.Add(this.pictureBoxRefresh);
             this.Controls.Add(this.label2);
@@ -204,6 +242,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBarPan)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRefresh)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLoop)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -223,5 +262,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBoxRefresh;
         private System.Windows.Forms.Label labelNoWaves;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown numericUpDownLoop;
     }
 }
