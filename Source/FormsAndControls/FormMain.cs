@@ -367,8 +367,8 @@ namespace CableGuardian
             AlarmTime = DateTime.Now.AddHours(TimerHours);
             AlarmTime = AlarmTime.AddMinutes(TimerMinutes);
 
-            //int interval = (hours * 3600 * 1000) + (minutes * 60 * 1000);
-            int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10);
+            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000);
+            //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
 
             SetAlarm(interval);
         }
@@ -388,8 +388,8 @@ namespace CableGuardian
             TimerHours = (AlarmTime - now).Hours;
             TimerMinutes = (AlarmTime - now).Minutes;
 
-            //int interval = (hours * 3600 * 1000) + (minutes * 60 * 1000);
-            int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10);
+            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000);
+            //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
            
             SetAlarm(interval);         
         }
