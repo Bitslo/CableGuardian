@@ -5,7 +5,7 @@ Rotation (yaw) tracker for VR headsets
 
 The purpose of the application is to monitor your rotations in VR and thus:  
      - improve the lifetime of the cable by preventing excessive twisting  
-     - improve the VR experience as you don't have to actively monitor your turning direction or peek for orientation
+     - improve the VR experience as you don't have to actively monitor your turning direction or peek for orientation  
      - eliminate the need to take off your headset just to straighten out the cable
 
 Cable Guardian uses customizable audio notifications, featuring:   
