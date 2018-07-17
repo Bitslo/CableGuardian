@@ -15,8 +15,8 @@ Cable Guardian uses customizable audio notifications, featuring:
      - support for custom sounds (by copying wave (*.wav) files to the executable directory)  
      - user profiles  
     
-In version 1.1.0 a lazy man's alarm clock was added to further increase immersion as there will be no need to check on time.
-     - quicker to set up than the timer on a cell phone or Windows
+In version 1.1.0 a lazy man's alarm clock was added to further increase immersion as there will be no need to check on time.  
+     - quicker to set up than the timer on a cell phone or Windows  
      - alarm will sound inside the headset
 
 Cable Guardian runs in the background with minimal CPU usage and doesn't render anything on the HMD.  
