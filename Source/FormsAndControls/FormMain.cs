@@ -40,6 +40,7 @@ namespace CableGuardian
         DateTime AlarmTime;
         int TimerHours = 0;
         int TimerMinutes = 0;
+        int TimerSeconds = 0;
 
         Point MouseDragPosOnForm = new Point(0, 0);        
         bool UpdateYawToForm = false;
@@ -323,7 +324,7 @@ namespace CableGuardian
             Direction rotSide = Tracker.GetRotationSide();
             TrayMenuRotations.Text = "Full rotations: " + fullRot.ToString() + ((fullRot > 0) ? " (" + rotSide.ToString() + ")" : "");
 
-            if (TimerHours == 0 && TimerMinutes == 0)
+            if (TimerHours == 0 && TimerMinutes == 0 && TimerSeconds == 0)
             {
                 TrayMenuAlarmIn.Text = $"Alarm me in";                
                 TrayMenuAlarmIn.ForeColor = Color.Empty;
@@ -335,7 +336,7 @@ namespace CableGuardian
             else
             {   
                 TimeSpan remain = AlarmTime.Subtract(DateTime.Now);
-                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min";                
+                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min {remain.Seconds}s";                
                 TrayMenuAlarmIn.ForeColor = Config.CGColor;
                 TrayMenuAlarmAt.Text = $"Alarm me @ {AlarmTime.ToShortTimeString()}";
                 TrayMenuAlarmAt.ForeColor = Config.CGColor;
@@ -384,11 +385,12 @@ namespace CableGuardian
 
             if (AlarmTime < now)
                 AlarmTime = AlarmTime.AddDays(1);
-
+                        
             TimerHours = (AlarmTime - now).Hours;
             TimerMinutes = (AlarmTime - now).Minutes;
+            TimerSeconds = (AlarmTime - now).Seconds;
 
-            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000);
+            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000) + (TimerSeconds * 1000);
             //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
            
             SetAlarm(interval);         
@@ -404,7 +406,7 @@ namespace CableGuardian
                 AlarmTimer.Start();
                 if (Config.TrayMenuNotifications)
                 {
-                    notifyIcon1.ShowBalloonTip(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min (@ {AlarmTime.ToShortTimeString()}).", ToolTipIcon.None);
+                    notifyIcon1.ShowBalloonTip(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min {TimerSeconds}s (@ {AlarmTime.ToShortTimeString()}).", ToolTipIcon.None);
                     // to clear the notification from the list:
                     notifyIcon1.Visible = false;
                     notifyIcon1.Visible = true;
@@ -419,7 +421,7 @@ namespace CableGuardian
         private void TrayMenuAlarmClear_Click(object sender, EventArgs e)
         {
             AlarmTimer.Stop();
-            TimerHours = TimerMinutes = 0;
+            TimerHours = TimerMinutes = TimerSeconds = 0;
             if (Config.TrayMenuNotifications)
             {
                 notifyIcon1.ShowBalloonTip(2000, Config.ProgramTitle, "Alarm cancelled.", ToolTipIcon.None);
@@ -437,7 +439,7 @@ namespace CableGuardian
         private void PlayAlarm()
         {
             AlarmTimer.Stop();
-            TimerHours = TimerMinutes = 0;
+            TimerHours = TimerMinutes = TimerSeconds = 0;
             Config.Alarm.Play();
         }
 
