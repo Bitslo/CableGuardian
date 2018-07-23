@@ -121,7 +121,7 @@ namespace CableGuardian
             Alarm.Wave = "TickTock";
             Alarm.Pan = 0;
             Alarm.Volume = 100;
-            Alarm.LoopCount = 2;
+            Alarm.LoopCount = 3;
         }
 
         public static void WriteConfigToFile()

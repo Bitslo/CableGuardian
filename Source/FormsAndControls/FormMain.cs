@@ -165,11 +165,11 @@ namespace CableGuardian
 
         void BuilAlarmMenu()
         {
-            ToolStripMenuItem itemAM = new ToolStripMenuItem("AM");            
-            TrayMenuAlarmAt.DropDownItems.Add(itemAM);
+            //ToolStripMenuItem itemAM = new ToolStripMenuItem("AM");            
+            //TrayMenuAlarmAt.DropDownItems.Add(itemAM);
 
-            ToolStripMenuItem itemPM = new ToolStripMenuItem("PM");            
-            TrayMenuAlarmAt.DropDownItems.Add(itemPM);
+            //ToolStripMenuItem itemPM = new ToolStripMenuItem("PM");            
+            //TrayMenuAlarmAt.DropDownItems.Add(itemPM);
 
             for (int i = 0; i < 12; i++)
             {
@@ -181,11 +181,11 @@ namespace CableGuardian
 
                 ToolStripMenuItem itemAMH = new ToolStripMenuItem(ath.ToString());
                 itemAMH.Tag = (ath == 12) ? 0 : ath;
-                itemAM.DropDownItems.Add(itemAMH);
+                TrayMenuAlarmAt.DropDownItems.Add(itemAMH);
                                 
-                ToolStripMenuItem itemPMH = new ToolStripMenuItem(ath.ToString());                
-                itemPMH.Tag = (ath == 12) ? ath : ath + 12;
-                itemPM.DropDownItems.Add(itemPMH);
+                //ToolStripMenuItem itemPMH = new ToolStripMenuItem(ath.ToString());                
+                //itemPMH.Tag = (ath == 12) ? ath : ath + 12;
+                //itemPM.DropDownItems.Add(itemPMH);
 
                 for (int j = 0; j < 60; j += 5)
                 {
@@ -193,16 +193,18 @@ namespace CableGuardian
                     itemM.Tag = j;
                     itemH.DropDownItems.Add(itemM);
                     itemM.Click += TrayMenuAlarmInItem_Click;
-
-                    ToolStripMenuItem itemAMM = new ToolStripMenuItem(ath.ToString() + ":" + ((j < 10) ? "0" : "") + j.ToString() + " AM");
+                                       
+                    ToolStripMenuItem itemAMM = new ToolStripMenuItem(ath.ToString() + ":" + ((j < 10) ? "0" : "") + j.ToString()); // + " AM");
                     itemAMM.Tag = j;
                     itemAMH.DropDownItems.Add(itemAMM);
                     itemAMM.Click += TrayMenuAlarmAtItem_Click;
 
+                    /*
                     ToolStripMenuItem itemPMM = new ToolStripMenuItem(ath.ToString() + ":" + ((j < 10) ? "0" : "") + j.ToString() + " PM");
                     itemPMM.Tag = j;
                     itemPMH.DropDownItems.Add(itemPMM);
                     itemPMM.Click += TrayMenuAlarmAtItem_Click;
+                    */
                 }
             }
         }        
@@ -342,7 +344,44 @@ namespace CableGuardian
                 TrayMenuAlarmAt.ForeColor = Config.CGColor;
                 TrayMenuAlarmClear.Text = $"Cancel alarm";
                 TrayMenuAlarmClear.Enabled = true;
-            }            
+            }
+
+            // update AM/PM for available alarm times (next 12h):
+            DateTime now = DateTime.Now;
+            int nowHour0_11 = (now.Hour > 11) ? now.Hour - 12 : now.Hour;
+            int nowMin = now.Minute;
+            bool isPM = (now.Hour > 11);
+            string amPM = "AM";
+
+            foreach (ToolStripMenuItem itemH in TrayMenuAlarmAt.DropDownItems)
+            {
+                int menuHour0_11 = (int)itemH.Tag;
+                foreach (ToolStripMenuItem itemMin in itemH.DropDownItems)
+                {
+                    int menuMin = (int)itemMin.Tag;
+                    if (menuHour0_11 < nowHour0_11)
+                    {
+                        amPM = (isPM) ? "AM" : "PM";
+                    }
+                    else if (menuHour0_11 > nowHour0_11)
+                    {
+                        amPM = (isPM) ? "PM" : "AM";
+                    }
+                    else // current hour
+                    {
+                        if (menuMin <= nowMin)
+                        {
+                            amPM = (isPM) ? "AM" : "PM";
+                        }
+                        else
+                        {
+                            amPM = (isPM) ? "PM" : "AM";
+                        }
+                    }
+                    int menuH12 = (menuHour0_11 == 0) ? 12 : menuHour0_11;                    
+                    itemMin.Text = menuH12.ToString() + ":" + ((menuMin < 10) ? "0" : "") + menuMin.ToString() + " " + amPM;
+                }
+            }
         }
 
         private void TrayMenutReset_Click(object sender, EventArgs e)
@@ -381,10 +420,19 @@ namespace CableGuardian
             int hours = (int)parent.Tag;
             int minutes = (int)item.Tag;
             DateTime now = DateTime.Now;
-            AlarmTime = new DateTime(now.Year,now.Month,now.Day,hours,minutes,0);
-
-            if (AlarmTime < now)
-                AlarmTime = AlarmTime.AddDays(1);
+            // No more AM/PM menu. The nearest one is chosen automatically.
+            DateTime AlarmTimeAM = new DateTime(now.Year, now.Month, now.Day, hours, minutes, 0);
+            DateTime AlarmTimePM = new DateTime(now.Year, now.Month, now.Day, (hours == 0) ? 12 : hours + 12, minutes, 0);
+            if (AlarmTimeAM < now)
+                AlarmTimeAM = AlarmTimeAM.AddDays(1);
+            if (AlarmTimePM < now)
+                AlarmTimePM = AlarmTimePM.AddDays(1);
+                        
+            AlarmTime = (AlarmTimeAM < AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
+            
+            //AlarmTime = new DateTime(now.Year,now.Month,now.Day,hours,minutes,0);
+            //if (AlarmTime < now)
+            //    AlarmTime = AlarmTime.AddDays(1);
                         
             TimerHours = (AlarmTime - now).Hours;
             TimerMinutes = (AlarmTime - now).Minutes;
