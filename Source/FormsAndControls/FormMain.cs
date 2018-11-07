@@ -48,12 +48,15 @@ namespace CableGuardian
         bool ProfilesSaved = false;
         bool MouseDownOnComboBox = false;
         bool APIChangedByUser = false;
+        /// <summary>
+        /// One-time flag to allow hiding the form at startup
+        /// </summary>
+        bool ForceHide = true;
 
         public FormMain()
         {
             InitializeComponent();
-            Environment.CurrentDirectory = Config.ExeFolder; // always run from exe folder to avoid problems with dlls
-            Minimize();
+            Environment.CurrentDirectory = Config.ExeFolder; // always run from exe folder to avoid problems with dlls            
 
             comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
 
@@ -83,6 +86,11 @@ namespace CableGuardian
             SetProfilesSaveStatus(true);
         }
 
+        protected override void SetVisibleCore(bool value)
+        {
+            base.SetVisibleCore(ForceHide ? false : value);
+        }
+
         void ReadConfigAndProfilesFromFile()
         {
             try
@@ -92,7 +100,7 @@ namespace CableGuardian
             catch (Exception ex)
             {
                 string msg = String.Format("Unable* to load default sounds.  {0}{0} * {1}", Environment.NewLine, ex.Message);
-                Restore();
+                RestoreFromTray();
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
@@ -112,7 +120,7 @@ namespace CableGuardian
             catch (Exception ex)
             {
                 string msg = String.Format("Unable* to load profiles from file. {2} will not be sounding any alerts until a new profile has been defined.  {0}{0} * {1}", Environment.NewLine, ex.Message, Config.ProgramTitle);
-                Restore();
+                RestoreFromTray();
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -132,7 +140,7 @@ namespace CableGuardian
             LoadProfile(startProf);
 
             if (!Config.StartMinimized)
-                Restore();
+                RestoreFromTray();
 
             CheckWindowsStartUpStatus();
 
@@ -299,13 +307,24 @@ namespace CableGuardian
 
             TrayMenuReset.Click += TrayMenutReset_Click;
             TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
-            TrayMenuGUI.Click += (s,e) => { Restore();};
-            TrayMenuExit.Click += (s, e) => { Close(); };
+            TrayMenuGUI.Click += (s,e) => { RestoreFromTray();};
+            TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
 
             AlarmTimer.Tick += AlarmTimer_Tick;
         }
 
+        void Exit()
+        {
+            if (ForceHide) // form has never been shown
+            {
+                Application.Exit();
+            }
+            else
+            {
+                Close();
+            }            
+        }
        
         void AddEventHandlersCommon(Control ctl)
         {
@@ -866,18 +885,21 @@ namespace CableGuardian
 
         private void PictureBoxClose_MouseClick(object sender, MouseEventArgs e)
         {
-            Close();
+            Exit();
         }
 
-        void Minimize()
+        void MinimizeToTray()
         {
-            WindowState = FormWindowState.Minimized;
-            ShowInTaskbar = false;
+            //WindowState = FormWindowState.Minimized;
+            //ShowInTaskbar = false;
+            Hide();
         }
-        void Restore()
+        void RestoreFromTray()
         {
-            WindowState = FormWindowState.Normal;
-            ShowInTaskbar = true;
+            //WindowState = FormWindowState.Normal;
+            //ShowInTaskbar = true;         
+            ForceHide = false;
+            Show();
         }
 
         private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -885,15 +907,16 @@ namespace CableGuardian
             if (SkipFlaggedEventHandlers)
                 return;
 
-            if (WindowState == FormWindowState.Normal)
-                Minimize();
+            //if (WindowState == FormWindowState.Normal)
+            if (Visible)
+                MinimizeToTray();
             else
-                Restore();            
+                RestoreFromTray();            
         }
 
         private void PictureBoxMinimize_MouseClick(object sender, MouseEventArgs e)
         {
-            Minimize();
+            MinimizeToTray();
         }
 
         private void DragPoint_MouseDown(object sender, MouseEventArgs e)
