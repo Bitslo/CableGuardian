@@ -13,9 +13,9 @@ namespace CableGuardian
     {
         public Trigger ParentTrigger { get; private set; }
 
-        public uint TargetFullRotations { get; set; } = 0;
-        public uint TargetFullRotationsMax { get; set; } = 99;
-        public uint TargetPeakFullRotations { get; set; } = 0;        
+        public uint TargetHalfTurns { get; set; } = 0;
+        public uint TargetHalfTurnsMax { get; set; } = 99;
+        public uint TargetPeakHalfTurns { get; set; } = 0;        
        
 
         public CompareOperator CompOperator { get; set; } = CompareOperator.EqualOrGreaterThan;
@@ -40,17 +40,17 @@ namespace CableGuardian
         {                  
             if (CompOperator == CompareOperator.Equal)
             {
-                if (e.FullRotations != TargetFullRotations)
+                if (e.HalfTurns != TargetHalfTurns)
                     return false;
             }
             else if (CompOperator == CompareOperator.EqualOrGreaterThan)
             {
-                if (e.FullRotations < TargetFullRotations)
+                if (e.HalfTurns < TargetHalfTurns)
                     return false;
             }
             
 
-            if (e.FullRotations > TargetFullRotationsMax)
+            if (e.HalfTurns > TargetHalfTurnsMax)
             {
                 return false;
             }
@@ -67,7 +67,7 @@ namespace CableGuardian
             }
 
                             
-            if (e.PeakFullRotations < TargetPeakFullRotations)
+            if (e.PeakHalfTurns < TargetPeakHalfTurns)
                 return false;                               
             
                         
@@ -94,16 +94,43 @@ namespace CableGuardian
                 else
                     CompOperator = CompareOperator.EqualOrGreaterThan;
 
-                TargetFullRotations = (uint)xCondition.GetElementValueInt("TargetFullRotations");
-                TargetFullRotationsMax = (uint)xCondition.GetElementValueInt("TargetFullRotationsMax");
+                if (xCondition.GetElementValueOrNull("TargetHalfTurns") != null)
+                    TargetHalfTurns = (uint)xCondition.GetElementValueInt("TargetHalfTurns");
+                else
+                {
+                    TargetHalfTurns = (uint)xCondition.GetElementValueInt("TargetFullRotations") * 2; // backwards compatibility
+                    if (TargetHalfTurns > 99)
+                    {
+                        TargetHalfTurns = 99;
+                    }
+                }
+
+                if (xCondition.GetElementValueOrNull("TargetHalfTurnsMax") != null)
+                    TargetHalfTurnsMax = (uint)xCondition.GetElementValueInt("TargetHalfTurnsMax");
+                else
+                {
+                    TargetHalfTurnsMax = (uint)xCondition.GetElementValueInt("TargetFullRotationsMax") * 2; // backwards compatibility                                
+                    if (TargetHalfTurnsMax > 99)
+                    {
+                        TargetHalfTurnsMax = 99;
+                    }
+                }
 
                 if (Enum.TryParse(xCondition.GetElementValueTrimmed("TargetAccumulation"), out AccumulationStatus s))
                     TargetAccumulation = s;
                 else
                     TargetAccumulation = AccumulationStatus.Either;
 
-                TargetPeakFullRotations = (uint)xCondition.GetElementValueInt("TargetPeakFullRotations");                
-                
+                if (xCondition.GetElementValueOrNull("TargetPeakHalfTurns") != null)
+                    TargetPeakHalfTurns = (uint)xCondition.GetElementValueInt("TargetPeakHalfTurns");
+                else
+                {
+                    TargetPeakHalfTurns = (uint)xCondition.GetElementValueInt("TargetPeakFullRotations") * 2; // backwards compatibility
+                    if (TargetPeakHalfTurns > 99)
+                    {
+                        TargetPeakHalfTurns = 99;
+                    }
+                }
             }
         }
 
@@ -112,23 +139,23 @@ namespace CableGuardian
             return new XElement("RotationCondition",
                                    new XElement("TargetRotationSide", TargetRotationSide),
                                    new XElement("CompOperator", CompOperator),
-                                   new XElement("TargetFullRotations", TargetFullRotations),
-                                   new XElement("TargetFullRotationsMax", TargetFullRotationsMax),
+                                   new XElement("TargetHalfTurns", TargetHalfTurns),
+                                   new XElement("TargetHalfTurnsMax", TargetHalfTurnsMax),
                                    new XElement("TargetAccumulation", TargetAccumulation),
-                                   new XElement("TargetPeakFullRotations", TargetPeakFullRotations));
+                                   new XElement("TargetPeakHalfTurns", TargetPeakHalfTurns));
         }
 
         public override string ToString()
         {
             string output;
             if (ParentTrigger?.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition)
-                output = $" AND peak rotations \u2265 {TargetPeakFullRotations}";
+                output = $" AND peak half-turns \u2265 {TargetPeakHalfTurns}";
             else
             {
                 string compOp = (CompOperator == CompareOperator.Equal) ? "=" : "\u2265";
-                output = $" AND side is {TargetRotationSide} AND rotations {compOp} {TargetFullRotations}";
+                output = $" AND side is {TargetRotationSide} AND half-turns {compOp} {TargetHalfTurns}";
                 if (CompOperator != CompareOperator.Equal)
-                    output += (TargetFullRotationsMax < 99) ? $" AND rotations \u2264 {TargetFullRotationsMax}" : "";
+                    output += (TargetHalfTurnsMax < 99) ? $" AND half-turns \u2264 {TargetHalfTurnsMax}" : "";
                 output += $" AND twisting is {TargetAccumulation}";
             }
             

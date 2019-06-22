@@ -69,17 +69,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormsAndControls\FormAlarm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormsAndControls\FormAlarm.Designer.cs">
-      <DependentUpon>FormAlarm.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormsAndControls\FormHelp.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormsAndControls\FormHelp.Designer.cs">
       <DependentUpon>FormHelp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormsAndControls\FormSound.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\FormSound.designer.cs">
+      <DependentUpon>FormSound.cs</DependentUpon>
     </Compile>
     <Compile Include="FormsAndControls\TriggeredActionControl.cs">
       <SubType>UserControl</SubType>
@@ -167,11 +167,11 @@
     <Compile Include="Actions\Trigger.cs" />
     <Compile Include="AudioDevices\WaveOutDevice.cs" />
     <Compile Include="Actions\TriggeredAction.cs" />
-    <EmbeddedResource Include="FormsAndControls\FormAlarm.resx">
-      <DependentUpon>FormAlarm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FormsAndControls\FormHelp.resx">
       <DependentUpon>FormHelp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\FormSound.resx">
+      <DependentUpon>FormSound.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormsAndControls\TriggeredActionControl.resx">
       <DependentUpon>TriggeredActionControl.cs</DependentUpon>
@@ -181,6 +181,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormsAndControls\ConditionEditor.resx">
       <DependentUpon>ConditionEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FormsAndControls\WaveEditor.resx">
       <DependentUpon>WaveEditor.cs</DependentUpon>
@@ -220,10 +221,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Art\CG.ico" />
+    <None Include="Art\CG_icon_pic.png" />
+    <None Include="Art\Help2.png" />
+    <None Include="Art\Help1.png" />
+    <None Include="Config\TurnRight.wav" />
+    <None Include="Config\TurnLeft.wav" />
+    <None Include="Config\CG_ConnLost.wav" />
+    <None Include="Config\CG_Jingle.wav" />
+    <None Include="Config\CGProfiles_Default_OpenVR.xml" />
+    <None Include="Config\CGProfiles_Default_Oculus.xml" />
+    <None Include="Art\CloneSmall.png" />
+    <None Include="Config\Beep_loud.wav" />
+    <None Include="Art\CGLogo_Index.png" />
     <None Include="Config\TickTock.wav" />
     <None Include="Config\Bilibom.wav" />
-    <None Include="Config\Beep_classic.wav" />
-    <None Include="Config\CGProfiles.xml" />
     <None Include="Art\Close.png" />
     <None Include="Art\Minimize.png" />
     <None Include="Art\CGLogo.png" />
@@ -234,7 +245,6 @@
     <None Include="Art\MinusSmall.png" />
     <None Include="Art\PlusSmall.png" />
     <None Include="Art\Help.png" />
-    <None Include="Art\HelpForm.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

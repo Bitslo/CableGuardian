@@ -19,7 +19,7 @@ namespace CableGuardian.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,9 +63,9 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Beep_classic {
+        internal static System.IO.UnmanagedMemoryStream Beep_loud {
             get {
-                return ResourceManager.GetStream("Beep_classic", resourceCulture);
+                return ResourceManager.GetStream("Beep_loud", resourceCulture);
             }
         }
         
@@ -89,12 +89,40 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream CG_ConnLost {
+            get {
+                return ResourceManager.GetStream("CG_ConnLost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon CG_error {
             get {
                 object obj = ResourceManager.GetObject("CG_error", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CG_icon_pic {
+            get {
+                object obj = ResourceManager.GetObject("CG_icon_pic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream CG_Jingle {
+            get {
+                return ResourceManager.GetStream("CG_Jingle", resourceCulture);
             }
         }
         
@@ -109,26 +137,71 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CGLogo_Index {
+            get {
+                object obj = ResourceManager.GetObject("CGLogo_Index", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;CGProfiles&gt;
+        ///  &lt;StartupProfile /&gt;
+        ///  &lt;Profiles&gt;       
+        ///    &lt;Profile&gt;
+        ///      &lt;Name&gt;Default&lt;/Name&gt;
+        ///      &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///      &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///      &lt;API&gt;OculusVR&lt;/API&gt;
+        ///      &lt;WaveOutDeviceSource&gt;OculusHome&lt;/WaveOutDeviceSource&gt;
+        ///      &lt;WaveOutDeviceName /&gt;
+        ///      &lt;Actions&gt;
+        ///        &lt;TriggeredAction&gt;
+        ///          &lt;Trigger&gt;
+        ///            &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimi [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CGProfiles_Default_Oculus {
+            get {
+                return ResourceManager.GetString("CGProfiles_Default_Oculus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
         ///&lt;CGProfiles&gt;
         ///  &lt;StartupProfile /&gt;
         ///  &lt;Profiles&gt;
         ///    &lt;Profile&gt;
-        ///      &lt;Name&gt;Simple&lt;/Name&gt;
+        ///      &lt;Name&gt;Default&lt;/Name&gt;
         ///      &lt;Frozen&gt;false&lt;/Frozen&gt;
-        ///      &lt;WaveOutDeviceSource&gt;Oculus&lt;/WaveOutDeviceSource&gt;
+        ///      &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///      &lt;API&gt;OpenVR&lt;/API&gt;
+        ///      &lt;WaveOutDeviceSource&gt;Windows&lt;/WaveOutDeviceSource&gt;
         ///      &lt;WaveOutDeviceName /&gt;
         ///      &lt;Actions&gt;
         ///        &lt;TriggeredAction&gt;
         ///          &lt;Trigger&gt;
         ///            &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
         ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
-        ///            &lt;RotationCondition&gt;
-        ///              &lt;TargetRotationSide&gt;E [rest of string was truncated]&quot;;.
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string CGProfiles {
+        internal static string CGProfiles_Default_OpenVR {
             get {
-                return ResourceManager.GetString("CGProfiles", resourceCulture);
+                return ResourceManager.GetString("CGProfiles_Default_OpenVR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CloneSmall {
+            get {
+                object obj = ResourceManager.GetObject("CloneSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -155,9 +228,19 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap HelpForm {
+        internal static System.Drawing.Bitmap Help1 {
             get {
-                object obj = ResourceManager.GetObject("HelpForm", resourceCulture);
+                object obj = ResourceManager.GetObject("Help1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Help2 {
+            get {
+                object obj = ResourceManager.GetObject("Help2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -238,6 +321,24 @@ namespace CableGuardian.Properties {
         internal static System.IO.UnmanagedMemoryStream TickTock {
             get {
                 return ResourceManager.GetStream("TickTock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream TurnLeft {
+            get {
+                return ResourceManager.GetStream("TurnLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream TurnRight {
+            get {
+                return ResourceManager.GetStream("TurnRight", resourceCulture);
             }
         }
     }

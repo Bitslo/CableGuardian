@@ -40,9 +40,14 @@
             this.listBoxActions = new System.Windows.Forms.ListBox();
             this.pictureBoxMinus = new System.Windows.Forms.PictureBox();
             this.labelOcuChanges = new System.Windows.Forms.Label();
+            this.labelAPI = new System.Windows.Forms.Label();
+            this.comboBoxAPI = new System.Windows.Forms.ComboBox();
+            this.checkBoxHome = new System.Windows.Forms.CheckBox();
             this.WaveActionCtl = new CableGuardian.WaveActionControl();
+            this.pictureBoxClone = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBoxStartup
@@ -51,16 +56,16 @@
             this.checkBoxStartup.ForeColor = System.Drawing.Color.White;
             this.checkBoxStartup.Location = new System.Drawing.Point(9, 38);
             this.checkBoxStartup.Name = "checkBoxStartup";
-            this.checkBoxStartup.Size = new System.Drawing.Size(122, 17);
+            this.checkBoxStartup.Size = new System.Drawing.Size(91, 17);
             this.checkBoxStartup.TabIndex = 12;
-            this.checkBoxStartup.Text = "Set as startup profile";
+            this.checkBoxStartup.Text = "Startup profile";
             this.checkBoxStartup.UseVisualStyleBackColor = true;
             // 
             // checkBoxFreeze
             // 
             this.checkBoxFreeze.AutoSize = true;
             this.checkBoxFreeze.ForeColor = System.Drawing.Color.White;
-            this.checkBoxFreeze.Location = new System.Drawing.Point(134, 38);
+            this.checkBoxFreeze.Location = new System.Drawing.Point(101, 38);
             this.checkBoxFreeze.Name = "checkBoxFreeze";
             this.checkBoxFreeze.Size = new System.Drawing.Size(89, 17);
             this.checkBoxFreeze.TabIndex = 16;
@@ -71,26 +76,26 @@
             // 
             this.labelAudio.AutoSize = true;
             this.labelAudio.ForeColor = System.Drawing.Color.White;
-            this.labelAudio.Location = new System.Drawing.Point(246, 11);
+            this.labelAudio.Location = new System.Drawing.Point(308, 11);
             this.labelAudio.Name = "labelAudio";
-            this.labelAudio.Size = new System.Drawing.Size(107, 13);
+            this.labelAudio.Size = new System.Drawing.Size(72, 13);
             this.labelAudio.TabIndex = 46;
-            this.labelAudio.Text = "Audio device source:";
+            this.labelAudio.Text = "Audio device:";
             // 
             // comboBoxManual
             // 
             this.comboBoxManual.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxManual.FormattingEnabled = true;
-            this.comboBoxManual.Location = new System.Drawing.Point(455, 8);
+            this.comboBoxManual.Location = new System.Drawing.Point(484, 8);
             this.comboBoxManual.Name = "comboBoxManual";
-            this.comboBoxManual.Size = new System.Drawing.Size(229, 21);
+            this.comboBoxManual.Size = new System.Drawing.Size(199, 21);
             this.comboBoxManual.TabIndex = 8;
             // 
             // pictureBoxPlus
             // 
             this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBoxPlus.Image = global::CableGuardian.Properties.Resources.PlusSmall;
-            this.pictureBoxPlus.Location = new System.Drawing.Point(645, 39);
+            this.pictureBoxPlus.Location = new System.Drawing.Point(623, 39);
             this.pictureBoxPlus.Name = "pictureBoxPlus";
             this.pictureBoxPlus.Size = new System.Drawing.Size(16, 16);
             this.pictureBoxPlus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -101,25 +106,25 @@
             // 
             this.labelAddHint.AutoSize = true;
             this.labelAddHint.ForeColor = System.Drawing.Color.White;
-            this.labelAddHint.Location = new System.Drawing.Point(448, 39);
+            this.labelAddHint.Location = new System.Drawing.Point(526, 39);
             this.labelAddHint.Name = "labelAddHint";
-            this.labelAddHint.Size = new System.Drawing.Size(193, 13);
+            this.labelAddHint.Size = new System.Drawing.Size(94, 13);
             this.labelAddHint.TabIndex = 52;
             this.labelAddHint.Tag = "MANUAL";
-            this.labelAddHint.Text = "Click the plus sign to add an action  --->";
+            this.labelAddHint.Text = "Add an action  --->";
             // 
             // textBoxName
             // 
             this.textBoxName.Location = new System.Drawing.Point(60, 8);
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(176, 20);
+            this.textBoxName.Size = new System.Drawing.Size(125, 20);
             this.textBoxName.TabIndex = 0;
             // 
             // comboBoxDeviceSource
             // 
             this.comboBoxDeviceSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxDeviceSource.FormattingEnabled = true;
-            this.comboBoxDeviceSource.Location = new System.Drawing.Point(358, 8);
+            this.comboBoxDeviceSource.Location = new System.Drawing.Point(383, 8);
             this.comboBoxDeviceSource.Name = "comboBoxDeviceSource";
             this.comboBoxDeviceSource.Size = new System.Drawing.Size(93, 21);
             this.comboBoxDeviceSource.TabIndex = 4;
@@ -159,12 +164,41 @@
             // 
             this.labelOcuChanges.AutoSize = true;
             this.labelOcuChanges.ForeColor = System.Drawing.Color.White;
-            this.labelOcuChanges.Location = new System.Drawing.Point(455, 11);
+            this.labelOcuChanges.Location = new System.Drawing.Point(488, 11);
             this.labelOcuChanges.Name = "labelOcuChanges";
-            this.labelOcuChanges.Size = new System.Drawing.Size(231, 13);
+            this.labelOcuChanges.Size = new System.Drawing.Size(194, 13);
             this.labelOcuChanges.TabIndex = 60;
-            this.labelOcuChanges.Text = "Oculus Home setting is not auto-refreshed here.";
+            this.labelOcuChanges.Text = "No auto-refresh for Oculus Home audio.";
             this.labelOcuChanges.Visible = false;
+            // 
+            // labelAPI
+            // 
+            this.labelAPI.AutoSize = true;
+            this.labelAPI.ForeColor = System.Drawing.Color.White;
+            this.labelAPI.Location = new System.Drawing.Point(191, 11);
+            this.labelAPI.Name = "labelAPI";
+            this.labelAPI.Size = new System.Drawing.Size(27, 13);
+            this.labelAPI.TabIndex = 62;
+            this.labelAPI.Text = "API:";
+            // 
+            // comboBoxAPI
+            // 
+            this.comboBoxAPI.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxAPI.FormattingEnabled = true;
+            this.comboBoxAPI.Location = new System.Drawing.Point(220, 8);
+            this.comboBoxAPI.Name = "comboBoxAPI";
+            this.comboBoxAPI.Size = new System.Drawing.Size(81, 21);
+            this.comboBoxAPI.TabIndex = 61;
+            // 
+            // checkBoxHome
+            // 
+            this.checkBoxHome.ForeColor = System.Drawing.Color.White;
+            this.checkBoxHome.Location = new System.Drawing.Point(194, 38);
+            this.checkBoxHome.Name = "checkBoxHome";
+            this.checkBoxHome.Size = new System.Drawing.Size(131, 17);
+            this.checkBoxHome.TabIndex = 63;
+            this.checkBoxHome.Text = "Require Oculus Home";
+            this.checkBoxHome.UseVisualStyleBackColor = true;
             // 
             // WaveActionCtl
             // 
@@ -176,29 +210,45 @@
             this.WaveActionCtl.Size = new System.Drawing.Size(675, 85);
             this.WaveActionCtl.TabIndex = 26;
             // 
+            // pictureBoxClone
+            // 
+            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxClone.Image = global::CableGuardian.Properties.Resources.CloneSmall;
+            this.pictureBoxClone.Location = new System.Drawing.Point(645, 39);
+            this.pictureBoxClone.Name = "pictureBoxClone";
+            this.pictureBoxClone.Size = new System.Drawing.Size(16, 16);
+            this.pictureBoxClone.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBoxClone.TabIndex = 64;
+            this.pictureBoxClone.TabStop = false;
+            // 
             // ProfileEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.Controls.Add(this.pictureBoxClone);
+            this.Controls.Add(this.textBoxName);
+            this.Controls.Add(this.checkBoxStartup);
+            this.Controls.Add(this.checkBoxFreeze);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.checkBoxHome);
+            this.Controls.Add(this.labelAPI);
+            this.Controls.Add(this.comboBoxAPI);
             this.Controls.Add(this.labelOcuChanges);
             this.Controls.Add(this.pictureBoxMinus);
             this.Controls.Add(this.WaveActionCtl);
             this.Controls.Add(this.listBoxActions);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBoxDeviceSource);
-            this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.pictureBoxPlus);
             this.Controls.Add(this.labelAddHint);
             this.Controls.Add(this.comboBoxManual);
             this.Controls.Add(this.labelAudio);
-            this.Controls.Add(this.checkBoxFreeze);
-            this.Controls.Add(this.checkBoxStartup);
             this.Name = "ProfileEditor";
             this.Size = new System.Drawing.Size(695, 445);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -218,5 +268,9 @@
         private WaveActionControl WaveActionCtl;
         private System.Windows.Forms.PictureBox pictureBoxMinus;
         private System.Windows.Forms.Label labelOcuChanges;
+        private System.Windows.Forms.Label labelAPI;
+        private System.Windows.Forms.ComboBox comboBoxAPI;
+        private System.Windows.Forms.CheckBox checkBoxHome;
+        private System.Windows.Forms.PictureBox pictureBoxClone;
     }
 }

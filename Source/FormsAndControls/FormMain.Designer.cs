@@ -30,8 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.labelFullRotTitle = new System.Windows.Forms.Label();
-            this.labelFullRot = new System.Windows.Forms.Label();
             this.buttonReset = new System.Windows.Forms.Button();
             this.labelYaw = new System.Windows.Forms.Label();
             this.pictureBoxMinimize = new System.Windows.Forms.PictureBox();
@@ -42,21 +40,22 @@
             this.checkBoxShowYaw = new System.Windows.Forms.CheckBox();
             this.labelStatus = new System.Windows.Forms.Label();
             this.checkBoxWindowsStart = new System.Windows.Forms.CheckBox();
-            this.labelDataWarning = new System.Windows.Forms.Label();
             this.buttonSave = new System.Windows.Forms.Button();
             this.pictureBoxPlus = new System.Windows.Forms.PictureBox();
             this.labelProf = new System.Windows.Forms.Label();
             this.comboBoxProfile = new System.Windows.Forms.ComboBox();
             this.pictureBoxMinus = new System.Windows.Forms.PictureBox();
             this.pictureBoxHelp = new System.Windows.Forms.PictureBox();
-            this.comboBoxAPI = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.buttonRetry = new System.Windows.Forms.Button();
-            this.labelMount = new System.Windows.Forms.Label();
-            this.checkBoxHome = new System.Windows.Forms.CheckBox();
             this.checkBoxConnLost = new System.Windows.Forms.CheckBox();
             this.buttonAlarm = new System.Windows.Forms.Button();
             this.checkBoxTrayNotifications = new System.Windows.Forms.CheckBox();
+            this.pictureBoxClone = new System.Windows.Forms.PictureBox();
+            this.labelHalfTurnTitle = new System.Windows.Forms.Label();
+            this.labelHalfTurns = new System.Windows.Forms.Label();
+            this.checkBoxPlaySoundOnHMDInteraction = new System.Windows.Forms.CheckBox();
+            this.buttonJingle = new System.Windows.Forms.Button();
+            this.checkBoxOnAPIQuit = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -64,49 +63,26 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHelp)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).BeginInit();
             this.SuspendLayout();
-            // 
-            // labelFullRotTitle
-            // 
-            this.labelFullRotTitle.AutoSize = true;
-            this.labelFullRotTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelFullRotTitle.ForeColor = System.Drawing.Color.White;
-            this.labelFullRotTitle.Location = new System.Drawing.Point(5, 298);
-            this.labelFullRotTitle.Name = "labelFullRotTitle";
-            this.labelFullRotTitle.Size = new System.Drawing.Size(108, 20);
-            this.labelFullRotTitle.TabIndex = 7;
-            this.labelFullRotTitle.Text = "Full rotations: ";
-            this.labelFullRotTitle.Visible = false;
-            // 
-            // labelFullRot
-            // 
-            this.labelFullRot.AutoSize = true;
-            this.labelFullRot.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelFullRot.ForeColor = System.Drawing.Color.White;
-            this.labelFullRot.Location = new System.Drawing.Point(110, 298);
-            this.labelFullRot.Name = "labelFullRot";
-            this.labelFullRot.Size = new System.Drawing.Size(18, 20);
-            this.labelFullRot.TabIndex = 9;
-            this.labelFullRot.Text = "0";
-            this.labelFullRot.Visible = false;
             // 
             // buttonReset
             // 
             this.buttonReset.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
-            this.buttonReset.Location = new System.Drawing.Point(176, 249);
+            this.buttonReset.Location = new System.Drawing.Point(177, 215);
             this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(143, 23);
+            this.buttonReset.Size = new System.Drawing.Size(142, 23);
             this.buttonReset.TabIndex = 20;
-            this.buttonReset.Text = "Reset rotation counter";
+            this.buttonReset.Text = "Reset turn counter";
             this.buttonReset.UseVisualStyleBackColor = true;
             // 
             // labelYaw
             // 
             this.labelYaw.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelYaw.ForeColor = System.Drawing.Color.White;
-            this.labelYaw.Location = new System.Drawing.Point(5, 280);
+            this.labelYaw.Location = new System.Drawing.Point(5, 360);
             this.labelYaw.Name = "labelYaw";
             this.labelYaw.Size = new System.Drawing.Size(128, 20);
             this.labelYaw.TabIndex = 0;
@@ -155,9 +131,8 @@
             // 
             // checkBoxStartMinimized
             // 
-            this.checkBoxStartMinimized.AutoSize = true;
             this.checkBoxStartMinimized.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinimized.Location = new System.Drawing.Point(176, 207);
+            this.checkBoxStartMinimized.Location = new System.Drawing.Point(9, 236);
             this.checkBoxStartMinimized.Name = "checkBoxStartMinimized";
             this.checkBoxStartMinimized.Size = new System.Drawing.Size(128, 17);
             this.checkBoxStartMinimized.TabIndex = 4;
@@ -168,7 +143,7 @@
             // 
             this.checkBoxShowYaw.AutoSize = true;
             this.checkBoxShowYaw.ForeColor = System.Drawing.Color.White;
-            this.checkBoxShowYaw.Location = new System.Drawing.Point(9, 230);
+            this.checkBoxShowYaw.Location = new System.Drawing.Point(9, 299);
             this.checkBoxShowYaw.Name = "checkBoxShowYaw";
             this.checkBoxShowYaw.Size = new System.Drawing.Size(134, 17);
             this.checkBoxShowYaw.TabIndex = 8;
@@ -186,25 +161,13 @@
             // 
             // checkBoxWindowsStart
             // 
-            this.checkBoxWindowsStart.AutoSize = true;
             this.checkBoxWindowsStart.ForeColor = System.Drawing.Color.White;
-            this.checkBoxWindowsStart.Location = new System.Drawing.Point(9, 207);
+            this.checkBoxWindowsStart.Location = new System.Drawing.Point(9, 215);
             this.checkBoxWindowsStart.Name = "checkBoxWindowsStart";
-            this.checkBoxWindowsStart.Size = new System.Drawing.Size(117, 17);
+            this.checkBoxWindowsStart.Size = new System.Drawing.Size(134, 17);
             this.checkBoxWindowsStart.TabIndex = 0;
             this.checkBoxWindowsStart.Text = "Start with Windows";
             this.checkBoxWindowsStart.UseVisualStyleBackColor = true;
-            // 
-            // labelDataWarning
-            // 
-            this.labelDataWarning.ForeColor = System.Drawing.Color.White;
-            this.labelDataWarning.Location = new System.Drawing.Point(6, 317);
-            this.labelDataWarning.Name = "labelDataWarning";
-            this.labelDataWarning.Size = new System.Drawing.Size(313, 44);
-            this.labelDataWarning.TabIndex = 36;
-            this.labelDataWarning.Text = "It\'s recommended to hide the live data to save every last bit of that precious CP" +
-    "U time.";
-            this.labelDataWarning.Visible = false;
             // 
             // buttonSave
             // 
@@ -222,7 +185,7 @@
             // 
             this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBoxPlus.Image = global::CableGuardian.Properties.Resources.PlusSmall;
-            this.pictureBoxPlus.Location = new System.Drawing.Point(571, 14);
+            this.pictureBoxPlus.Location = new System.Drawing.Point(522, 14);
             this.pictureBoxPlus.Name = "pictureBoxPlus";
             this.pictureBoxPlus.Size = new System.Drawing.Size(16, 16);
             this.pictureBoxPlus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -244,16 +207,16 @@
             // 
             this.comboBoxProfile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxProfile.FormattingEnabled = true;
-            this.comboBoxProfile.Location = new System.Drawing.Point(391, 11);
+            this.comboBoxProfile.Location = new System.Drawing.Point(389, 11);
             this.comboBoxProfile.Name = "comboBoxProfile";
-            this.comboBoxProfile.Size = new System.Drawing.Size(176, 21);
+            this.comboBoxProfile.Size = new System.Drawing.Size(125, 21);
             this.comboBoxProfile.TabIndex = 40;
             // 
             // pictureBoxMinus
             // 
             this.pictureBoxMinus.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBoxMinus.Image = global::CableGuardian.Properties.Resources.MinusSmall;
-            this.pictureBoxMinus.Location = new System.Drawing.Point(593, 14);
+            this.pictureBoxMinus.Location = new System.Drawing.Point(566, 14);
             this.pictureBoxMinus.Name = "pictureBoxMinus";
             this.pictureBoxMinus.Size = new System.Drawing.Size(16, 16);
             this.pictureBoxMinus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -272,61 +235,18 @@
             this.pictureBoxHelp.TabIndex = 51;
             this.pictureBoxHelp.TabStop = false;
             // 
-            // comboBoxAPI
-            // 
-            this.comboBoxAPI.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxAPI.FormattingEnabled = true;
-            this.comboBoxAPI.Location = new System.Drawing.Point(224, 364);
-            this.comboBoxAPI.Name = "comboBoxAPI";
-            this.comboBoxAPI.Size = new System.Drawing.Size(95, 21);
-            this.comboBoxAPI.TabIndex = 32;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(173, 367);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
-            this.label1.TabIndex = 54;
-            this.label1.Text = "VR API:";
-            // 
             // buttonRetry
             // 
             this.buttonRetry.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonRetry.ForeColor = System.Drawing.Color.White;
-            this.buttonRetry.Location = new System.Drawing.Point(9, 362);
+            this.buttonRetry.Location = new System.Drawing.Point(177, 388);
             this.buttonRetry.Name = "buttonRetry";
-            this.buttonRetry.Size = new System.Drawing.Size(155, 23);
+            this.buttonRetry.Size = new System.Drawing.Size(142, 23);
             this.buttonRetry.TabIndex = 28;
             this.buttonRetry.Text = "Retry VR connection";
             this.buttonRetry.UseVisualStyleBackColor = true;
             this.buttonRetry.Visible = false;
-            // 
-            // labelMount
-            // 
-            this.labelMount.AutoSize = true;
-            this.labelMount.ForeColor = System.Drawing.Color.White;
-            this.labelMount.Location = new System.Drawing.Point(6, 345);
-            this.labelMount.Name = "labelMount";
-            this.labelMount.Size = new System.Drawing.Size(303, 13);
-            this.labelMount.TabIndex = 56;
-            this.labelMount.Tag = "MANUAL";
-            this.labelMount.Text = "With OpenVR, the HMD must be mounted for tracking to work.";
-            this.labelMount.Visible = false;
-            // 
-            // checkBoxHome
-            // 
-            this.checkBoxHome.AutoSize = true;
-            this.checkBoxHome.ForeColor = System.Drawing.Color.White;
-            this.checkBoxHome.Location = new System.Drawing.Point(9, 253);
-            this.checkBoxHome.Name = "checkBoxHome";
-            this.checkBoxHome.Size = new System.Drawing.Size(130, 17);
-            this.checkBoxHome.TabIndex = 16;
-            this.checkBoxHome.Text = "Require Oculus Home";
-            this.checkBoxHome.UseVisualStyleBackColor = true;
-            this.checkBoxHome.Visible = false;
             // 
             // checkBoxConnLost
             // 
@@ -334,9 +254,9 @@
             this.checkBoxConnLost.ForeColor = System.Drawing.Color.White;
             this.checkBoxConnLost.Location = new System.Drawing.Point(13, 463);
             this.checkBoxConnLost.Name = "checkBoxConnLost";
-            this.checkBoxConnLost.Size = new System.Drawing.Size(239, 17);
+            this.checkBoxConnLost.Size = new System.Drawing.Size(211, 17);
             this.checkBoxConnLost.TabIndex = 36;
-            this.checkBoxConnLost.Text = "Show notification when VR connection is lost";
+            this.checkBoxConnLost.Text = "Notification when VR connection is lost";
             this.checkBoxConnLost.UseVisualStyleBackColor = true;
             // 
             // buttonAlarm
@@ -344,23 +264,92 @@
             this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonAlarm.ForeColor = System.Drawing.Color.White;
-            this.buttonAlarm.Location = new System.Drawing.Point(176, 272);
+            this.buttonAlarm.Location = new System.Drawing.Point(177, 244);
             this.buttonAlarm.Name = "buttonAlarm";
-            this.buttonAlarm.Size = new System.Drawing.Size(143, 23);
+            this.buttonAlarm.Size = new System.Drawing.Size(142, 23);
             this.buttonAlarm.TabIndex = 24;
-            this.buttonAlarm.Text = "Alarm clock settings...";
+            this.buttonAlarm.Text = "Alarm clock sound...";
             this.buttonAlarm.UseVisualStyleBackColor = true;
             // 
             // checkBoxTrayNotifications
             // 
             this.checkBoxTrayNotifications.AutoSize = true;
             this.checkBoxTrayNotifications.ForeColor = System.Drawing.Color.White;
-            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(176, 230);
+            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 257);
             this.checkBoxTrayNotifications.Name = "checkBoxTrayNotifications";
             this.checkBoxTrayNotifications.Size = new System.Drawing.Size(135, 17);
             this.checkBoxTrayNotifications.TabIndex = 12;
             this.checkBoxTrayNotifications.Text = "Tray menu notifications";
             this.checkBoxTrayNotifications.UseVisualStyleBackColor = true;
+            // 
+            // pictureBoxClone
+            // 
+            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxClone.Image = global::CableGuardian.Properties.Resources.CloneSmall;
+            this.pictureBoxClone.Location = new System.Drawing.Point(544, 14);
+            this.pictureBoxClone.Name = "pictureBoxClone";
+            this.pictureBoxClone.Size = new System.Drawing.Size(16, 16);
+            this.pictureBoxClone.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBoxClone.TabIndex = 58;
+            this.pictureBoxClone.TabStop = false;
+            // 
+            // labelHalfTurnTitle
+            // 
+            this.labelHalfTurnTitle.AutoSize = true;
+            this.labelHalfTurnTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHalfTurnTitle.ForeColor = System.Drawing.Color.White;
+            this.labelHalfTurnTitle.Location = new System.Drawing.Point(143, 360);
+            this.labelHalfTurnTitle.Name = "labelHalfTurnTitle";
+            this.labelHalfTurnTitle.Size = new System.Drawing.Size(87, 20);
+            this.labelHalfTurnTitle.TabIndex = 59;
+            this.labelHalfTurnTitle.Text = "Half-turns: ";
+            this.labelHalfTurnTitle.Visible = false;
+            // 
+            // labelHalfTurns
+            // 
+            this.labelHalfTurns.AutoSize = true;
+            this.labelHalfTurns.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHalfTurns.ForeColor = System.Drawing.Color.White;
+            this.labelHalfTurns.Location = new System.Drawing.Point(237, 360);
+            this.labelHalfTurns.Name = "labelHalfTurns";
+            this.labelHalfTurns.Size = new System.Drawing.Size(18, 20);
+            this.labelHalfTurns.TabIndex = 60;
+            this.labelHalfTurns.Text = "0";
+            this.labelHalfTurns.Visible = false;
+            // 
+            // checkBoxPlaySoundOnHMDInteraction
+            // 
+            this.checkBoxPlaySoundOnHMDInteraction.AutoSize = true;
+            this.checkBoxPlaySoundOnHMDInteraction.ForeColor = System.Drawing.Color.White;
+            this.checkBoxPlaySoundOnHMDInteraction.Location = new System.Drawing.Point(9, 278);
+            this.checkBoxPlaySoundOnHMDInteraction.Name = "checkBoxPlaySoundOnHMDInteraction";
+            this.checkBoxPlaySoundOnHMDInteraction.Size = new System.Drawing.Size(116, 17);
+            this.checkBoxPlaySoundOnHMDInteraction.TabIndex = 61;
+            this.checkBoxPlaySoundOnHMDInteraction.Text = "Confirmation sound";
+            this.checkBoxPlaySoundOnHMDInteraction.UseVisualStyleBackColor = true;
+            // 
+            // buttonJingle
+            // 
+            this.buttonJingle.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonJingle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonJingle.ForeColor = System.Drawing.Color.White;
+            this.buttonJingle.Location = new System.Drawing.Point(177, 273);
+            this.buttonJingle.Name = "buttonJingle";
+            this.buttonJingle.Size = new System.Drawing.Size(142, 23);
+            this.buttonJingle.TabIndex = 62;
+            this.buttonJingle.Text = "Confirmation sound...";
+            this.buttonJingle.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxOnAPIQuit
+            // 
+            this.checkBoxOnAPIQuit.AutoSize = true;
+            this.checkBoxOnAPIQuit.ForeColor = System.Drawing.Color.White;
+            this.checkBoxOnAPIQuit.Location = new System.Drawing.Point(227, 463);
+            this.checkBoxOnAPIQuit.Name = "checkBoxOnAPIQuit";
+            this.checkBoxOnAPIQuit.Size = new System.Drawing.Size(87, 17);
+            this.checkBoxOnAPIQuit.TabIndex = 63;
+            this.checkBoxOnAPIQuit.Text = "...on API quit";
+            this.checkBoxOnAPIQuit.UseVisualStyleBackColor = true;
             // 
             // profileEditor
             // 
@@ -379,14 +368,16 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.checkBoxOnAPIQuit);
+            this.Controls.Add(this.buttonJingle);
+            this.Controls.Add(this.checkBoxPlaySoundOnHMDInteraction);
+            this.Controls.Add(this.labelHalfTurns);
+            this.Controls.Add(this.labelHalfTurnTitle);
+            this.Controls.Add(this.pictureBoxClone);
             this.Controls.Add(this.checkBoxTrayNotifications);
             this.Controls.Add(this.buttonAlarm);
             this.Controls.Add(this.checkBoxConnLost);
-            this.Controls.Add(this.checkBoxHome);
-            this.Controls.Add(this.labelMount);
             this.Controls.Add(this.buttonRetry);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBoxAPI);
             this.Controls.Add(this.pictureBoxHelp);
             this.Controls.Add(this.profileEditor);
             this.Controls.Add(this.pictureBoxMinus);
@@ -401,11 +392,8 @@
             this.Controls.Add(this.pictureBoxMinimize);
             this.Controls.Add(this.pictureBoxClose);
             this.Controls.Add(this.buttonReset);
-            this.Controls.Add(this.labelFullRot);
-            this.Controls.Add(this.labelFullRotTitle);
             this.Controls.Add(this.labelYaw);
             this.Controls.Add(this.pictureBoxLogo);
-            this.Controls.Add(this.labelDataWarning);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.Name = "FormMain";
@@ -416,14 +404,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHelp)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Label labelFullRotTitle;
-        private System.Windows.Forms.Label labelFullRot;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Label labelYaw;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
@@ -434,7 +421,6 @@
         private System.Windows.Forms.CheckBox checkBoxShowYaw;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.CheckBox checkBoxWindowsStart;
-        private System.Windows.Forms.Label labelDataWarning;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.PictureBox pictureBoxPlus;
         private System.Windows.Forms.Label labelProf;
@@ -442,14 +428,16 @@
         private System.Windows.Forms.PictureBox pictureBoxMinus;
         private ProfileEditor profileEditor;
         private System.Windows.Forms.PictureBox pictureBoxHelp;
-        private System.Windows.Forms.ComboBox comboBoxAPI;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button buttonRetry;
-        private System.Windows.Forms.Label labelMount;
-        private System.Windows.Forms.CheckBox checkBoxHome;
         private System.Windows.Forms.CheckBox checkBoxConnLost;
         private System.Windows.Forms.Button buttonAlarm;
         private System.Windows.Forms.CheckBox checkBoxTrayNotifications;
+        private System.Windows.Forms.PictureBox pictureBoxClone;
+        private System.Windows.Forms.Label labelHalfTurnTitle;
+        private System.Windows.Forms.Label labelHalfTurns;
+        private System.Windows.Forms.CheckBox checkBoxPlaySoundOnHMDInteraction;
+        private System.Windows.Forms.Button buttonJingle;
+        private System.Windows.Forms.CheckBox checkBoxOnAPIQuit;
     }
 }
 

@@ -114,9 +114,9 @@
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(3, 6);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 13);
+            this.label4.Size = new System.Drawing.Size(69, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "PLAY wave:";
+            this.label4.Text = "PLAY sound:";
             // 
             // labelVolVal
             // 

@@ -23,7 +23,7 @@ namespace CableGuardian
         bool SessionCreated = false;
         bool SuppressStatusEvents = false;
         bool StopFlag = false;
-        int PollInterval = 100;
+        int PollInterval = 50;
         IntPtr SessionPtr;
         GraphicsLuid pLuid;
         BackgroundWorker Worker = new BackgroundWorker();
@@ -32,8 +32,11 @@ namespace CableGuardian
         SessionStatus SesStatus = new SessionStatus();       
         bool HomePresent = false;
         int _KeepAliveCounter = 0;
-        int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 100) ? 1 : value; } }
-
+        int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 10000) ? 1 : value; } }
+        bool HMDMounted_buffered = false;
+        bool HMDMounted_previousReading = false;
+        int HMDMountBuffer = 0;
+        
         /// <summary>
         /// ONLY UPDATE THIS FROM OculusStatus SETTER
         /// </summary>
@@ -50,7 +53,7 @@ namespace CableGuardian
                     _OculusStatus = value;                    
                     if (_OculusStatus == OculusConnectionStatus.NoHMD)
                     {
-                        StatusMessage = "Oculus HMD not found.";
+                        StatusMessage = "Searching for an Oculus VR headset.";
                         Status = VRConnectionStatus.APIError;
                     }
                     else if (_OculusStatus == OculusConnectionStatus.NoService)
@@ -85,7 +88,7 @@ namespace CableGuardian
                     }
                     else if (_OculusStatus == OculusConnectionStatus.OculusVRQuit)
                     {
-                        StatusMessage = "OculusVR service requested quit. Waiting to reconnect...";
+                        StatusMessage = "OculusVR service requested quit. Waiting 15s before attempting to reconnect...";
                         Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OculusStatus == OculusConnectionStatus.Stopped)
@@ -143,8 +146,25 @@ namespace CableGuardian
                     return -1;
                 }                
             }
-        } 
-        
+        }
+
+        public bool OculusHMDConnected()
+        {
+            try
+            {
+                DetectResult detection = OculusWrap.Detect(1000);
+                if (detection.IsOculusHMDConnected)
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                // intentionally ignore and just assume not connected    
+            }
+
+            return false;
+        }
         
         public OculusConnection()
         {
@@ -208,7 +228,7 @@ namespace CableGuardian
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            InvokeStatusChanged();
+            OnStateChange(e.ProgressPercentage);
         }
        
         void KeepAlive()
@@ -223,7 +243,7 @@ namespace CableGuardian
 
             if (RequireHome)
             {
-                if (KeepAliveCounter % 20 == 0) // to save CPU, check only every 2 secs
+                if (KeepAliveCounter % 40 == 0) // to save CPU, check only every 2 secs (when pollrate = 50ms)
                 {
                     if (System.Diagnostics.Process.GetProcessesByName(Config.OculusHomeProcessName).Any() == false)
                     {
@@ -256,7 +276,31 @@ namespace CableGuardian
                     EndCurrentSession();
                     OculusStatus = OculusConnectionStatus.OculusVRQuit;  // again to get correct status (changed in EndCurrentSession())
                     // a good sleep before starting to poll OculusVR again
-                    Thread.Sleep(15000);
+                    Thread.Sleep(15000);                     
+                }
+                else if (OculusWrap.OVR_SUCCESS(LastOculusResult))
+                {
+                    bool mounted = SesStatus.HmdMounted;
+                    if (mounted == HMDMounted_previousReading)                    
+                        HMDMountBuffer++;                    
+                    else                    
+                        HMDMountBuffer = 0;
+
+                    HMDMounted_previousReading = mounted;
+
+                    if (HMDMountBuffer > 20) // some buffer to filter out false flags (and conveniently some delay for notifications)
+                    {
+                        if (HMDMounted_buffered != mounted)
+                        {
+                            HMDMounted_buffered = mounted;
+
+                            if (mounted)
+                                Worker.ReportProgress(1, null);
+                            else
+                                Worker.ReportProgress(2, null);
+                        }                        
+                        HMDMountBuffer = 0;
+                    }
                 }
                 return;
             }
@@ -265,7 +309,7 @@ namespace CableGuardian
             // This point is reached only when connection not yet created 
             // ******** INITIALIZATION & CREATION ***********
 
-            if (KeepAliveCounter % 10 != 0) // try initialization one per second
+            if (KeepAliveCounter % 20 != 0) // try initialization one per second (when pollrate = 50 ms)
                 return;
 
             if (OculusStatus == OculusConnectionStatus.Initialized)

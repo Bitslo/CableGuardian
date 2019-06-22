@@ -16,7 +16,7 @@ namespace CableGuardian
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
-        int PollInterval = 100; // needs to be quick enough to catch the quit message from steamvr
+        int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...
         EVRInitError LastOpenVRError = EVRInitError.None;
         CVRSystem VRSys = null;
         string LastExceptionMessage { get; set; }
@@ -26,7 +26,14 @@ namespace CableGuardian
         bool StopRequested = false;       
         uint HmdIndex = 0;
         int _KeepAliveCounter = 0;
-        int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 100) ? 1 : value; } }
+        int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 10000) ? 1 : value; } }
+        // Unlike Oculus, there doesn't seem to be a way to read HMD mounted (proximity sensor) for OpenVR.
+        // For OpenVR User interaction is true when HMD is mounted OR HMD is moving.
+        // Note that there is also a 10s delay before User interaction returns to false. (e.g. User sets the HMD down on a desk)
+        // (Side note: in Unity SteamVR plugin there's a way to read the prox sensor, but it seemed like a huge hassle to implement here)
+        bool HMDUserInteraction_buffered = false; 
+        bool HMDUserInteraction_previousReading = false;
+        int HMDUserInteractionBuffer = 0;
 
 
         /// <summary>
@@ -51,7 +58,7 @@ namespace CableGuardian
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoHMD)
                     {
-                        StatusMessage = "OpenVR HMD not found.";
+                        StatusMessage = "Searching for an OpenVR headset.";
                         Status = VRConnectionStatus.APIError;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR)
@@ -61,7 +68,7 @@ namespace CableGuardian
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.SteamVRQuit)
                     {
-                        StatusMessage = "SteamVR requested quit. Waiting to reconnect...";
+                        StatusMessage = "SteamVR requested quit. Waiting 15s before attempting to reconnect...";
                         Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.Stopped)
@@ -184,7 +191,7 @@ namespace CableGuardian
             
             if (VRSys == null) 
             {
-                if (KeepAliveCounter % 10 != 0) // initialization attempt on only every tenth lap
+                if (KeepAliveCounter % 180 != 0) // initialization attempt on only every 180th lap (apprx 1/2s when pollrate = 11ms)
                     return; 
 
                 // ***** INITIALIZATION ******
@@ -252,7 +259,31 @@ namespace CableGuardian
                     EndCurrentSession();
                     OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // again to get correct status (changed in EndCurrentSession())
                     // a good sleep before starting to poll steamvr -process again
-                    Thread.Sleep(15000);
+                    Thread.Sleep(15000);                     
+                }
+                else
+                {   
+                    bool interaction = (VRSys.GetTrackedDeviceActivityLevel(HmdIndex) == EDeviceActivityLevel.k_EDeviceActivityLevel_UserInteraction);
+                    if (interaction == HMDUserInteraction_previousReading)
+                        HMDUserInteractionBuffer++;
+                    else
+                        HMDUserInteractionBuffer = 0;
+
+                    HMDUserInteraction_previousReading = interaction;
+
+                    if (HMDUserInteractionBuffer > 20) // some buffer to filter out false flags (and conveniently some delay for notifications)
+                    {
+                        if (HMDUserInteraction_buffered != interaction)
+                        {
+                            HMDUserInteraction_buffered = interaction;
+
+                            if (interaction)
+                                Worker.ReportProgress(1, null);
+                            else
+                                Worker.ReportProgress(2, null);
+                        }
+                        HMDUserInteractionBuffer = 0;
+                    }
                 }
             }    
         }
@@ -294,7 +325,7 @@ namespace CableGuardian
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            InvokeStatusChanged();
+            OnStateChange(e.ProgressPercentage);
         }
 
         public override bool GetHmdYaw(ref double yaw)

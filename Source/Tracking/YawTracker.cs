@@ -19,42 +19,36 @@ namespace CableGuardian
         /// <summary>
         /// Did the last movement cause the directional rotation to increase (go away from ResetPosition) or decrease (approach ResetPosition).
         /// </summary>
-        public AccumulationStatus RotationAccumulationStatus { get; }
+        public AccumulationStatus RotationAccumulationStatus { get; }        
         /// <summary>
-        /// Full rotation count (360 degrees) from ResetPosition after the last movement.
+        /// Current half rotation count (180 degrees) from ResetPosition.
         /// </summary>
-        public uint FullRotations { get; }
+        public uint HalfTurns { get; }        
         /// <summary>
-        /// Highest amount of full rotations reached since last ResetPosition crossing.
-        /// Will be reset to 0 AFTER the Yaw0 event has fired when fullrotations == 0.
+        /// Highest amount of half rotations reached since last ResetPosition crossing.
+        /// Will be reset to 0 AFTER the Yaw0 event has fired when half-turns == 0.
         /// </summary>
-        public uint PeakFullRotations { get; }
+        public uint PeakHalfTurns { get; }
         /// <summary>
-        /// Direction of cumulative rotation (e.g. full rotations) from ResetPosition. 
+        /// Direction of cumulative rotation from ResetPosition.                 
+        ///  = the direction where cable twisting increases.
         /// </summary>
-        public Direction RotationSide { get; }
-       /*
-        /// <summary>
-        /// true when Yaw0 -event occurs at ResetPosition. 
-        /// </summary>
-        public bool AtResetPosition { get; } 
-        */
+        public Direction RotationSide { get; }       
 
         public double Yaw { get; }
-        public RotationEventArgs(Direction movementDirection, AccumulationStatus rotationAccumulation, uint fullRotations, uint peakFullRotations, Direction rotationSide, /*bool atResetPosition,*/double yaw)
+        public RotationEventArgs(Direction movementDirection, AccumulationStatus rotationAccumulation, uint halfTurns, uint peakHalfTurns, Direction rotationSide, double yaw)
         {            
             MovementDirection = movementDirection;
-            RotationAccumulationStatus = rotationAccumulation;
-            FullRotations = fullRotations;
-            PeakFullRotations = peakFullRotations;
-            RotationSide = rotationSide;
-            //AtResetPosition = atResetPosition;
+            RotationAccumulationStatus = rotationAccumulation;            
+            HalfTurns = halfTurns;            
+            PeakHalfTurns = peakHalfTurns;
+            RotationSide = rotationSide;            
             Yaw = yaw;
         }
     }
 
     /// <summary>
-    /// Keeps track of full (360 degree) rotations around y-axis (Yaw) to either direction.
+    /// Keeps track of half-turns (180 degree) around y-axis (Yaw) to either direction.
     /// NOTE: Input value (absolute axis position) must be updated frequently enough - 
     /// Angular difference between samples must always be below 180 degrees (half circle)!
     /// </summary>
@@ -66,9 +60,9 @@ namespace CableGuardian
         public bool InvertLeftRight { get { return (LeftRightMultiplier == -1); } set { LeftRightMultiplier = (value) ? -1 : 1; } } 
         int LeftRightMultiplier = 1;
 
-        public const string S_Yaw0 = "facing front (0)";        
-        public const string S_Yaw180 = "facing away (180)";
-        public const string S_Yaw0Yaw180 = "facing front OR away";
+        public const string S_Yaw0 = "facing Front (0\u00B0)";        
+        public const string S_Yaw180 = "facing Back (180\u00B0)";
+        public const string S_Yaw0Yaw180 = "facing Front or Back";
         public const string S_ResetPosition = "total rotation = 0 (reset position)";
 
         /// <summary>
@@ -83,96 +77,54 @@ namespace CableGuardian
         /// Occurs when Yaw axis value 180 degrees is crossed (half turn, facing away from 0).
         /// </summary>
         public EventHandler<RotationEventArgs> Yaw180;                     
-        
-        public EventHandler<RotationEventArgs> FullRotationsChanged;
 
         VRObserver HmdObserver { get; }
         public double YawValue { get { return (_YawValue == null) ? 0.0 : (double)_YawValue ; } } 
         double? _YawValue { get; set; } = null;
-               
-                            
+        
+
         /// <summary>
-        /// The highest amount of full rotations in one direction since leaving ResetPosition.
+        /// The highest amount of half rotations in one direction since leaving ResetPosition.
         /// Resets to 0 at ResetPosition.
         /// </summary>
-        uint PeakFullRotations { get; set; } = 0;        
-    
-        int _CurrentLap = 1;
+        uint PeakHalfTurns { get; set; } = 0;
+               
+        int _CurrentHalfTurn = 1;
         /// <summary>
-        /// Current lap (full rotation in progress). Sign (+- denotes direction).
+        /// Current (incomplete) half-turn (180 degrees). Sign (+- denotes direction).
         /// Updated from UpdateRotation().
         /// NOTE: never zero (0): ...-3,-2,-1,1,2,3...
         /// </summary>
-        int CurrentLap 
+        int CurrentHalfTurn
         {
-            get { return _CurrentLap; }
+            get { return _CurrentHalfTurn; }
             set
             {                
-                uint prevFullRotations = GetFullRotations(); // full rotations are calculated based on CurrentLap
-                _CurrentLap = value;
-                uint currentFullRotations = GetFullRotations();                
-                if (currentFullRotations != prevFullRotations)
-                {
-                    AccumulationStatus acc;
-                    Direction moveDir;
-                    if (currentFullRotations < prevFullRotations)
-                    {
-                        acc = AccumulationStatus.Decreasing;
-                        if (GetRotationSide() == Direction.Left)                        
-                            moveDir = Direction.Right;
-                        else
-                            moveDir = Direction.Left;
-                    }
-                    else
-                    {
-                        acc = AccumulationStatus.Increasing;
-                        moveDir = GetRotationSide();
-                    }
+                _CurrentHalfTurn = value;                
+                CompletedHalfTurns = (uint)Math.Abs((_CurrentHalfTurn < 0) ? _CurrentHalfTurn + 1 : _CurrentHalfTurn - 1);
+                RotationSide = (_CurrentHalfTurn < 0) ? Direction.Right : Direction.Left;
 
-                    InvokeFullRotationsChanged(new RotationEventArgs(moveDir, acc, GetFullRotations(), PeakFullRotations, GetRotationSide(), YawValue));                                        
-                } 
-            }            
+                if (CompletedHalfTurns > PeakHalfTurns)                
+                    PeakHalfTurns = CompletedHalfTurns;
+            }
         }
+
+        /// <summary>
+        /// Number of fully completed half-turns (180 degrees)
+        /// </summary>
+        public uint CompletedHalfTurns { get; private set; }
+        /// <summary>
+        /// Direction of cumulative rotation from ResetPosition.                 
+        ///  = the direction where cable twisting increases.
+        /// </summary>
+        public Direction RotationSide { get; private set; }
 
         public YawTracker(VRObserver hmdObserver)
         {
             HmdObserver = hmdObserver;                     
             _YawValue = null;            
 
-            HmdObserver.StateRefreshed += OnHmdStateRefreshed;
-                        
-            FullRotationsChanged += OnFullRotationsChanged;
-        }
-
-        /// <summary>
-        /// Returns the current number of full rotations away from ResetPosition.         
-        /// Use GetRotationSide() to check direction.
-        /// </summary>
-        public uint GetFullRotations()
-        {
-            return (uint)Math.Abs((CurrentLap < 0) ? CurrentLap + 1 : CurrentLap - 1);
-        }
-
-        /// <summary>
-        /// Rotation offset direction from ResetPosition ( = Yaw0 @ zero full rotations).
-        ///  = the direction where rotation accumulates.
-        /// </summary>
-        public Direction GetRotationSide()
-        {            
-            if (CurrentLap < 0)
-                return Direction.Right;
-            else
-                return Direction.Left;
-        }
-
-
-        void OnFullRotationsChanged(object sender, RotationEventArgs e)
-        {            
-            uint fullRot = GetFullRotations();
-            if (fullRot > PeakFullRotations)
-            {
-                PeakFullRotations = fullRot;
-            }                        
+            HmdObserver.StateRefreshed += OnHmdStateRefreshed;            
         }
 
         void OnHmdStateRefreshed(object sender, VRObserverEventArgs e)
@@ -187,7 +139,7 @@ namespace CableGuardian
 
         /// <summary>
         /// Checks the difference of the last two Yaw values and determines if either 0 or 180 degree position was crossed.
-        /// Invokes rotation events and updates the lap counter (which in turn is used for getting full rotations).
+        /// Invokes rotation events and updates the lap counter (which in turn is used for counting the half-turns).
         /// NOTE, the angular difference between the last two Yaw values must always be below 180 degrees for this to work!
         /// </summary>
         /// <param name="newYawValue"></param>
@@ -196,58 +148,65 @@ namespace CableGuardian
             // Oculus rotation axis range is in radians from -pi to +pi. 
             // Zero is the middle point (facing forward). Rotation is positive when turning left. 
 
-            if (_YawValue != null) // null = first time (after reset)
+            if (_YawValue != null) // null = first time (or after reset)
             {                
                 if (Math.Abs((double)(_YawValue - newYawValue)) < 3.14F) 
                 {
                     bool resetPos = false;
                     Direction moveDir = Direction.Either;
                     if (_YawValue < 0 && newYawValue >= 0) // Zero crossed from negative to positive (right side to left side, moving left)
-                    {
-                        CurrentLap += (CurrentLap == -1) ? 2 : 1;
-                        resetPos = (CurrentLap == 1);
+                    {  
+                        CurrentHalfTurn += (CurrentHalfTurn == -1) ? 2 : 1;
+                        resetPos = (CurrentHalfTurn == 1);
                         moveDir = Direction.Left;
 
-                        AccumulationStatus acc = (resetPos) ? AccumulationStatus.Either : ((GetRotationSide() == Direction.Left) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing);
-                        InvokeYaw0(new RotationEventArgs(moveDir, acc, GetFullRotations(), PeakFullRotations, GetRotationSide(), newYawValue));                   
+                        AccumulationStatus acc = (resetPos) ? AccumulationStatus.Either : ((RotationSide == Direction.Left) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing);
+                        InvokeYaw0(new RotationEventArgs(moveDir, acc, CompletedHalfTurns, PeakHalfTurns, RotationSide, newYawValue));                   
                     }
                     else if (_YawValue >= 0 && newYawValue < 0) // Zero crossed from positive to negative (left side to right side, moving right)
-                    {
-                        CurrentLap -= (CurrentLap == 1) ? 2 : 1;
-                        resetPos = (CurrentLap == -1);
+                    {   
+                        CurrentHalfTurn -= (CurrentHalfTurn == 1) ? 2 : 1;
+                        resetPos = (CurrentHalfTurn == -1);
                         moveDir = Direction.Right;
 
-                        AccumulationStatus acc = (resetPos) ? AccumulationStatus.Either : ((GetRotationSide() == Direction.Right) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing);
-                        InvokeYaw0(new RotationEventArgs(moveDir, acc, GetFullRotations(), PeakFullRotations, GetRotationSide(), newYawValue));                       
+                        AccumulationStatus acc = (resetPos) ? AccumulationStatus.Either : ((RotationSide == Direction.Right) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing);
+                        InvokeYaw0(new RotationEventArgs(moveDir, acc, CompletedHalfTurns, PeakHalfTurns, RotationSide, newYawValue));                       
                     }
 
                     if (resetPos)
                     {
-                        InvokeResetPosition(new RotationEventArgs(moveDir, AccumulationStatus.Either, GetFullRotations(), PeakFullRotations, GetRotationSide(), newYawValue));
-                        PeakFullRotations = 0; // this must NOT be reset before invoking the Yaw0 & ResetPosition events!
+                        InvokeResetPosition(new RotationEventArgs(moveDir, AccumulationStatus.Either, CompletedHalfTurns, PeakHalfTurns, RotationSide, newYawValue));
+                        PeakHalfTurns = 0; // this must NOT be reset before invoking the Yaw0 & ResetPosition events!
                     }
                 }
                 else // 180 degree position was crossed (or sample rate is too low --> incorrect result)
                 {
                     if (_YawValue < newYawValue) // 180 crossed from negative to positive (right side to left side, moving right)
                     {
-                        AccumulationStatus acc = (GetRotationSide() == Direction.Right) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing;
-                        InvokeYaw180(new RotationEventArgs(Direction.Right, acc, GetFullRotations(), PeakFullRotations, GetRotationSide(), newYawValue));
+                        CurrentHalfTurn -= 1;
+                        AccumulationStatus acc = (RotationSide == Direction.Right) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing;
+                        InvokeYaw180(new RotationEventArgs(Direction.Right, acc, CompletedHalfTurns, PeakHalfTurns, RotationSide, newYawValue));
                     }
                     else // 180 crossed from positive to negative (left side to right side, moving left)
                     {
-                        AccumulationStatus acc = (GetRotationSide() == Direction.Left) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing;
-                        InvokeYaw180(new RotationEventArgs(Direction.Left, acc, GetFullRotations(), PeakFullRotations, GetRotationSide(), newYawValue));
+                        CurrentHalfTurn += 1;
+                        AccumulationStatus acc = (RotationSide == Direction.Left) ? AccumulationStatus.Increasing : AccumulationStatus.Decreasing;
+                        InvokeYaw180(new RotationEventArgs(Direction.Left, acc, CompletedHalfTurns, PeakHalfTurns, RotationSide, newYawValue));
                     }
                 }
+            }
+            else // first time (or after reset)
+            {
+                // to detect initial orientation                
+                CurrentHalfTurn = (newYawValue < 0) ? -1 : 1;
             }
             _YawValue = newYawValue;
         }
         
         public void Reset()
-        {            
-            _CurrentLap = (YawValue < 0) ? -1 : 1;
-            PeakFullRotations = 0;
+        {   
+            CurrentHalfTurn = (YawValue < 0) ? -1 : 1;            
+            PeakHalfTurns = 0;
             _YawValue = null;
         }
 
@@ -273,14 +232,6 @@ namespace CableGuardian
             {
                 Yaw180(this, e);
             }
-        }
-      
-        void InvokeFullRotationsChanged(RotationEventArgs e)
-        {
-            if (FullRotationsChanged != null)
-            {
-                FullRotationsChanged(this, e);
-            }
-        }
+        }              
     }
 }

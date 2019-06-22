@@ -59,11 +59,11 @@
             // 
             this.labelLimit.AutoSize = true;
             this.labelLimit.ForeColor = System.Drawing.Color.White;
-            this.labelLimit.Location = new System.Drawing.Point(50, 32);
+            this.labelLimit.Location = new System.Drawing.Point(19, 32);
             this.labelLimit.Name = "labelLimit";
-            this.labelLimit.Size = new System.Drawing.Size(84, 13);
+            this.labelLimit.Size = new System.Drawing.Size(115, 13);
             this.labelLimit.TabIndex = 14;
-            this.labelLimit.Text = "Repetition limit =";
+            this.labelLimit.Text = "Trigger repetition limit =";
             // 
             // TriggerEditor
             // 

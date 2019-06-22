@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace CableGuardian
 {
-    public enum AudioDeviceSource { Oculus, Windows, Manual }
+    public enum AudioDeviceSource { OculusHome, Windows, Manual }
 
     /// <summary>
     /// Handles audio device selection. Get currently selected device number with GetxxxxxDeviceNumber()
@@ -21,7 +21,7 @@ namespace CableGuardian
         public static IList<WaveOutDevice> WaveOutDevices { get { return _WaveOutDevices.AsReadOnly(); } }
 
         bool SuppressFlaggedEvents = false;
-        AudioDeviceSource _WaveOutDeviceSource = AudioDeviceSource.Oculus;
+        AudioDeviceSource _WaveOutDeviceSource = AudioDeviceSource.OculusHome;
         public AudioDeviceSource WaveOutDeviceSource
         {
             get
@@ -107,7 +107,7 @@ namespace CableGuardian
 
         public int GetWaveOutDeviceNumber()
         {
-            if (WaveOutDeviceSource == AudioDeviceSource.Oculus && Oculus != null)
+            if (WaveOutDeviceSource == AudioDeviceSource.OculusHome && Oculus != null)
                 return Oculus.WaveOutDeviceNumber;
             else if (WaveOutDeviceSource == AudioDeviceSource.Manual && ManualDevice != null)
                 return ManualDevice.Number;
@@ -117,7 +117,7 @@ namespace CableGuardian
 
         public string GetWaveOutDeviceName()
         {
-            if (WaveOutDeviceSource == AudioDeviceSource.Oculus && Oculus != null)
+            if (WaveOutDeviceSource == AudioDeviceSource.OculusHome && Oculus != null)
                 return "Oculus";
             else if (WaveOutDeviceSource == AudioDeviceSource.Manual && ManualDevice != null)
                 return ManualDevice.Name;

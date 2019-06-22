@@ -28,14 +28,14 @@ namespace CableGuardian
             AddComboItems();    
             AddEventHandlers();
 
-            labelPeak.Text = "peak full rotations \u2265";
-            labelFullRotMax.Text = "AND   full rotations \u2264";
-            TTip.SetToolTip(numericUpDownFullRot, "Number of full (360) rotations to one side.");
-            TTip.SetToolTip(numericUpDownFullRotMax, $"Full rotation upper limit. Trigger won't fire when rotation count is higher than this value.");
+            labelPeak.Text = "peak half-turns   \u2265";
+            labelHalfTurnsMax.Text = "AND    half-turns   \u2264";
+            TTip.SetToolTip(numericUpDownHalfTurns, "Number of half-turns (180\u00B0) to one side.");
+            TTip.SetToolTip(numericUpDownHalfTurnsMax, $"Half-turns upper limit. Trigger won't fire when half-turn count is higher than this value.");
             TTip.SetToolTip(comboBoxAccu,$"Movement direction at trigger point.{Environment.NewLine}" +
                                         $"For example if you only want to be alerted when your current movement direction is increasing the cable twisting. ");
-            TTip.SetToolTip(numericUpDownPeak, $"Peak number of full (360) rotations to one side.{Environment.NewLine}" +
-                                                $"When returning to reset position, the trigger will fire (once) only if this number has been reached.");
+            TTip.SetToolTip(numericUpDownPeak, $"Required peak number of half-turns (180\u00B0) to one side before triggering.{Environment.NewLine}" +
+                                                $"When returning to reset position, the trigger will fire (once) ONLY if this number of half-turns has been reached.");
             TTip.SetToolTip(comboBoxSide, "Direction of the overall rotation from reset position. ( = the direction where cable twisting increases)");            
                        
         }
@@ -62,19 +62,19 @@ namespace CableGuardian
             comboBoxOperator.SelectedIndexChanged += ComboBoxOperator_SelectedIndexChanged;            
             comboBoxSide.SelectedIndexChanged += ComboBoxSide_SelectedIndexChanged;
             comboBoxAccu.SelectedIndexChanged += ComboBoxAccu_SelectedIndexChanged;
-            numericUpDownFullRot.ValueChanged += NumericUpDownFullRot_ValueChanged;
-            numericUpDownFullRotMax.ValueChanged += NumericUpDownFullRotMax_ValueChanged;
+            numericUpDownHalfTurns.ValueChanged += NumericUpDownHalfTurns_ValueChanged;
+            numericUpDownHalfTurnsMax.ValueChanged += NumericUpDownHalfTurnsMax_ValueChanged;
             numericUpDownPeak.ValueChanged += NumericUpDownPeak_ValueChanged;
 
         }
 
-        private void NumericUpDownFullRotMax_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDownHalfTurnsMax_ValueChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
                 return;
 
-            Condition.TargetFullRotationsMax = (uint)numericUpDownFullRotMax.Value;
-            InvokeChangeMade(new ChangeEventArgs(numericUpDownFullRotMax));
+            Condition.TargetHalfTurnsMax = (uint)numericUpDownHalfTurnsMax.Value;
+            InvokeChangeMade(new ChangeEventArgs(numericUpDownHalfTurnsMax));
         }
 
         private void ComboBoxAccu_SelectedIndexChanged(object sender, EventArgs e)
@@ -91,17 +91,17 @@ namespace CableGuardian
             if (SkipFlaggedEventHandlers)
                 return;
 
-            Condition.TargetPeakFullRotations = (uint)numericUpDownPeak.Value;
+            Condition.TargetPeakHalfTurns = (uint)numericUpDownPeak.Value;
             InvokeChangeMade(new ChangeEventArgs(numericUpDownPeak));
         }
 
-        private void NumericUpDownFullRot_ValueChanged(object sender, EventArgs e)
+        private void NumericUpDownHalfTurns_ValueChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
                 return;
 
-            Condition.TargetFullRotations = (uint)numericUpDownFullRot.Value;
-            InvokeChangeMade(new ChangeEventArgs(numericUpDownFullRot));
+            Condition.TargetHalfTurns = (uint)numericUpDownHalfTurns.Value;
+            InvokeChangeMade(new ChangeEventArgs(numericUpDownHalfTurns));
         }
 
         private void ComboBoxSide_SelectedIndexChanged(object sender, EventArgs e)
@@ -127,7 +127,7 @@ namespace CableGuardian
                 Condition.CompOperator = CompareOperator.EqualOrGreaterThan;                
             }
 
-            CheckFullRotMaxVisibility();
+            CheckHalfTurnMaxVisibility();
             InvokeChangeMade(new ChangeEventArgs(comboBoxOperator));
         }
 
@@ -142,9 +142,9 @@ namespace CableGuardian
 
             comboBoxSide.SelectedItem = Condition.TargetRotationSide;
             comboBoxAccu.SelectedItem = Condition.TargetAccumulation;
-            numericUpDownFullRot.Value = Condition.TargetFullRotations;
-            numericUpDownFullRotMax.Value = Condition.TargetFullRotationsMax;
-            numericUpDownPeak.Value = Condition.TargetPeakFullRotations;
+            numericUpDownHalfTurns.Value = Condition.TargetHalfTurns;
+            numericUpDownHalfTurnsMax.Value = Condition.TargetHalfTurnsMax;
+            numericUpDownPeak.Value = Condition.TargetPeakHalfTurns;
 
             SkipFlaggedEventHandlers = false;
 
@@ -161,8 +161,8 @@ namespace CableGuardian
                 comboBoxSide.SelectedItem = Direction.Either;
                 comboBoxOperator.SelectedItem = EqualOrGreaterThan;
                 comboBoxAccu.SelectedItem = AccumulationStatus.Either;                
-                numericUpDownFullRot.Value = 0;
-                numericUpDownFullRotMax.Value = 99;
+                numericUpDownHalfTurns.Value = 0;
+                numericUpDownHalfTurnsMax.Value = 99;
                 ShowOnlyResetPositionConditions(true);
             }
             else
@@ -172,19 +172,19 @@ namespace CableGuardian
             }
         }
 
-        void CheckFullRotMaxVisibility()
+        void CheckHalfTurnMaxVisibility()
         {
             if (Condition == null)
                 return;
 
             if (Condition.CompOperator == CompareOperator.Equal || Condition.ParentTrigger.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition)
             {                
-                panelFullRotMax.Visible = false;
-                numericUpDownFullRotMax.Value = 99;
+                panelHalfTurnsMax.Visible = false;
+                numericUpDownHalfTurnsMax.Value = 99;
             }
             else
             {                
-                panelFullRotMax.Visible = true;
+                panelHalfTurnsMax.Visible = true;
             }
         }
 
@@ -193,8 +193,8 @@ namespace CableGuardian
             // this order is not trivial as it causes resizing of the control  // should suppress painting during change
             panelRotSide.Visible = !show;
             panelPeak.Visible = show; 
-            panelFullRot.Visible = !show;
-            CheckFullRotMaxVisibility();
+            panelHalfTurns.Visible = !show;
+            CheckHalfTurnMaxVisibility();
             panelAccu.Visible = !show;            
         }
 

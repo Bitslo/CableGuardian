@@ -10,13 +10,12 @@ using System.Windows.Forms;
 
 namespace CableGuardian
 {
-    
-
     partial class ProfileEditor : UserControl
     {
         public EventHandler<ChangeEventArgs> ChangeMade;
         public EventHandler<EventArgs> ProfileNameChanged;
-
+        public EventHandler<EventArgs> VRConnectionParameterChanged;
+        
         Profile TheProfile;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
         /// <summary>
@@ -27,17 +26,25 @@ namespace CableGuardian
 
         public ProfileEditor()
         {
-            InitializeComponent();                        
-                        
+            InitializeComponent();
+
+            comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
             comboBoxDeviceSource.DataSource = Enum.GetValues(typeof(AudioDeviceSource));
             comboBoxManual.DataSource = AudioDevicePool.WaveOutDevices;
 
-            TTip.SetToolTip(checkBoxStartup,"Load this profile when program starts");
-            TTip.SetToolTip(checkBoxFreeze, "Freeze profile to prevent accidental changes");
+            TTip.SetToolTip(comboBoxAPI, $"Choose {VRAPI.OculusVR} for Oculus headsets, {VRAPI.OpenVR} for others.{Environment.NewLine}"
+                                            + $"If you switch between different headsets (with different API / Audio device), it is recommended to make a separate profile for each.{Environment.NewLine}" 
+                                            + "You can use the \"Clone profile\" -button to quickly copy the rotation settings to another profile.");
+            TTip.SetToolTip(checkBoxStartup,$"Load this profile when program starts.{Environment.NewLine}" 
+                                            + "If a startup profile has not been defined, the previously used profile will be loaded.");
+            TTip.SetToolTip(checkBoxFreeze, "Freeze profile to prevent accidental changes.");
             TTip.SetToolTip(pictureBoxPlus, "Add a new action");
+            TTip.SetToolTip(pictureBoxClone, "Clone the selected action");
             TTip.SetToolTip(pictureBoxMinus, "Remove the selected action");
-            TTip.SetToolTip(comboBoxDeviceSource, "How to determine the audio device for playing the waves: Oculus Home, Windows or manual setting.");
-            TTip.SetToolTip(labelOcuChanges, $"Changes in Oculus Home audio settings are only updated to {Config.ProgramTitle} when you change the audio settings in {Config.ProgramTitle}  ");
+            TTip.SetToolTip(comboBoxDeviceSource, "Source for the audio device for playing the waves in this profile.");
+            TTip.SetToolTip(labelOcuChanges, $"Change in Oculus Home audio device is only updated to {Config.ProgramTitle} at startup OR when you change the device here.");            
+            TTip.SetToolTip(checkBoxHome, $"When checked, the headset orientation is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +
+                                         $"The presence of Home is polled once in two seconds.");
 
             if (!FormMain.RunFromDesigner)
             {   
@@ -48,7 +55,7 @@ namespace CableGuardian
         }
 
         void InitializeAppearance()
-        {   
+        {            
             labelAddHint.ForeColor = Config.CGColor;
             listBoxActions.BackColor = Config.CGBackColor;
             listBoxActions.ForeColor = Config.CGColor;
@@ -56,16 +63,83 @@ namespace CableGuardian
 
         void AddEventHandlers()
         {
+            comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
+            checkBoxHome.CheckedChanged += CheckBoxHome_CheckedChanged;
             checkBoxFreeze.CheckedChanged += CheckBoxFreeze_CheckedChanged;
             comboBoxDeviceSource.SelectedIndexChanged += ComboBoxDeviceSource_SelectedIndexChanged;
             comboBoxManual.SelectedIndexChanged += ComboBoxManual_SelectedIndexChanged;
             textBoxName.TextChanged += TextBoxName_TextChanged;
             pictureBoxPlus.Click += PictureBoxPlus_Click;
+            pictureBoxClone.Click += PictureBoxClone_Click;
             pictureBoxMinus.Click += PictureBoxMinus_Click;            
             listBoxActions.SelectedIndexChanged += ListBoxActions_SelectedIndexChanged;
             checkBoxStartup.CheckedChanged += CheckBoxStartup_CheckedChanged;            
             listBoxActions.DrawItem += listBoxActions_DrawItem;
             WaveActionCtl.ChangeMade += OnActionControlChangeMade;
+
+
+            KeyUp += AnyControl_KeyUp;
+            foreach (Control ctl in Controls)
+            {
+                if (ctl is TextBox == false && ctl is CheckBox == false)
+                    ctl.KeyUp += AnyControl_KeyUp;
+            }
+
+        }
+
+        private void PictureBoxClone_Click(object sender, EventArgs e)
+        {
+            CloneWaveAction();
+            SetControlVisibility();
+            InvokeChangeMade(new ChangeEventArgs(pictureBoxClone));
+        }
+
+        private void AnyControl_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == (int)' ')
+            {
+                TriggeredAction ta = listBoxActions.SelectedItem as TriggeredAction;
+                (ta?.TheAction as CGActionWave)?.Play();                
+            }
+        }
+
+        private void ComboBoxAPI_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+            
+            if ((VRAPI)comboBoxAPI.SelectedItem != VRAPI.OculusVR && FormMain.OculusConn.Status == VRConnectionStatus.AllOK && TheProfile.API == VRAPI.OculusVR)
+            {
+                string msg = String.Format("IMPORTANT{0}{0}When you are using an Oculus Headset, you DON'T need to change the API when using SteamVR apps. " +
+                                            "It is highly recommended to leave this setting to \"{1}\" at all times!{0}{0}Continue anyway?", Environment.NewLine, VRAPI.OculusVR.ToString());
+                if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Cancel)
+                {
+                    SkipFlaggedEventHandlers = true;
+                    comboBoxAPI.SelectedItem = VRAPI.OculusVR;
+                    SkipFlaggedEventHandlers = false;
+                    return;
+                }
+            }
+
+            TheProfile.API = (VRAPI)comboBoxAPI.SelectedItem;
+
+            if (FormMain.ActiveConnection?.Status == VRConnectionStatus.AllOK)            
+                FormMain.IntentionalAPIChange = true; // really cheap and dirty trick to prevent connection lost notification
+            
+            SetControlVisibility();
+            InvokeChangeMade(new ChangeEventArgs(comboBoxAPI));            
+            InvokeVRConnectionParameterChanged(new EventArgs());
+        }
+
+       
+        private void CheckBoxHome_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            TheProfile.RequireHome = checkBoxHome.Checked;
+            InvokeChangeMade(new ChangeEventArgs(checkBoxHome));
+            InvokeVRConnectionParameterChanged(new EventArgs());
         }
 
         private void ComboBoxManual_SelectedIndexChanged(object sender, EventArgs e)
@@ -184,6 +258,22 @@ namespace CableGuardian
 
         }
 
+        void CloneWaveAction()
+        {
+            TriggeredAction selAction = (listBoxActions.SelectedItem as TriggeredAction);
+            if (selAction != null)
+            {
+                TriggeredAction ta = new TriggeredAction(FormMain.Tracker, TheProfile);
+                ta.LoadFromXml(selAction.GetXml());
+                
+                RefreshActionsListbox();
+                SkipFlaggedEventHandlers = true;
+                listBoxActions.SelectedItem = ta;
+                SkipFlaggedEventHandlers = false;
+                WaveActionCtl.LoadWaveAction(ta);
+            }
+        }
+
         private void ComboBoxDeviceSource_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
@@ -214,7 +304,7 @@ namespace CableGuardian
 
             string newName = textBoxName.Text;
 
-            if (!String.IsNullOrEmpty(newName) && (from Profile p in Config.Profiles where p.Name == newName && p != TheProfile select p).Count() == 0)
+            if (!String.IsNullOrEmpty(newName))//&& (from Profile p in Config.Profiles where p.Name == newName && p != TheProfile select p).Count() == 0)
             {
                 TheProfile.Name = newName;
                 InvokeProfileNameChanged(new EventArgs());
@@ -234,24 +324,19 @@ namespace CableGuardian
         }
 
         public void LoadProfile(Profile profile)
-        {
+        {            
             TheProfile = profile;
-            
-            LoadValuesToGui();
-        }
 
-        void LoadValuesToGui()
-        {
             SkipFlaggedEventHandlers = true;
+
             checkBoxFreeze.Checked = TheProfile.Frozen;
             checkBoxStartup.Checked = (Config.StartUpProfile == TheProfile);
-            comboBoxDeviceSource.SelectedItem = TheProfile.WaveOutDeviceSource;            
-            FormMain.WaveOutPool.WaveOutDeviceSource = TheProfile.WaveOutDeviceSource;
-            if (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Manual)
-            {
-                comboBoxManual.SelectedItem = TheProfile.TheWaveOutDevice;
-                FormMain.WaveOutPool.SetWaveOutDevice(TheProfile.TheWaveOutDevice);
-            }            
+            checkBoxHome.Checked = TheProfile.RequireHome;            
+            comboBoxDeviceSource.SelectedItem = TheProfile.WaveOutDeviceSource;
+            comboBoxAPI.SelectedItem = TheProfile.API;
+            
+            if (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Manual)            
+                comboBoxManual.SelectedItem = TheProfile.TheWaveOutDevice;                        
 
             textBoxName.Text = TheProfile.Name;
             SkipFlaggedEventHandlers = false;
@@ -259,7 +344,8 @@ namespace CableGuardian
             LoadActions();
             SetControlVisibility();
             CheckProfileFrozenStatus();
-        }
+
+        }                
 
         void LoadActions()
         {            
@@ -305,8 +391,8 @@ namespace CableGuardian
 
         void SetControlVisibility()
         {
-           
-            labelOcuChanges.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Oculus);
+            checkBoxHome.Visible = (TheProfile.API == VRAPI.OculusVR);
+            labelOcuChanges.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.OculusHome);
             comboBoxManual.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Manual);
             labelAddHint.Visible = (listBoxActions.Items.Count == 0);
             WaveActionCtl.Visible = !(listBoxActions.Items.Count == 0);
@@ -336,6 +422,14 @@ namespace CableGuardian
             }
         }
 
+        void InvokeVRConnectionParameterChanged(EventArgs e)
+        {
+            if (VRConnectionParameterChanged != null)
+            {
+                VRConnectionParameterChanged(this, e);
+            }
+        }
+
         void InvokeChangeMade(ChangeEventArgs e)
         {
             if (ChangeMade != null)
@@ -356,5 +450,5 @@ namespace CableGuardian
         {
             OriginalSender = originalSender;
         }
-    }
+    }   
 }

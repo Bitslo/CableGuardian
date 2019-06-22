@@ -10,21 +10,21 @@ using System.Windows.Forms;
 
 namespace CableGuardian
 {
-    public partial class FormAlarm : Form
+    public partial class FormSound : Form
     {
-        public static bool RunFromDesigner { get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); } }        
-
-        public FormAlarm()
+        internal FormSound()
         {
             InitializeComponent();
-            waveEditor1.LoadWaveAction(Config.Alarm);
+        }
+
+        internal FormSound(CGActionWave waveAction, string infoText = "")
+        {
+            InitializeComponent();
+            waveEditor1.LoadWaveAction(waveAction);
+            labelInfo.Text = infoText;
 
             buttonClose.Click += (s,e) => { Close(); };
-
-            if (!RunFromDesigner)
-            {
-                BackColor = Config.CGBackColor;
-            }
+            BackColor = Config.CGBackColor;
         }
     }
 }

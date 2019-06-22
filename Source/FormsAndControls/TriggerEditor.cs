@@ -30,7 +30,8 @@ namespace CableGuardian
             comboBoxEvent.SelectedIndexChanged += ComboBoxEvent_SelectedIndexChanged;
             numericUpDownLimit.ValueChanged += NumericUpDownLimit_ValueChanged;           
             TTip.SetToolTip(numericUpDownLimit, "Max fire count for the trigger until total rotation returns to zero (reset position). \n0 = no limit.");
-            TTip.SetToolTip(comboBoxEvent, "NOTE that the HMD poll frequency is optimized for performance --> trigger points are not exact by the millimeter.");
+            TTip.SetToolTip(comboBoxEvent, "Orientation to trigger the rule for assessment. If all conditions match, the sound will play." 
+                                            + "\nNOTE that the HMD poll frequency is optimized for performance --> trigger points are not exact by the millimeter.");
 
         }
 

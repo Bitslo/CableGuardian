@@ -14,7 +14,7 @@ namespace CableGuardian
         /// Current rotation around the y-axis (= Yaw) in radians.
         /// (range from -PI to +PI) (sign denotes direction from center - left or right depending on coordinate system)
         /// </summary>
-        public double HmdYaw { get; }
+        public double HmdYaw { get; }        
         public VRObserverEventArgs(double hmdYaw)
         {
             HmdYaw = hmdYaw;            
@@ -26,7 +26,7 @@ namespace CableGuardian
         public EventHandler<VRObserverEventArgs> StateRefreshed;
                 
         VRConnection VR;
-        double HmdYaw;
+        double HmdYaw;        
 
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
@@ -41,7 +41,7 @@ namespace CableGuardian
         /// </summary>
         /// <param name="vr"></param>
         /// <param name="pollInterval"></param>
-        public VRObserver(VRConnection vr, int pollInterval = 180)
+        public VRObserver(VRConnection vr, int pollInterval = 150)
         {
             VR = vr ?? throw new Exception("null VR connection.");
             PollInterval = pollInterval;
@@ -79,7 +79,7 @@ namespace CableGuardian
         void DoWork(object sender, DoWorkEventArgs e)
         {
             while (StopFlag == false)
-            {                
+            {
                 if(VR.GetHmdYaw(ref HmdYaw))
                     Worker.ReportProgress(0, null);
                

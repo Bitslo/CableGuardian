@@ -26,18 +26,30 @@ namespace CableGuardian
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
         public static string SteamVRProcessName { get; private set; } = "vrserver";
 
-        public static bool StartMinimized { get; set; } = false;
-        public static bool RequireHome { get; set; } = false;
+        public static bool StartMinimized { get; set; } = false;        
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
+        public static bool NotifyOnAPIQuit { get; set; } = false;
         public static bool TrayMenuNotifications { get; set; } = true;
-        public static CGActionWave Alarm { get; private set; } = new CGActionWave(FormMain.WaveOutPool);        
-        public static VRAPI API { get; set; } = VRAPI.OculusVR;
+        public static bool ShowResetMessageBox { get; set; } = true;
+        public static CGActionWave Alarm { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
+        public static CGActionWave Jingle { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
+        public static CGActionWave ConnLost { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
+        public static bool PlaySoundOnHMDinteractionStart { get; set; } = false;
         public static List<Profile> Profiles { get; private set; } = new List<Profile>();
         public static Profile StartUpProfile { get; set; }
-        static Profile ActiveProfile { get; set; }
+        public static Profile ActiveProfile { get; private set; }
         public static int ProfilesFileBackupCount { get; set; } = 5;
         public static bool WaveComboRefreshRequired { get; set; }  = false;
-        
+        public static bool ConfigFileMissingAtStartup { get; private set; } = false;
+        public static bool ProfilesFileMissingAtStartup { get; private set; } = false;
+        public static string LastSessionProfileName { get; private set; } = "";
+        /// <summary>
+        /// backwards compatibility only
+        /// </summary>
+        public static VRAPI LegacyAPI { get; private set; } = VRAPI.OculusVR;
+        public static bool IsLegacyConfig { get; private set; } = false;
+
+
         static Config()
         {
             ExeFile = System.Reflection.Assembly.GetEntryAssembly().Location;
@@ -88,7 +100,7 @@ namespace CableGuardian
 
         public static void CheckDefaultSounds()
         {
-            // default sounds
+            // Write baked in default sounds to disk if missing. A bit of double waste of space but IIRC they have to be on disk due to the audio implementation.
             string wavePath = ExeFolder + $@"\TickTock.wav";
             if (!File.Exists(wavePath))
             {
@@ -107,12 +119,52 @@ namespace CableGuardian
                 fileStream.Close();
                 WaveComboRefreshRequired = true;
             }
-            wavePath = ExeFolder + $@"\Beep_classic.wav";
+            wavePath = ExeFolder + $@"\Beep_loud.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.Beep_classic.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.Beep_classic.CopyTo(fileStream);
+                CableGuardian.Properties.Resources.Beep_loud.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.Beep_loud.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+
+            wavePath = ExeFolder + $@"\CG_Jingle.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.CG_Jingle.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.CG_Jingle.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+
+            wavePath = ExeFolder + $@"\CG_ConnLost.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.CG_ConnLost.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.CG_ConnLost.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+
+            wavePath = ExeFolder + $@"\TurnLeft.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.TurnLeft.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.TurnLeft.CopyTo(fileStream);
+                fileStream.Close();
+                WaveComboRefreshRequired = true;
+            }
+
+            wavePath = ExeFolder + $@"\TurnRight.wav";
+            if (!File.Exists(wavePath))
+            {
+                var fileStream = File.Create(wavePath);
+                CableGuardian.Properties.Resources.TurnRight.Seek(0, SeekOrigin.Begin);
+                CableGuardian.Properties.Resources.TurnRight.CopyTo(fileStream);
                 fileStream.Close();
                 WaveComboRefreshRequired = true;
             }
@@ -122,6 +174,18 @@ namespace CableGuardian
             Alarm.Pan = 0;
             Alarm.Volume = 100;
             Alarm.LoopCount = 3;
+
+            // default jingle:
+            Jingle.Wave = "CG_Jingle";
+            Jingle.Pan = 0;
+            Jingle.Volume = 50;
+            Jingle.LoopCount = 1;
+
+            // Connection lost sound:
+            ConnLost.Wave = "CG_ConnLost";
+            ConnLost.Pan = 0;
+            ConnLost.Volume = 70;
+            ConnLost.LoopCount = 1;
         }
 
         public static void WriteConfigToFile()
@@ -163,7 +227,11 @@ namespace CableGuardian
                         LoadConfigFromXml(xBase);
                     }
                 }
-            }                       
+            }
+            else
+            {
+                ConfigFileMissingAtStartup = true;
+            }
         }
            
         public static void ReadProfilesFromFile()
@@ -176,8 +244,13 @@ namespace CableGuardian
             }
             else
             {
-                // default profile              
-                XmlProfiles = XDocument.Parse(CableGuardian.Properties.Resources.CGProfiles, LoadOptions.PreserveWhitespace);                
+                ProfilesFileMissingAtStartup = true;
+                
+                // try to detect Oculus HMD and set default profile accordingly
+                if (FormMain.OculusConn.OculusHMDConnected())
+                    XmlProfiles = XDocument.Parse(CableGuardian.Properties.Resources.CGProfiles_Default_Oculus, LoadOptions.PreserveWhitespace);
+                else
+                    XmlProfiles = XDocument.Parse(CableGuardian.Properties.Resources.CGProfiles_Default_OpenVR, LoadOptions.PreserveWhitespace);
             }
 
             if (XmlProfiles != null)
@@ -193,15 +266,27 @@ namespace CableGuardian
         public static void LoadConfigFromXml(XElement xConfig)
         {
             if (xConfig != null)
-            {
-                StartMinimized = xConfig.GetElementValueBool("StartMinimized");
-                RequireHome = xConfig.GetElementValueBool("RequireHome");
+            {                
+                if (xConfig.GetElementValueOrNull("API") != null) // backwards compatibility
+                {
+                    IsLegacyConfig = true;
+                    if (Enum.TryParse(xConfig.GetElementValueTrimmed("API"), out VRAPI a))
+                        LegacyAPI = a;                    
+                }
+
+                StartMinimized = xConfig.GetElementValueBool("StartMinimized");                
                 NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
+                NotifyOnAPIQuit = xConfig.GetElementValueBool("NotifyOnAPIQuit");
                 TrayMenuNotifications = xConfig.GetElementValueBool("TrayMenuNotifications", true);
+                PlaySoundOnHMDinteractionStart = xConfig.GetElementValueBool("PlaySoundOnHMDinteractionStart");
+                ShowResetMessageBox = xConfig.GetElementValueBool("ShowResetMessageBox", true);
+                LastSessionProfileName = xConfig.GetElementValueTrimmed("LastSessionProfileName");
 
                 XElement xAlarm = xConfig.Element("Alarm");               
                 Alarm.LoadFromXml(xAlarm?.Element("CGActionWaveFile"));
-                                
+
+                XElement xJingle = xConfig.Element("Jingle");
+                Jingle.LoadFromXml(xJingle?.Element("CGActionWaveFile"));
 
                 XElement cons = xConfig.Element("CONSTANTS");
                 string temp = cons.GetElementValueTrimmed("OculusHomeProcessName");
@@ -210,12 +295,8 @@ namespace CableGuardian
 
                 temp = cons.GetElementValueTrimmed("SteamVRProcessName");
                 if (!String.IsNullOrWhiteSpace(temp))
-                    SteamVRProcessName = temp;
-
-                if (Enum.TryParse(xConfig.GetElementValueTrimmed("API"), out VRAPI a))
-                    API = a;
-                else
-                    API = VRAPI.OculusVR;
+                    SteamVRProcessName = temp;               
+                
             }
         }
 
@@ -237,12 +318,15 @@ namespace CableGuardian
         public static XElement GetConfigXml()
         {
             return new XElement(ConfigName, 
-                                new XElement("StartMinimized", StartMinimized),
-                                new XElement("RequireHome", RequireHome),
+                                new XElement("StartMinimized", StartMinimized),                                
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
+                                new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
                                 new XElement("TrayMenuNotifications", TrayMenuNotifications),
-                                new XElement("API", API),
-                                new XElement("Alarm", Alarm.GetXml()),                                
+                                new XElement("PlaySoundOnHMDinteractionStart", PlaySoundOnHMDinteractionStart),
+                                new XElement("ShowResetMessageBox", ShowResetMessageBox),
+                                new XElement("LastSessionProfileName", ActiveProfile?.Name),
+                                new XElement("Alarm", Alarm.GetXml()),
+                                new XElement("Jingle", Jingle.GetXml()),
                                 new XElement("CONSTANTS",
                                 new XComment("These are for future proofing. In case SteamVR or Oculus Home processes are named differently in an update (unlikely)."),
                                 new XElement("OculusHomeProcessName", OculusHomeProcessName),
