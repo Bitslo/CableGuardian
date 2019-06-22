@@ -833,6 +833,13 @@ namespace CableGuardian
                     WaveOutPool.SetWaveOutDevice(p.TheWaveOutDevice);                
 
                 RefreshVRConnectionForActiveProfile(); // after audio device has been set (to refresh Oculus Home audio)
+
+                if (p.WaveOutDeviceNotFound)
+                {
+                    string msg = $"The audio device for this profile was not found!{Environment.NewLine} \"{p.NotFoundDeviceName}\"{Environment.NewLine + Environment.NewLine}" 
+                                + "Default audio device will be used. Please re-save the profiles with valid audio configuration.";
+                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             else
             {

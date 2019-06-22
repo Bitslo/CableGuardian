@@ -95,7 +95,12 @@ namespace CableGuardian
         {
             if (device == null)
             {
-                throw new Exception("Wave out device cannot be null.");
+                //throw new Exception("Wave out device cannot be null.");
+                // this should not happen anymore (fixed in profile loading)... but since we were not handling this exception, let's just cop out and change device source to windows
+                SuppressFlaggedEvents = true;
+                WaveOutDeviceSource = AudioDeviceSource.Windows;
+                SuppressFlaggedEvents = false;
+                return;
             }
 
             SuppressFlaggedEvents = true;
