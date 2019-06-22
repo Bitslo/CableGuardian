@@ -78,21 +78,32 @@ namespace CableGuardian
             LoadStartupProfile();
 
             if (Config.ConfigFileMissingAtStartup || Config.IsLegacyConfig)
+            {
+                // another hacky solution... 
+                if (ActiveConnection == OculusConn)
+                {
+                    Config.NotifyOnAPIQuit = true; // this is better to be on by default for Oculus but not for OpenVR ... imo
+                    SkipFlaggedEventHandlers = true;
+                    checkBoxOnAPIQuit.Checked = true;
+                    SkipFlaggedEventHandlers = false;
+                } 
+
                 SaveConfigurationToFile();
+            }
 
             if (Config.ProfilesFileMissingAtStartup || Config.IsLegacyConfig)
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
             
-            if (Config.ConfigFileMissingAtStartup)
-            {
-                ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Find the tray icon here. ");
+            if (Config.ConfigFileMissingAtStartup) // First time launch
+            {                
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
                         $"1. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
                         $"2. For an overview, click the \"?\" in the top right corner.{Environment.NewLine}{Environment.NewLine}" +
-                        $"3. For a quick menu, right click the icon in the system tray.";
+                        $"3. For a quick menu, right click the CG icon in the system tray.";
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
 
         }
@@ -243,8 +254,7 @@ namespace CableGuardian
             TTip.SetToolTip(pictureBoxPlus, "Add a new empty profile");
             TTip.SetToolTip(pictureBoxClone, "Clone the current profile");
             TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");            
-            TTip.SetToolTip(checkBoxConnLost, $"Show a Windows notification and play a sound when connection to the VR headset unexpectedly changes from OK to NOT OK.{Environment.NewLine}" + 
-                                                $"This can happen for example when the VR-drivers are updated. (In such an event {Config.ProgramTitle} restart may be required)");
+            TTip.SetToolTip(checkBoxConnLost, $"Show a Windows notification and play a sound when connection to the VR headset unexpectedly changes from OK to NOT OK.");
             TTip.SetToolTip(checkBoxOnAPIQuit, $"Show connection lost notification when the VR API requests {Config.ProgramTitle} to quit.{Environment.NewLine}" +
                                                 $"Most common examples are when closing SteamVR or restarting Oculus.{Environment.NewLine}");
             TTip.SetToolTip(buttonReset, $"Reset turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be straight when counter = 0." + Environment.NewLine

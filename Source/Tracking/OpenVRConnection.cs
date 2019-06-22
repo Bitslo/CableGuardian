@@ -16,7 +16,9 @@ namespace CableGuardian
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
-        int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...
+        int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...        
+        int InitializationInterval = 2000;
+        int HMDUserInteractionBufferTime = 2000;
         EVRInitError LastOpenVRError = EVRInitError.None;
         CVRSystem VRSys = null;
         string LastExceptionMessage { get; set; }
@@ -33,7 +35,9 @@ namespace CableGuardian
         // (Side note: in Unity SteamVR plugin there's a way to read the prox sensor, but it seemed like a huge hassle to implement here)
         bool HMDUserInteraction_buffered = false; 
         bool HMDUserInteraction_previousReading = false;
-        int HMDUserInteractionBuffer = 0;
+        int HMDUserInteractionCounter = 0; // doesn't really make a difference for OpenVR, since we can't check the proximity sensor        
+        int InitializationDivider = 0;
+        int HMDUserInteractionDivider = 0;
 
 
         /// <summary>
@@ -113,7 +117,11 @@ namespace CableGuardian
         }
 
         public OpenVRConnection()
-        {  
+        {
+            // link all intervals to pollrate to be able to change them independently           
+            InitializationDivider = InitializationInterval / PollInterval;
+            HMDUserInteractionDivider = HMDUserInteractionBufferTime / PollInterval;
+
             Worker.ProgressChanged += Worker_ProgressChanged;
             Worker.WorkerReportsProgress = true;
             Worker.DoWork += DoWork;
@@ -191,7 +199,7 @@ namespace CableGuardian
             
             if (VRSys == null) 
             {
-                if (KeepAliveCounter % 180 != 0) // initialization attempt on only every 180th lap (apprx 1/2s when pollrate = 11ms)
+                if (KeepAliveCounter % InitializationDivider != 0) // do not attempt initialization on every loop
                     return; 
 
                 // ***** INITIALIZATION ******
@@ -265,13 +273,15 @@ namespace CableGuardian
                 {   
                     bool interaction = (VRSys.GetTrackedDeviceActivityLevel(HmdIndex) == EDeviceActivityLevel.k_EDeviceActivityLevel_UserInteraction);
                     if (interaction == HMDUserInteraction_previousReading)
-                        HMDUserInteractionBuffer++;
+                        HMDUserInteractionCounter++;
                     else
-                        HMDUserInteractionBuffer = 0;
+                        HMDUserInteractionCounter = 0;
 
                     HMDUserInteraction_previousReading = interaction;
 
-                    if (HMDUserInteractionBuffer > 20) // some buffer to filter out false flags (and conveniently some delay for notifications)
+                    // some buffer to filter out false flags (and conveniently some delay for notifications)                                                                                
+                    // ... although false flags are not really possible the way OpenVR currently works
+                    if (HMDUserInteractionCounter > HMDUserInteractionDivider) 
                     {
                         if (HMDUserInteraction_buffered != interaction)
                         {
@@ -282,7 +292,7 @@ namespace CableGuardian
                             else
                                 Worker.ReportProgress(2, null);
                         }
-                        HMDUserInteractionBuffer = 0;
+                        HMDUserInteractionCounter = 0;
                     }
                 }
             }    

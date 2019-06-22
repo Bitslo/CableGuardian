@@ -22,8 +22,11 @@ namespace CableGuardian
         bool SessionInitialized = false;
         bool SessionCreated = false;
         bool SuppressStatusEvents = false;
-        bool StopFlag = false;
+        bool StopFlag = false;        
         int PollInterval = 50;
+        int OculusHomePollInterval = 2000;
+        int InitializationInterval = 1000;
+        int HMDMountBufferTime = 2000;
         IntPtr SessionPtr;
         GraphicsLuid pLuid;
         BackgroundWorker Worker = new BackgroundWorker();
@@ -35,8 +38,11 @@ namespace CableGuardian
         int KeepAliveCounter { get { return _KeepAliveCounter; } set { _KeepAliveCounter = (_KeepAliveCounter >= 10000) ? 1 : value; } }
         bool HMDMounted_buffered = false;
         bool HMDMounted_previousReading = false;
-        int HMDMountBuffer = 0;
-        
+        int HMDMountCounter = 0;
+        int OculusHomeDivider = 0;
+        int InitializationDivider = 0;
+        int HMDMountDivider = 0;
+
         /// <summary>
         /// ONLY UPDATE THIS FROM OculusStatus SETTER
         /// </summary>
@@ -168,6 +174,11 @@ namespace CableGuardian
         
         public OculusConnection()
         {
+            // link all intervals to pollrate to be able to change them independently
+            OculusHomeDivider = OculusHomePollInterval / PollInterval;
+            InitializationDivider = InitializationInterval / PollInterval;
+            HMDMountDivider = HMDMountBufferTime / PollInterval;
+
             Worker.ProgressChanged += Worker_ProgressChanged;
             Worker.WorkerReportsProgress = true;
             Worker.DoWork += DoWork;
@@ -243,7 +254,7 @@ namespace CableGuardian
 
             if (RequireHome)
             {
-                if (KeepAliveCounter % 40 == 0) // to save CPU, check only every 2 secs (when pollrate = 50ms)
+                if (KeepAliveCounter % OculusHomeDivider == 0) // to save CPU, do not check every loop
                 {
                     if (System.Diagnostics.Process.GetProcessesByName(Config.OculusHomeProcessName).Any() == false)
                     {
@@ -282,13 +293,13 @@ namespace CableGuardian
                 {
                     bool mounted = SesStatus.HmdMounted;
                     if (mounted == HMDMounted_previousReading)                    
-                        HMDMountBuffer++;                    
+                        HMDMountCounter++;                    
                     else                    
-                        HMDMountBuffer = 0;
+                        HMDMountCounter = 0;
 
                     HMDMounted_previousReading = mounted;
 
-                    if (HMDMountBuffer > 20) // some buffer to filter out false flags (and conveniently some delay for notifications)
+                    if (HMDMountCounter > HMDMountDivider) // some buffer to filter out false flags (and conveniently some delay for notifications)
                     {
                         if (HMDMounted_buffered != mounted)
                         {
@@ -299,7 +310,7 @@ namespace CableGuardian
                             else
                                 Worker.ReportProgress(2, null);
                         }                        
-                        HMDMountBuffer = 0;
+                        HMDMountCounter = 0;
                     }
                 }
                 return;
@@ -309,7 +320,7 @@ namespace CableGuardian
             // This point is reached only when connection not yet created 
             // ******** INITIALIZATION & CREATION ***********
 
-            if (KeepAliveCounter % 20 != 0) // try initialization one per second (when pollrate = 50 ms)
+            if (KeepAliveCounter % InitializationDivider != 0) // do not try initialization every loop
                 return;
 
             if (OculusStatus == OculusConnectionStatus.Initialized)
