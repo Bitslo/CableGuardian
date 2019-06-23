@@ -276,7 +276,7 @@
             // 
             this.checkBoxTrayNotifications.AutoSize = true;
             this.checkBoxTrayNotifications.ForeColor = System.Drawing.Color.White;
-            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 298);
+            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 299);
             this.checkBoxTrayNotifications.Name = "checkBoxTrayNotifications";
             this.checkBoxTrayNotifications.Size = new System.Drawing.Size(135, 17);
             this.checkBoxTrayNotifications.TabIndex = 12;
