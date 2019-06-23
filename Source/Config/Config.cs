@@ -11,22 +11,18 @@ using System.Drawing;
 namespace CableGuardian
 {
     static class Config
-    {
-        public const string ConfigName = "CGConfig";
+    {        
         public const string ProfilesName = "CGProfiles";
         public const string RegistryPathForStartup = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         public const string ProgramTitle = "Cable Guardian";
         public static readonly Color CGColor = Color.FromArgb(86, 184, 254);
         public static readonly  Color CGErrorColor = Color.FromArgb(254, 84, 84);
-        public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);
-        public static string ExeFile { get; private set; }
-        public static string ExeFolder { get; private set; }
-        public static string ConfigFile { get; private set; }
+        public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);                
         public static string ProfilesFile { get; private set; }
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
-        public static string SteamVRProcessName { get; private set; } = "vrserver";
-
-        public static bool StartMinimized { get; set; } = false;        
+        public static string SteamVRProcessName { get; private set; } = "vrserver";        
+        public static bool MinimizeAtUserStartup { get; set; } = false;
+        public static bool MinimizeAtWindowsStartup { get; set; } = false;        
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
         public static bool NotifyOnAPIQuit { get; set; } = false;
         public static bool TrayMenuNotifications { get; set; } = true;
@@ -51,11 +47,8 @@ namespace CableGuardian
 
 
         static Config()
-        {
-            ExeFile = System.Reflection.Assembly.GetEntryAssembly().Location;
-            ExeFolder = Path.GetDirectoryName(ExeFile);
-            ConfigFile = ExeFolder + $@"\{ConfigName}.xml";
-            ProfilesFile = ExeFolder + $@"\{ProfilesName}.xml";
+        {   
+            ProfilesFile = Program.ExeFolder + $@"\{ProfilesName}.xml";
         }
 
         public static void WriteWindowsStartupToRegistry(bool startWithWindows)
@@ -63,9 +56,9 @@ namespace CableGuardian
             using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(RegistryPathForStartup, true))
             {
                 if (startWithWindows)
-                    reg.SetValue(ConfigName, ExeFile);
+                    reg.SetValue(Program.ConfigName, "\"" + Program.ExeFile + "\" winstartup");
                 else
-                    reg.DeleteValue(ConfigName, false);
+                    reg.DeleteValue(Program.ConfigName, false);
             }
         }
 
@@ -73,7 +66,7 @@ namespace CableGuardian
         {
             using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(RegistryPathForStartup, true))
             {
-                return (reg.GetValue(ConfigName) != null);
+                return (reg.GetValue(Program.ConfigName) != null);
             }
         }
 
@@ -100,8 +93,10 @@ namespace CableGuardian
 
         public static void CheckDefaultSounds()
         {
+            string exeFolder = Program.ExeFolder;
+
             // Write baked in default sounds to disk if missing. A bit of double waste of space but IIRC they have to be on disk due to the audio implementation.
-            string wavePath = ExeFolder + $@"\TickTock.wav";
+            string wavePath = exeFolder + $@"\TickTock.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -110,7 +105,7 @@ namespace CableGuardian
                 fileStream.Close();
                 WaveComboRefreshRequired = true; // a bit unfortunate gimmick, but whatever
             }
-            wavePath = ExeFolder + $@"\Bilibom.wav";
+            wavePath = exeFolder + $@"\Bilibom.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -119,7 +114,7 @@ namespace CableGuardian
                 fileStream.Close();
                 WaveComboRefreshRequired = true;
             }
-            wavePath = ExeFolder + $@"\Beep_loud.wav";
+            wavePath = exeFolder + $@"\Beep_loud.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -129,7 +124,7 @@ namespace CableGuardian
                 WaveComboRefreshRequired = true;
             }
 
-            wavePath = ExeFolder + $@"\CG_Jingle.wav";
+            wavePath = exeFolder + $@"\CG_Jingle.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -139,7 +134,7 @@ namespace CableGuardian
                 WaveComboRefreshRequired = true;
             }
 
-            wavePath = ExeFolder + $@"\CG_ConnLost.wav";
+            wavePath = exeFolder + $@"\CG_ConnLost.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -149,7 +144,7 @@ namespace CableGuardian
                 WaveComboRefreshRequired = true;
             }
 
-            wavePath = ExeFolder + $@"\TurnLeft.wav";
+            wavePath = exeFolder + $@"\TurnLeft.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -159,7 +154,7 @@ namespace CableGuardian
                 WaveComboRefreshRequired = true;
             }
 
-            wavePath = ExeFolder + $@"\TurnRight.wav";
+            wavePath = exeFolder + $@"\TurnRight.wav";
             if (!File.Exists(wavePath))
             {
                 var fileStream = File.Create(wavePath);
@@ -196,7 +191,7 @@ namespace CableGuardian
                         GetConfigXml());                        
                         
             // UTF-8 (with BOM):
-            xCableGuardian.Save(ConfigFile);
+            xCableGuardian.Save(Program.ConfigFile);
         }
 
         public static void WriteProfilesToFile()
@@ -215,13 +210,13 @@ namespace CableGuardian
 
         public static void ReadConfigFromFile()
         {
-            if (File.Exists(ConfigFile))
+            if (File.Exists(Program.ConfigFile))
             {
-                XDocument XmlConfig = XDocument.Load(ConfigFile, LoadOptions.PreserveWhitespace);
+                XDocument XmlConfig = XDocument.Load(Program.ConfigFile, LoadOptions.PreserveWhitespace);
 
                 if (XmlConfig != null)
                 {
-                    XElement xBase = XmlConfig.Element(ConfigName);
+                    XElement xBase = XmlConfig.Element(Program.ConfigName);
                     if (xBase != null)
                     {
                         LoadConfigFromXml(xBase);
@@ -274,7 +269,17 @@ namespace CableGuardian
                         LegacyAPI = a;                    
                 }
 
-                StartMinimized = xConfig.GetElementValueBool("StartMinimized");                
+                if (xConfig.GetElementValueOrNull("StartMinimized") != null) // backwards compatibility
+                {
+                    MinimizeAtUserStartup = xConfig.GetElementValueBool("StartMinimized");
+                    MinimizeAtWindowsStartup = MinimizeAtUserStartup;
+                }
+                else
+                {
+                    MinimizeAtUserStartup = xConfig.GetElementValueBool("MinimizeAtUserStartup");
+                    MinimizeAtWindowsStartup = xConfig.GetElementValueBool("MinimizeAtWindowsStartup");
+                }
+                
                 NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
                 NotifyOnAPIQuit = xConfig.GetElementValueBool("NotifyOnAPIQuit");
                 TrayMenuNotifications = xConfig.GetElementValueBool("TrayMenuNotifications", true);
@@ -289,14 +294,16 @@ namespace CableGuardian
                 Jingle.LoadFromXml(xJingle?.Element("CGActionWaveFile"));
 
                 XElement cons = xConfig.Element("CONSTANTS");
-                string temp = cons.GetElementValueTrimmed("OculusHomeProcessName");
-                if (!String.IsNullOrWhiteSpace(temp))
-                    OculusHomeProcessName = temp;
+                if (cons != null)
+                {
+                    string temp = cons.GetElementValueTrimmed("OculusHomeProcessName");
+                    if (!String.IsNullOrWhiteSpace(temp))
+                        OculusHomeProcessName = temp;
 
-                temp = cons.GetElementValueTrimmed("SteamVRProcessName");
-                if (!String.IsNullOrWhiteSpace(temp))
-                    SteamVRProcessName = temp;               
-                
+                    temp = cons.GetElementValueTrimmed("SteamVRProcessName");
+                    if (!String.IsNullOrWhiteSpace(temp))
+                        SteamVRProcessName = temp;
+                }
             }
         }
 
@@ -317,8 +324,9 @@ namespace CableGuardian
 
         public static XElement GetConfigXml()
         {
-            return new XElement(ConfigName, 
-                                new XElement("StartMinimized", StartMinimized),                                
+            return new XElement(Program.ConfigName, 
+                                new XElement("MinimizeAtUserStartup", MinimizeAtUserStartup),
+                                new XElement("MinimizeAtWindowsStartup", MinimizeAtWindowsStartup),
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
                                 new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
                                 new XElement("TrayMenuNotifications", TrayMenuNotifications),
@@ -328,7 +336,9 @@ namespace CableGuardian
                                 new XElement("Alarm", Alarm.GetXml()),
                                 new XElement("Jingle", Jingle.GetXml()),
                                 new XElement("CONSTANTS",
-                                new XComment("These are for future proofing. In case SteamVR or Oculus Home processes are named differently in an update (unlikely)."),
+                                new XComment("Wait time when starting with Windows. The purpose is to ensure that all audio devices have been initialized before using them."),
+                                new XElement("WindowsStartupWaitInSeconds", Program.WindowsStartupWaitInSeconds),
+                                new XComment("DO NOT TOUCH. These are for future proofing. In case SteamVR or Oculus Home processes are named differently in an update (unlikely)."),
                                 new XElement("OculusHomeProcessName", OculusHomeProcessName),
                                 new XElement("SteamVRProcessName", SteamVRProcessName))
                                 );

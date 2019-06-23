@@ -102,7 +102,7 @@ namespace CableGuardian
 
         static CGActionWave()
         {
-            ScanWaveFilesInFolder(Config.ExeFolder);
+            ScanWaveFilesInFolder(Program.ExeFolder);
         }
               
 

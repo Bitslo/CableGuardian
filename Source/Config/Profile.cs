@@ -14,7 +14,7 @@ namespace CableGuardian
         public VRAPI API { get; set; } = VRAPI.OculusVR;
         public AudioDeviceSource WaveOutDeviceSource { get; set; } = AudioDeviceSource.OculusHome;
         public WaveOutDevice TheWaveOutDevice { get; set; }
-        public bool WaveOutDeviceNotFound { get; private set; }
+        public bool OriginalWaveOutDeviceNotFound { get; private set; }
         public string NotFoundDeviceName { get; private set; }
         public bool RequireHome { get; set; } = false;        
         public string Name { get; set; }
@@ -104,10 +104,10 @@ namespace CableGuardian
                 string waveOutName = xUserProfile.GetElementValueTrimmed("WaveOutDeviceName");                
                 TheWaveOutDevice = AudioDevicePool.GetWaveOutDevice(waveOutName);
 
-                WaveOutDeviceNotFound = false;
+                OriginalWaveOutDeviceNotFound = false;
                 if (TheWaveOutDevice == null && WaveOutDeviceSource == AudioDeviceSource.Manual)
                 {
-                    WaveOutDeviceNotFound = true;
+                    OriginalWaveOutDeviceNotFound = true;
                     NotFoundDeviceName = waveOutName;
                     if (API == VRAPI.OculusVR)
                         WaveOutDeviceSource = AudioDeviceSource.OculusHome;

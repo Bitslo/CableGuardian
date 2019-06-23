@@ -26,8 +26,8 @@ namespace CableGuardian
             if (!FormMain.RunFromDesigner)
             {
                 comboBoxWave.DataSource = CGActionWave.AvailableWaves;
-                TTip.SetToolTip(pictureBoxRefresh, $"Scan for sound files (*.wav) in: \"{Config.ExeFolder}\"");
-                TTip.SetToolTip(labelNoWaves, $"Please add sound files (*.wav) to \"{Config.ExeFolder}\" and click the refresh button.");
+                TTip.SetToolTip(pictureBoxRefresh, $"Scan for sound files (*.wav) in: \"{Program.ExeFolder}\"");
+                TTip.SetToolTip(labelNoWaves, $"Please add sound files (*.wav) to \"{Program.ExeFolder}\" and click the refresh button.");
                 TTip.SetToolTip(comboBoxWave, $"Select the sound file to play. Due to audio implementation, only the first 5 seconds of the wave will be played.");
                 TTip.SetToolTip(numericUpDownLoop, $"Loop count. How many times the sound is played in succession per single trigger. Max=9.");
 
@@ -172,7 +172,7 @@ namespace CableGuardian
             SkipFlaggedEventHandlers = true;
             Enabled = false;
             comboBoxWave.DataSource = null;
-            CGActionWave.ScanWaveFilesInFolder(Config.ExeFolder);
+            CGActionWave.ScanWaveFilesInFolder(Program.ExeFolder);
             comboBoxWave.DataSource = CGActionWave.AvailableWaves;
             Enabled = true;
            

@@ -23,9 +23,9 @@ namespace CableGuardian
             buttonClose.Click += ButtonClose_Click;
             buttonPage.Click += ButtonPage_Click;
 
-            labelAddWaves.Text = $"You can add your own sound files (*.wav) by copying them into: \"{Config.ExeFolder}\"";            
+            labelAddWaves.Text = $"You can add your own sound files (*.wav) by copying them into: \"{Program.ExeFolder}\"";            
             labelCopyDll.Text = $"For Oculus users: If you get a dll-error (unlikely), try copying LibOVRRT64_1.dll and LibOVRRT32_1.dll from {Environment.NewLine} " +
-                                $"\".\\Oculus\\Support\\oculus-runtime\" into: \"{Config.ExeFolder}\"";
+                                $"\".\\Oculus\\Support\\oculus-runtime\" into: \"{Program.ExeFolder}\"";
             
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +

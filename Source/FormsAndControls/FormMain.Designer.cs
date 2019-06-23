@@ -36,7 +36,7 @@
             this.pictureBoxClose = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.checkBoxStartMinimized = new System.Windows.Forms.CheckBox();
+            this.checkBoxStartMinUser = new System.Windows.Forms.CheckBox();
             this.checkBoxShowYaw = new System.Windows.Forms.CheckBox();
             this.labelStatus = new System.Windows.Forms.Label();
             this.checkBoxWindowsStart = new System.Windows.Forms.CheckBox();
@@ -56,6 +56,7 @@
             this.checkBoxPlaySoundOnHMDInteraction = new System.Windows.Forms.CheckBox();
             this.buttonJingle = new System.Windows.Forms.Button();
             this.checkBoxOnAPIQuit = new System.Windows.Forms.CheckBox();
+            this.checkBoxStartMinWin = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -129,21 +130,21 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // checkBoxStartMinimized
+            // checkBoxStartMinUser
             // 
-            this.checkBoxStartMinimized.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinimized.Location = new System.Drawing.Point(9, 236);
-            this.checkBoxStartMinimized.Name = "checkBoxStartMinimized";
-            this.checkBoxStartMinimized.Size = new System.Drawing.Size(128, 17);
-            this.checkBoxStartMinimized.TabIndex = 4;
-            this.checkBoxStartMinimized.Text = "Start minimized to tray";
-            this.checkBoxStartMinimized.UseVisualStyleBackColor = true;
+            this.checkBoxStartMinUser.ForeColor = System.Drawing.Color.White;
+            this.checkBoxStartMinUser.Location = new System.Drawing.Point(9, 257);
+            this.checkBoxStartMinUser.Name = "checkBoxStartMinUser";
+            this.checkBoxStartMinUser.Size = new System.Drawing.Size(162, 17);
+            this.checkBoxStartMinUser.TabIndex = 4;
+            this.checkBoxStartMinUser.Text = "Minimize on User startup";
+            this.checkBoxStartMinUser.UseVisualStyleBackColor = true;
             // 
             // checkBoxShowYaw
             // 
             this.checkBoxShowYaw.AutoSize = true;
             this.checkBoxShowYaw.ForeColor = System.Drawing.Color.White;
-            this.checkBoxShowYaw.Location = new System.Drawing.Point(9, 299);
+            this.checkBoxShowYaw.Location = new System.Drawing.Point(9, 320);
             this.checkBoxShowYaw.Name = "checkBoxShowYaw";
             this.checkBoxShowYaw.Size = new System.Drawing.Size(134, 17);
             this.checkBoxShowYaw.TabIndex = 8;
@@ -275,7 +276,7 @@
             // 
             this.checkBoxTrayNotifications.AutoSize = true;
             this.checkBoxTrayNotifications.ForeColor = System.Drawing.Color.White;
-            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 257);
+            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 298);
             this.checkBoxTrayNotifications.Name = "checkBoxTrayNotifications";
             this.checkBoxTrayNotifications.Size = new System.Drawing.Size(135, 17);
             this.checkBoxTrayNotifications.TabIndex = 12;
@@ -351,6 +352,16 @@
             this.checkBoxOnAPIQuit.Text = "...on API quit";
             this.checkBoxOnAPIQuit.UseVisualStyleBackColor = true;
             // 
+            // checkBoxStartMinWin
+            // 
+            this.checkBoxStartMinWin.ForeColor = System.Drawing.Color.White;
+            this.checkBoxStartMinWin.Location = new System.Drawing.Point(9, 236);
+            this.checkBoxStartMinWin.Name = "checkBoxStartMinWin";
+            this.checkBoxStartMinWin.Size = new System.Drawing.Size(173, 17);
+            this.checkBoxStartMinWin.TabIndex = 64;
+            this.checkBoxStartMinWin.Text = "Minimize on Windows startup";
+            this.checkBoxStartMinWin.UseVisualStyleBackColor = true;
+            // 
             // profileEditor
             // 
             this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -388,12 +399,13 @@
             this.Controls.Add(this.checkBoxWindowsStart);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.checkBoxShowYaw);
-            this.Controls.Add(this.checkBoxStartMinimized);
             this.Controls.Add(this.pictureBoxMinimize);
             this.Controls.Add(this.pictureBoxClose);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.labelYaw);
             this.Controls.Add(this.pictureBoxLogo);
+            this.Controls.Add(this.checkBoxStartMinWin);
+            this.Controls.Add(this.checkBoxStartMinUser);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.Name = "FormMain";
@@ -417,7 +429,7 @@
         private System.Windows.Forms.PictureBox pictureBoxClose;
         private System.Windows.Forms.PictureBox pictureBoxMinimize;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.CheckBox checkBoxStartMinimized;
+        private System.Windows.Forms.CheckBox checkBoxStartMinUser;
         private System.Windows.Forms.CheckBox checkBoxShowYaw;
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.CheckBox checkBoxWindowsStart;
@@ -438,6 +450,7 @@
         private System.Windows.Forms.CheckBox checkBoxPlaySoundOnHMDInteraction;
         private System.Windows.Forms.Button buttonJingle;
         private System.Windows.Forms.CheckBox checkBoxOnAPIQuit;
+        private System.Windows.Forms.CheckBox checkBoxStartMinWin;
     }
 }
 

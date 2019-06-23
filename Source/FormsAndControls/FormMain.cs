@@ -33,8 +33,8 @@ namespace CableGuardian
         internal static YawTracker Tracker { get; private set; }
         internal static OculusConnection OculusConn { get; private set; } = new OculusConnection();
         internal static OpenVRConnection OpenVRConn { get; private set; } = new OpenVRConnection();
-        internal static AudioDevicePool WaveOutPool { get; private set; } = new AudioDevicePool(OculusConn);        
-        
+        internal static AudioDevicePool WaveOutPool { get; private set; } = new AudioDevicePool(OculusConn);
+
         VRObserver Observer;
         internal static VRConnection ActiveConnection { get; private set; }
         Timer AlarmTimer = new Timer();        
@@ -55,10 +55,9 @@ namespace CableGuardian
         bool ForceHide = true;
 
         public FormMain()
-        {
+        {   
             InitializeComponent();
-            Environment.CurrentDirectory = Config.ExeFolder; // always run from exe folder to avoid problems with dlls            
-
+            
             // poll interval of 180ms should suffice (5.5 Hz) ...// UPDATE: Tightened to 150ms (6.67 Hz) just to be on the safe side. Still not too much CPU usage.
             // (head rotation must stay below 180 degrees between samples)
             Observer = new VRObserver(OculusConn, 150);
@@ -73,30 +72,20 @@ namespace CableGuardian
             
             AddEventHandlers();
 
-            ReadConfigAndProfilesFromFile();
+            ReadConfigFromFileAndCheckDefaultSounds();
+            ReadProfilesFromFile();
             LoadConfigToGui();
             LoadStartupProfile();
 
-            if (Config.ConfigFileMissingAtStartup || Config.IsLegacyConfig)
-            {
-                // another hacky solution... 
-                if (ActiveConnection == OculusConn)
-                {
-                    Config.NotifyOnAPIQuit = true; // this is better to be on by default for Oculus but not for OpenVR ... imo
-                    SkipFlaggedEventHandlers = true;
-                    checkBoxOnAPIQuit.Checked = true;
-                    SkipFlaggedEventHandlers = false;
-                } 
-
-                SaveConfigurationToFile();
-            }
+            if (Config.ConfigFileMissingAtStartup || Config.IsLegacyConfig)            
+                UpdateMissingOrLegacyConfig();            
 
             if (Config.ProfilesFileMissingAtStartup || Config.IsLegacyConfig)
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
             
-            if (Config.ConfigFileMissingAtStartup) // First time launch
+            if (Config.ConfigFileMissingAtStartup) // Most likely a first time launch
             {                
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
                         $"1. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
@@ -105,7 +94,6 @@ namespace CableGuardian
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
-
         }
 
         protected override void SetVisibleCore(bool value)
@@ -113,7 +101,32 @@ namespace CableGuardian
             base.SetVisibleCore(ForceHide ? false : value);
         }
 
-        void ReadConfigAndProfilesFromFile()
+        void UpdateMissingOrLegacyConfig()
+        {
+            try
+            {
+                // rewrite registry for win startup if existing:
+                if (Config.ReadWindowsStartupFromRegistry())
+                    Config.WriteWindowsStartupToRegistry(true);
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+
+            // another hacky solution... 
+            if (ActiveConnection == OculusConn)
+            {
+                Config.NotifyOnAPIQuit = true; // this is better to be on by default for Oculus but not for OpenVR ... imo
+                SkipFlaggedEventHandlers = true;
+                checkBoxOnAPIQuit.Checked = true;
+                SkipFlaggedEventHandlers = false;
+            }
+
+            SaveConfigurationToFile();
+        }
+               
+        void ReadConfigFromFileAndCheckDefaultSounds()
         {
             try
             {
@@ -134,7 +147,10 @@ namespace CableGuardian
             {
                 // intentionally ignore... atm there's nothing that vital in the config
             }
+        }
 
+        void ReadProfilesFromFile()
+        {
             try
             {
                 Config.ReadProfilesFromFile();
@@ -146,18 +162,22 @@ namespace CableGuardian
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
+              
         void LoadConfigToGui()
         {
             SkipFlaggedEventHandlers = true;            
-            checkBoxStartMinimized.Checked = Config.StartMinimized;            
+            checkBoxStartMinUser.Checked = Config.MinimizeAtUserStartup;
+            checkBoxStartMinWin.Checked = Config.MinimizeAtWindowsStartup;
             checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
             checkBoxOnAPIQuit.Checked = Config.NotifyOnAPIQuit;
             checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;
             checkBoxPlaySoundOnHMDInteraction.Checked = Config.PlaySoundOnHMDinteractionStart;
             SkipFlaggedEventHandlers = false;
 
-            if (!Config.StartMinimized)
+            if (!Config.MinimizeAtUserStartup && !Program.IsWindowsStartup)
+                RestoreFromTray();
+
+            if (!Config.MinimizeAtWindowsStartup && Program.IsWindowsStartup)
                 RestoreFromTray();
 
             CheckWindowsStartUpStatus();
@@ -270,8 +290,11 @@ namespace CableGuardian
                 + "      \u2022 User interaction stops when the proximity sensor is uncovered but ONLY after the headset has been completely stationary (e.g. on a table) for 10 seconds.");
             TTip.SetToolTip(buttonJingle, $"Adjust the sound that plays when you put on the headset.");
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
-            TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up.");
-            TTip.SetToolTip(checkBoxStartMinimized, $"Hide GUI at startup ( = tray icon only). Recommended for normal usage after you have dialed in your settings.");
+            TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
+                                                + $"Note that the program will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
+                                                +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
+            TTip.SetToolTip(checkBoxStartMinWin, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
+            TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
 
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
@@ -326,7 +349,8 @@ namespace CableGuardian
             comboBoxProfile.SelectedIndexChanged += ComboBoxProfile_SelectedIndexChanged;
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
             checkBoxWindowsStart.CheckedChanged += CheckBoxWindowsStart_CheckedChanged;
-            checkBoxStartMinimized.CheckedChanged += CheckBoxStartMinimized_CheckedChanged;                           
+            checkBoxStartMinUser.CheckedChanged += CheckBoxStartMinUser_CheckedChanged;
+            checkBoxStartMinWin.CheckedChanged += CheckBoxStartMinWin_CheckedChanged;
             checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
             checkBoxOnAPIQuit.CheckedChanged += CheckBoxOnAPIQuit_CheckedChanged;
             checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;
@@ -742,12 +766,21 @@ namespace CableGuardian
             SetProfilesSaveStatus(false);
         }
 
-        private void CheckBoxStartMinimized_CheckedChanged(object sender, EventArgs e)
+        private void CheckBoxStartMinUser_CheckedChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
                 return;
 
-            Config.StartMinimized = checkBoxStartMinimized.Checked;
+            Config.MinimizeAtUserStartup = checkBoxStartMinUser.Checked;
+            SaveConfigurationToFile();
+        }
+
+        private void CheckBoxStartMinWin_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.MinimizeAtWindowsStartup = checkBoxStartMinWin.Checked;
             SaveConfigurationToFile();
         }
 
@@ -834,10 +867,12 @@ namespace CableGuardian
 
                 RefreshVRConnectionForActiveProfile(); // after audio device has been set (to refresh Oculus Home audio)
 
-                if (p.WaveOutDeviceNotFound)
+                if (p.OriginalWaveOutDeviceNotFound)
                 {
-                    string msg = $"The audio device for this profile was not found!{Environment.NewLine} \"{p.NotFoundDeviceName}\"{Environment.NewLine + Environment.NewLine}" 
-                                + "Default audio device will be used. Please re-save the profiles with valid audio configuration.";
+                    string msg = $"Audio device for the profile \"{p.Name}\" was not found!{Environment.NewLine}Device name: \"{p.NotFoundDeviceName}\"{Environment.NewLine + Environment.NewLine}"
+                                + $"If the device is disconnected, you need to plug it in and restart {Config.ProgramTitle}. "
+                                + "If the device is not available anymore, please re-save the profiles with valid audio configuration.";                                
+                    RestoreFromTray();
                     MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
@@ -870,12 +905,14 @@ namespace CableGuardian
                         
             try
             {
-                Config.WriteWindowsStartupToRegistry(checkBoxWindowsStart.Checked);
+                Config.WriteWindowsStartupToRegistry(checkBoxWindowsStart.Checked);                
             }
             catch (Exception ex)
             {
                 string msg = String.Format("Unable* to access registry to set startup status. Try running this app as Administrator.{0}{0}", Environment.NewLine);
-                msg += String.Format("Alternatively, you can manually add a shortcut to {2} into your startup folder: {1} {0}{0}",Environment.NewLine, Environment.GetFolderPath(Environment.SpecialFolder.Startup), Config.ProgramTitle);                
+                msg += String.Format("Alternatively, you can manually add a shortcut into your startup folder: {1}{0}{0}" 
+                                    + "Point the shortcut to: {2}{0}{0}Remember to add the \"winstartup\" -parameter! {0}{0}" 
+                                     ,Environment.NewLine, Environment.GetFolderPath(Environment.SpecialFolder.Startup), "\"" + Program.ExeFile + "\" winstartup");                
                 msg += "*" + ex.Message;
                 MessageBox.Show(this, msg, Config.ProgramTitle);
             }
@@ -1102,7 +1139,7 @@ namespace CableGuardian
             }
             catch (Exception e)
             {
-                string msg = $"Saving configuration to {Config.ConfigFile} failed! {Environment.NewLine}{Environment.NewLine} {e.Message}";
+                string msg = $"Saving configuration to {Program.ConfigFile} failed! {Environment.NewLine}{Environment.NewLine} {e.Message}";
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
            
@@ -1127,7 +1164,7 @@ namespace CableGuardian
             Tracker.Reset();
             labelHalfTurns.Text = "0";
             if (Config.TrayMenuNotifications)
-                ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Reset successfull. Rotations = 0.");
+                ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Reset successful. Turn count = 0.");
         }
 
         private void ButtonReset_Click(object sender, EventArgs e)
@@ -1141,7 +1178,7 @@ namespace CableGuardian
                                             "Note that the reset position is always set to 0 degrees (facing forward) " +
                                             "regardless of the headset orientation when applying this reset operation. Also note that " +
                                             "the turn counter is automatically reset when {1} is started. " +
-                                            "You can perform the reset from the {1} tray icon as well. {0}{0}" +
+                                            "You can perform the reset from the tray icon as well. {0}{0}" +
                                             "Hide this message in the future?", Environment.NewLine, Config.ProgramTitle);
                 if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
