@@ -24,6 +24,7 @@ namespace CableGuardian
         public static bool MinimizeAtUserStartup { get; set; } = false;
         public static bool MinimizeAtWindowsStartup { get; set; } = false;        
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
+        public static bool ConnLostNotificationIsSticky { get; set; } = true;
         public static bool NotifyOnAPIQuit { get; set; } = false;
         public static bool TrayMenuNotifications { get; set; } = true;
         public static bool ShowResetMessageBox { get; set; } = true;
@@ -281,6 +282,7 @@ namespace CableGuardian
                 }
                 
                 NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
+                ConnLostNotificationIsSticky = xConfig.GetElementValueBool("ConnLostNotificationIsSticky", true);
                 NotifyOnAPIQuit = xConfig.GetElementValueBool("NotifyOnAPIQuit");
                 TrayMenuNotifications = xConfig.GetElementValueBool("TrayMenuNotifications", true);
                 PlaySoundOnHMDinteractionStart = xConfig.GetElementValueBool("PlaySoundOnHMDinteractionStart");
@@ -328,6 +330,7 @@ namespace CableGuardian
                                 new XElement("MinimizeAtUserStartup", MinimizeAtUserStartup),
                                 new XElement("MinimizeAtWindowsStartup", MinimizeAtWindowsStartup),
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
+                                new XElement("ConnLostNotificationIsSticky", ConnLostNotificationIsSticky),
                                 new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
                                 new XElement("TrayMenuNotifications", TrayMenuNotifications),
                                 new XElement("PlaySoundOnHMDinteractionStart", PlaySoundOnHMDinteractionStart),

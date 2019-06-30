@@ -169,6 +169,7 @@ namespace CableGuardian
             checkBoxStartMinUser.Checked = Config.MinimizeAtUserStartup;
             checkBoxStartMinWin.Checked = Config.MinimizeAtWindowsStartup;
             checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
+            checkBoxSticky.Checked = Config.ConnLostNotificationIsSticky;
             checkBoxOnAPIQuit.Checked = Config.NotifyOnAPIQuit;
             checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;
             checkBoxPlaySoundOnHMDInteraction.Checked = Config.PlaySoundOnHMDinteractionStart;
@@ -276,7 +277,9 @@ namespace CableGuardian
             TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");            
             TTip.SetToolTip(checkBoxConnLost, $"Show a Windows notification and play a sound when connection to the VR headset unexpectedly changes from OK to NOT OK.");
             TTip.SetToolTip(checkBoxOnAPIQuit, $"Show connection lost notification when the VR API requests {Config.ProgramTitle} to quit.{Environment.NewLine}" +
-                                                $"Most common examples are when closing SteamVR or restarting Oculus.{Environment.NewLine}");
+                                                $"Most common examples are when closing SteamVR or restarting Oculus.");
+            TTip.SetToolTip(checkBoxSticky, $"If checked, the connection lost notification stays in the Windows notification list until cleared.{Environment.NewLine}" +
+                                            "Otherwise the notification disappears automatically after a few seconds.");
             TTip.SetToolTip(buttonReset, $"Reset turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be straight when counter = 0." + Environment.NewLine
                                         + $"NOTE that the reset can also be done from the {Config.ProgramTitle} tray icon.");
             TTip.SetToolTip(buttonAlarm, $"Adjust the alarm clock sound. Use the {Config.ProgramTitle} tray icon to set the alarm.");
@@ -352,6 +355,7 @@ namespace CableGuardian
             checkBoxStartMinUser.CheckedChanged += CheckBoxStartMinUser_CheckedChanged;
             checkBoxStartMinWin.CheckedChanged += CheckBoxStartMinWin_CheckedChanged;
             checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
+            checkBoxSticky.CheckedChanged += CheckBoxSticky_CheckedChanged;
             checkBoxOnAPIQuit.CheckedChanged += CheckBoxOnAPIQuit_CheckedChanged;
             checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;
             checkBoxPlaySoundOnHMDInteraction.CheckedChanged += CheckBoxPlayJingle_CheckedChanged;
@@ -475,9 +479,9 @@ namespace CableGuardian
             ResetRotations();
         }
 
-        void ShowTemporaryTrayNotification(int timeOut, string title, string message)
+        void ShowTemporaryTrayNotification(int timeOut, string title, string message, ToolTipIcon icon = ToolTipIcon.None)
         {
-            notifyIcon1.ShowBalloonTip(timeOut, title, message, ToolTipIcon.None);
+            notifyIcon1.ShowBalloonTip(timeOut, title, message, icon);
             // to clear the notification from the list:
             notifyIcon1.Visible = false;
             notifyIcon1.Visible = true;
@@ -577,6 +581,15 @@ namespace CableGuardian
                 return;
                         
             Config.NotifyWhenVRConnectionLost = (checkBoxConnLost.Checked);
+            SaveConfigurationToFile();
+        }
+
+        private void CheckBoxSticky_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.ConnLostNotificationIsSticky = (checkBoxSticky.Checked);
             SaveConfigurationToFile();
         }
 
@@ -1041,8 +1054,14 @@ namespace CableGuardian
                     show = true;                
 
                 if (show)
-                {
-                    notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, $"VR headset connection lost. {Config.ProgramTitle} offline.", ToolTipIcon.Warning);
+                {   
+                    string msg = $"VR headset connection lost. {Config.ProgramTitle} offline.";
+                    if (Config.ConnLostNotificationIsSticky)
+                        notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, msg, ToolTipIcon.Warning);
+                    else
+                        ShowTemporaryTrayNotification(2000, Config.ProgramTitle, msg, ToolTipIcon.Warning);
+
+                    System.Threading.Thread.Sleep(1000);
                     Config.ConnLost.Play();
                 }                
             }

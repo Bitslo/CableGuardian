@@ -58,6 +58,7 @@
             this.checkBoxOnAPIQuit = new System.Windows.Forms.CheckBox();
             this.checkBoxStartMinWin = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
+            this.checkBoxSticky = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -255,9 +256,9 @@
             this.checkBoxConnLost.ForeColor = System.Drawing.Color.White;
             this.checkBoxConnLost.Location = new System.Drawing.Point(13, 463);
             this.checkBoxConnLost.Name = "checkBoxConnLost";
-            this.checkBoxConnLost.Size = new System.Drawing.Size(211, 17);
+            this.checkBoxConnLost.Size = new System.Drawing.Size(153, 17);
             this.checkBoxConnLost.TabIndex = 36;
-            this.checkBoxConnLost.Text = "Notification when VR connection is lost";
+            this.checkBoxConnLost.Text = "Connection lost notification";
             this.checkBoxConnLost.UseVisualStyleBackColor = true;
             // 
             // buttonAlarm
@@ -345,7 +346,7 @@
             // 
             this.checkBoxOnAPIQuit.AutoSize = true;
             this.checkBoxOnAPIQuit.ForeColor = System.Drawing.Color.White;
-            this.checkBoxOnAPIQuit.Location = new System.Drawing.Point(227, 463);
+            this.checkBoxOnAPIQuit.Location = new System.Drawing.Point(167, 463);
             this.checkBoxOnAPIQuit.Name = "checkBoxOnAPIQuit";
             this.checkBoxOnAPIQuit.Size = new System.Drawing.Size(87, 17);
             this.checkBoxOnAPIQuit.TabIndex = 63;
@@ -372,6 +373,17 @@
             this.profileEditor.Size = new System.Drawing.Size(695, 445);
             this.profileEditor.TabIndex = 48;
             // 
+            // checkBoxSticky
+            // 
+            this.checkBoxSticky.AutoSize = true;
+            this.checkBoxSticky.ForeColor = System.Drawing.Color.White;
+            this.checkBoxSticky.Location = new System.Drawing.Point(254, 463);
+            this.checkBoxSticky.Name = "checkBoxSticky";
+            this.checkBoxSticky.Size = new System.Drawing.Size(62, 17);
+            this.checkBoxSticky.TabIndex = 65;
+            this.checkBoxSticky.Text = "...sticky";
+            this.checkBoxSticky.UseVisualStyleBackColor = true;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,6 +391,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.checkBoxSticky);
             this.Controls.Add(this.checkBoxOnAPIQuit);
             this.Controls.Add(this.buttonJingle);
             this.Controls.Add(this.checkBoxPlaySoundOnHMDInteraction);
@@ -451,6 +464,7 @@
         private System.Windows.Forms.Button buttonJingle;
         private System.Windows.Forms.CheckBox checkBoxOnAPIQuit;
         private System.Windows.Forms.CheckBox checkBoxStartMinWin;
+        private System.Windows.Forms.CheckBox checkBoxSticky;
     }
 }
 
