@@ -21,5 +21,5 @@ In version 1.1.0 a lazy man's alarm clock was added to further increase immersio
 
 Cable Guardian runs in the background with minimal CPU usage and doesn't render anything on the HMD.  
 
-For help texts, hover your mouse over a setting/control. 
+For help texts, hover your mouse over a setting/control.  
 For an overview, click the question mark "?" in the upper right corner of the application.
