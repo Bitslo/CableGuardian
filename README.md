@@ -1,6 +1,6 @@
 # CableGuardian
 Rotation (yaw) tracker for VR headsets  
-     - supported APIs: OculusVR, OpenVR (SteamVR) 
+     - supported APIs: OculusVR, OpenVR (SteamVR)       
      - tested with the Oculus Rift and the Valve Index. Should be compatible with other Oculus and OpenVR headsets as well (e.g. HTC Vive)
 
 The purpose of the application is to monitor your rotations in VR and thus:  
