@@ -1,4 +1,7 @@
-# CableGuardian
+![alt text](https://github.com/Bitslo/CableGuardian/blob/master/Source/Art/CG_icon_pic.png) 
+
+# Cable Guardian 
+
 Rotation (yaw) tracker for VR headsets  
      - supported APIs: OculusVR, OpenVR (SteamVR)       
      - tested with the Oculus Rift and the Valve Index. Should be compatible with other Oculus and OpenVR headsets as well (e.g. Oculus Rift S and HTC Vive)
@@ -6,7 +9,7 @@ Rotation (yaw) tracker for VR headsets
 The purpose of the application is to monitor your rotations in VR and thus:  
      - improve the lifetime of the cable by preventing excessive twisting  
      - improve the VR experience as you don't have to actively monitor your turning direction or peek for orientation  
-     - eliminate the need to take off your headset just to straighten out the cable
+     - eliminate the need to straighten out the cable after a VR session
 
 Cable Guardian uses customizable audio notifications, featuring:   
      - audio device selection  
@@ -22,4 +25,8 @@ In version 1.1.0 a lazy man's alarm clock was added to further increase immersio
 Cable Guardian runs in the background with minimal CPU usage and doesn't render anything on the HMD.  
 
 For help texts, hover your mouse over a setting/control.  
-For an overview, click the question mark "?" in the upper right corner of the application.
+For an overview, click the question mark "?" in the upper right corner of the application. 
+
+[Screenshot](../master/Source/Art/CG_GUI.png)
+
+[Demonstration video (imgur) ;)](https://i.imgur.com/mMKLhW6.mp4)
