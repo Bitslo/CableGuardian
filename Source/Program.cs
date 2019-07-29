@@ -16,6 +16,7 @@ namespace CableGuardian
         public static string ConfigFile { get; private set; }
         public static bool IsWindowsStartup { get; private set; } = false;
         public static int WindowsStartupWaitInSeconds { get; private set; } = 30;
+        public static string CmdArgsLCase { get; private set; } = "";
 
         /// <summary>
         /// The main entry point for the application.
@@ -35,9 +36,14 @@ namespace CableGuardian
             catch (Exception)
             {
                 // intentionally ignore
-            }            
+            }
 
-            if (args.Count() > 0 && args[0].ToLower() == "winstartup")
+            if (args.Count() > 0)
+            {
+                CmdArgsLCase = String.Concat(args).ToLower();
+            }
+
+            if (CmdArgsLCase.Contains("winstartup"))
             {
                 IsWindowsStartup = true;
                 System.Threading.Thread.Sleep(WindowsStartupWaitInSeconds * 1000); // wait for audio devices

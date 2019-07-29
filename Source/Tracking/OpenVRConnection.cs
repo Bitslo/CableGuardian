@@ -9,15 +9,18 @@ using System.Threading;
 
 namespace CableGuardian
 {
-    public enum OpenVRConnectionStatus { AllOK, NoHMD, Initializing, NoSteamVR, SteamVRQuit, StoppedOnInitError, UnexpectedError, Stopped }
+    public enum OpenVRConnectionStatus { AllOK, NoHMD, Initializing, NoSteamVR, SteamVRQuit, InitLimitReached, UnexpectedError, Stopped }
 
     class OpenVRConnection : VRConnection
-    {        
+    {
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
-        int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...        
-        int InitializationInterval = 2000;
+        const int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...        
+        const int InitializationInterval = 3000;        
+        int InitAttemptCount = 0;        
+        const int InitAttemptLimit = 300; // (failed) OpenVR initialization attempt seems to leak about 0.1MB memory. Set a global limit (and request app restart)
+        const int SleepTimeAfterQuit = 15000;
         int HMDUserInteractionBufferTime = 2000;
         EVRInitError LastOpenVRError = EVRInitError.None;
         CVRSystem VRSys = null;
@@ -51,19 +54,25 @@ namespace CableGuardian
             get { return _OpenVRConnStatus; }
             private set
             {   
-                if (_OpenVRConnStatus != value)
+                if (_OpenVRConnStatus != value || value == OpenVRConnectionStatus.Initializing) // to get refresh on initialization attempts
                 {
                     _OpenVRConnStatus = value;
 
                     if (_OpenVRConnStatus == OpenVRConnectionStatus.Initializing)
                     {
-                        StatusMessage = "Preparing OpenVR HMD connection.";
+                        if (InitAttemptCount == 0)
+                            StatusMessage = $"Initializing...";
+                        else
+                            StatusMessage = $"Trying to establish OpenVR headset connection... {Environment.NewLine}(Attempt #{InitAttemptCount} since startup)" +
+                                        $"{Environment.NewLine}Last error: {OpenVR.GetStringForHmdError(LastOpenVRError)}";
+
                         Status = VRConnectionStatus.Opening;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoHMD)
-                    {
-                        StatusMessage = "Searching for an OpenVR headset.";
-                        Status = VRConnectionStatus.APIError;
+                    {                        
+                        StatusMessage = $"OpenVR headset not found. Waiting {SleepTimeAfterQuit/1000}s before trying again." +
+                                        $"{Environment.NewLine}Last error: {OpenVR.GetStringForHmdError(LastOpenVRError)}";
+                        Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR)
                     {
@@ -72,7 +81,7 @@ namespace CableGuardian
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.SteamVRQuit)
                     {
-                        StatusMessage = "SteamVR requested quit. Waiting 15s before attempting to reconnect...";
+                        StatusMessage = $"SteamVR requested quit. Waiting {SleepTimeAfterQuit / 1000}s before trying again.";
                         Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.Stopped)
@@ -80,20 +89,20 @@ namespace CableGuardian
                         StatusMessage = $"Stopped. {LastStopMessage ?? ""}";
                         Status = VRConnectionStatus.Closed;
                     }
-                    else if (_OpenVRConnStatus == OpenVRConnectionStatus.StoppedOnInitError)
+                    else if (_OpenVRConnStatus == OpenVRConnectionStatus.InitLimitReached)
                     {
-                        StatusMessage = $"OpenVR HMD initialization failed. Make sure SteamVR is running." +
-                                        $" Manual retry is required. {OpenVR.GetStringForHmdError(LastOpenVRError)}";
-                        Status = VRConnectionStatus.Closed;
+                        StatusMessage = $"OpenVR initialization limit ({InitAttemptLimit}) reached. " +
+                                        $" Restart application. {OpenVR.GetStringForHmdError(LastOpenVRError)}";
+                        Status = VRConnectionStatus.InitLimitReached;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.UnexpectedError)
                     {
-                        StatusMessage = $"Unexpected error when connecting to OpenVR HMD. {LastExceptionMessage ?? ""}";
+                        StatusMessage = $"Unexpected error when connecting to OpenVR headset. {LastExceptionMessage ?? ""}";
                         Status = VRConnectionStatus.UnknownError;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.AllOK)
                     {
-                        StatusMessage = "OpenVR HMD connection OK.";
+                        StatusMessage = "OpenVR headset connection OK.";
                         Status = VRConnectionStatus.AllOK;
                     }
                     
@@ -132,10 +141,10 @@ namespace CableGuardian
 
         protected override bool OpenImplementation()
         {
-            if (!Worker.IsBusy)
+            if (!Worker.IsBusy && Status != VRConnectionStatus.InitLimitReached)
             {
                 StopFlag = false;
-                StopRequested = false;
+                StopRequested = false;                
                 Worker.RunWorkerAsync();
                 return true;
             }
@@ -151,13 +160,13 @@ namespace CableGuardian
             StopRequested = true;            
         }
 
-        void Stop(bool initError = false)
+        void Stop(bool initLimitReached = false)
         {
             if (!StopFlag)
             {
-                if (initError)
+                if (initLimitReached)
                 {
-                    OpenVRConnStatus = OpenVRConnectionStatus.StoppedOnInitError;
+                    OpenVRConnStatus = OpenVRConnectionStatus.InitLimitReached;
                 }
                 else
                 {
@@ -169,6 +178,9 @@ namespace CableGuardian
 
         void DoWork(object sender, DoWorkEventArgs e)
         {
+            if (!StopFlag)            
+                OpenVRConnStatus = OpenVRConnectionStatus.Initializing;            
+
             while (!StopFlag)
             {                
                 try
@@ -199,46 +211,58 @@ namespace CableGuardian
             
             if (VRSys == null) 
             {
-                if (KeepAliveCounter % InitializationDivider != 0) // do not attempt initialization on every loop
+                if (KeepAliveCounter % InitializationDivider != 0) // do not attempt initialization on every loop.
                     return; 
 
                 // ***** INITIALIZATION ******
 
                 //if (!OpenVR.IsHmdPresent()) // Note that this also leaks memory
-                
+
                 // To avoid a memory leak, check that SteamVR is running before trying to Initialize                
                 if (System.Diagnostics.Process.GetProcessesByName(Config.SteamVRProcessName).Any())
                 {
+                    if (InitAttemptCount >= InitAttemptLimit)
+                    {
+                        Stop(true); // no point to keep looping and eating memory forever                                                                    
+                    }
+
+                    InitAttemptCount++;
+                    OpenVRConnStatus = OpenVRConnectionStatus.Initializing;
                     // do not carelessly call OpenVR.Init(), it will leak memory
                     VRSys = OpenVR.Init(ref LastOpenVRError, EVRApplicationType.VRApplication_Background);
                     if (LastOpenVRError != EVRInitError.None || VRSys == null)
-                    {                        
-                        Stop(true); // no point to keep looping and eating memory
-                                    // let user try again manually
+                    {
+                        if (LastOpenVRError == EVRInitError.Init_HmdNotFound || LastOpenVRError == EVRInitError.Init_HmdNotFoundPresenceFailed)
+                        {
+                            OpenVRConnStatus = OpenVRConnectionStatus.NoHMD;                                                             
+                            Thread.Sleep(SleepTimeAfterQuit);
+                        }
                         return;
                     }
 
-                    int deviceCount = 0;
+                    bool hmdFound = false;
                     // check devices and find HMD index (but I suppose it's always 0) - Documentation is vague.
                     // For example, what's the purpose of OpenVR.k_unTrackedDeviceIndex_Hmd? What about multiple HMDs...
                     for (uint i = 0; i < OpenVR.k_unMaxTrackedDeviceCount; i++)
                     {
                         if (VRSys.IsTrackedDeviceConnected(i))
-                        {
-                            deviceCount++;
+                        {                            
                             ETrackedDeviceClass c = VRSys.GetTrackedDeviceClass(i);
                             if (c == ETrackedDeviceClass.HMD)
                             {
                                 HmdIndex = i;
+                                hmdFound = true;
                                 break;
                             }
                         }
                     }
 
-                    if (deviceCount == 0)
-                    {
-                        LastStopMessage = "No VR devices connected.";
-                        Stop();
+                    if (!hmdFound‬)
+                    {                        
+                        EndCurrentSession();
+                        OpenVRConnStatus = OpenVRConnectionStatus.NoHMD;                         
+                        Thread.Sleep(SleepTimeAfterQuit);
+
                         return;
                     }
 
@@ -247,7 +271,7 @@ namespace CableGuardian
                     {
                         PoseArray[i] = new TrackedDevicePose_t();
                     }
-
+                    
                     OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
                 }
                 else
@@ -267,7 +291,7 @@ namespace CableGuardian
                     EndCurrentSession();
                     OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // again to get correct status (changed in EndCurrentSession())
                     // a good sleep before starting to poll steamvr -process again
-                    Thread.Sleep(15000);                     
+                    Thread.Sleep(SleepTimeAfterQuit);                     
                 }
                 else
                 {   
@@ -414,6 +438,5 @@ namespace CableGuardian
             else
                 return a * -1;            
         }
-                
     }
 }

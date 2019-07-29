@@ -81,6 +81,7 @@ namespace CableGuardian
         VRObserver HmdObserver { get; }
         public double YawValue { get { return (_YawValue == null) ? 0.0 : (double)_YawValue ; } } 
         double? _YawValue { get; set; } = null;
+        int InitialHalfTurns = 0;
         
 
         /// <summary>
@@ -114,15 +115,20 @@ namespace CableGuardian
         /// </summary>
         public uint CompletedHalfTurns { get; private set; }
         /// <summary>
+        /// Number of fully completed half-turns (180 degrees) with sign for direction info
+        /// </summary>
+        public int CompletedHalfTurns_Signed { get { return (int)CompletedHalfTurns * ((RotationSide == Direction.Left) ? 1 : -1 ); } }
+        /// <summary>
         /// Direction of cumulative rotation from ResetPosition.                 
         ///  = the direction where cable twisting increases.
         /// </summary>
         public Direction RotationSide { get; private set; }
 
-        public YawTracker(VRObserver hmdObserver)
-        {
+        public YawTracker(VRObserver hmdObserver, int initialHalfTurns = 0)
+        {            
             HmdObserver = hmdObserver;                     
-            _YawValue = null;            
+            _YawValue = null;
+            InitialHalfTurns = initialHalfTurns;    // in case we start counting from a non-zero value (autorestart app)      
 
             HmdObserver.StateRefreshed += OnHmdStateRefreshed;            
         }
@@ -147,6 +153,14 @@ namespace CableGuardian
         {
             // Oculus rotation axis range is in radians from -pi to +pi. 
             // Zero is the middle point (facing forward). Rotation is positive when turning left. 
+
+            // only when starting from a non-zero number of completed turns
+            if (InitialHalfTurns != 0)
+            {
+                _YawValue = newYawValue;                
+                CurrentHalfTurn = (int)((InitialHalfTurns < 0) ? InitialHalfTurns - 1 : InitialHalfTurns + 1);
+                InitialHalfTurns = 0;
+            }
 
             if (_YawValue != null) // null = first time (or after reset)
             {                

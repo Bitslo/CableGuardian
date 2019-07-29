@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CableGuardian
 {
-    public enum VRConnectionStatus { AllOK = 1, Closed = 0, Waiting = -1, Opening = -2, APIError = -3, UnknownError = -4 }
+    public enum VRConnectionStatus { AllOK = 1, Closed = 0, Waiting = -1, Opening = -2, APIError = -3, UnknownError = -4, InitLimitReached = -5 }
         
     abstract class VRConnection : IDisposable
     {
@@ -17,7 +17,7 @@ namespace CableGuardian
         public EventHandler<EventArgs> HMDUserInteractionStopped;
         public abstract VRConnectionStatus Status { get; protected set; }
         private VRConnectionStatus PreviousStatus { get; set; } = VRConnectionStatus.Closed;
-        public string StatusMessage { get; protected set; }
+        public string StatusMessage { get; protected set; } = "";
         /// <summary>
         /// Returns the wave out device index used by the VR API
         /// </summary>

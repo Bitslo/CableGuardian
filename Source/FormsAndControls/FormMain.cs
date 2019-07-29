@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 
 namespace CableGuardian
@@ -53,6 +54,9 @@ namespace CableGuardian
         /// One-time flag to allow hiding the form at startup
         /// </summary>
         bool ForceHide = true;
+        bool IsRestart = false;
+        string RestartArgs = "";
+
 
         public FormMain()
         {   
@@ -62,7 +66,15 @@ namespace CableGuardian
             // (head rotation must stay below 180 degrees between samples)
             Observer = new VRObserver(OculusConn, 150);
             Observer.Start();
-            Tracker = new YawTracker(Observer);
+
+            int initialHalfTurns = 0;
+            Regex rx = new Regex(@"-?\d");
+            MatchCollection matches = rx.Matches(Program.CmdArgsLCase);
+            if (matches.Count > 0)
+            {
+                int.TryParse(matches[0].Value, out initialHalfTurns);
+            } 
+            Tracker = new YawTracker(Observer, initialHalfTurns);
                         
             if (!RunFromDesigner)
             {
@@ -175,11 +187,18 @@ namespace CableGuardian
             checkBoxPlaySoundOnHMDInteraction.Checked = Config.PlaySoundOnHMDinteractionStart;
             SkipFlaggedEventHandlers = false;
 
-            if (!Config.MinimizeAtUserStartup && !Program.IsWindowsStartup)
+            if (Program.CmdArgsLCase.Contains("maximized"))
+            {
                 RestoreFromTray();
+            }
+            else if (Program.CmdArgsLCase.Contains("minimized") == false)
+            {
+                if (!Config.MinimizeAtUserStartup && !Program.IsWindowsStartup)
+                    RestoreFromTray();
 
-            if (!Config.MinimizeAtWindowsStartup && Program.IsWindowsStartup)
-                RestoreFromTray();
+                if (!Config.MinimizeAtWindowsStartup && Program.IsWindowsStartup)
+                    RestoreFromTray();
+            }
 
             CheckWindowsStartUpStatus();
             SetControlVisibility();
@@ -762,6 +781,9 @@ namespace CableGuardian
 
             Enabled = true;
             Cursor.Current = Cursors.Default;
+            
+            // Force GUI refresh in case the connection has stopped reporting status earlier
+            OnVRConnectionStatusChanged(connectionToOpen, null);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -1031,7 +1053,12 @@ namespace CableGuardian
 
             labelStatus.Text = $"VR Headset Connection Status:{Environment.NewLine}{Environment.NewLine}" + conn.StatusMessage;
                        
-            buttonRetry.Visible = (conn.Status == VRConnectionStatus.Closed);           
+            buttonRetry.Visible = (conn.Status == VRConnectionStatus.Closed);
+
+            if (conn.Status == VRConnectionStatus.InitLimitReached)
+            {
+                Restart();
+            }
         }
 
         void OnVRConnectionLost(object sender, EventArgs e)
@@ -1067,6 +1094,15 @@ namespace CableGuardian
             }
 
             IntentionalAPIChange = false;
+        }
+
+        void Restart()
+        {   
+            RestartArgs = (Visible) ? "maximized" : "minimized";
+            RestartArgs += Tracker.CompletedHalfTurns_Signed.ToString();
+            ProfilesSaved = true; // bypass save dialog if not saved            
+            IsRestart = true;
+            Close();
         }
 
         private void PictureBoxClose_MouseClick(object sender, MouseEventArgs e)
@@ -1148,6 +1184,20 @@ namespace CableGuardian
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {   
             notifyIcon1.Visible = false;
+            if (IsRestart)
+            {
+                try
+                {                    
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo(Program.ExeFile, RestartArgs);
+                    System.Diagnostics.Process.Start(startInfo);
+                }
+                catch (Exception)
+                {
+                    // intentionally ignore
+                }
+                
+                IsRestart = false;
+            }
         }
 
         void SaveConfigurationToFile()
