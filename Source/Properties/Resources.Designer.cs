@@ -61,6 +61,16 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Attention {
+            get {
+                object obj = ResourceManager.GetObject("Attention", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
         internal static System.IO.UnmanagedMemoryStream Beep_loud {
@@ -75,6 +85,33 @@ namespace CableGuardian.Properties {
         internal static System.IO.UnmanagedMemoryStream Bilibom {
             get {
                 return ResourceManager.GetStream("Bilibom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;applications&quot;: [
+        ///        {
+        ///            &quot;app_key&quot;: &quot;$APPKEY$&quot;,
+        ///            &quot;arguments&quot;: &quot;&quot;,
+        ///            &quot;binary_path_windows&quot;: &quot;$EXEPATH$&quot;,
+        ///            &quot;image_path&quot;: &quot;&quot;,
+        ///            &quot;is_dashboard_overlay&quot;: true,
+        ///            &quot;launch_type&quot;: &quot;binary&quot;,
+        ///            &quot;strings&quot;: {
+        ///                &quot;en_us&quot;: {
+        ///                    &quot;description&quot;: &quot;Cable Guardian&quot;,
+        ///                    &quot;name&quot;: &quot;Cable Guardian&quot;
+        ///                }
+        ///            }
+        ///        }
+        ///    ]
+        ///}
+        ///.
+        /// </summary>
+        internal static string CableGuardianVrManifest {
+            get {
+                return ResourceManager.GetString("CableGuardianVrManifest", resourceCulture);
             }
         }
         

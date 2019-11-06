@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace CableGuardian
 {
@@ -36,8 +37,21 @@ namespace CableGuardian
         {
             string strValue = parent.GetElementValueOrNull(elementName);
             int output;
-            return (int.TryParse(strValue, out output)) ? output : defaultValue;
+            return (int.TryParse(strValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out output)) ? output : defaultValue;
         }
 
+        public static uint GetElementValueUInt(this XElement parent, string elementName, uint defaultValue = 0)
+        {
+            string strValue = parent.GetElementValueOrNull(elementName);
+            uint output;
+            return (uint.TryParse(strValue, out output)) ? output : defaultValue;
+        }
+
+        public static double GetElementValueDouble(this XElement parent, string elementName, double defaultValue = 0)
+        {
+            string strValue = parent.GetElementValueOrNull(elementName);
+            double output;
+            return (double.TryParse(strValue, NumberStyles.Float, CultureInfo.InvariantCulture, out output)) ? output : defaultValue;
+        }
     }
 }

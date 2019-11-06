@@ -17,7 +17,7 @@ namespace CableGuardian
         BackgroundWorker Worker = new BackgroundWorker();
         bool StopFlag = false;
         const int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...        
-        const int InitializationInterval = 3000;        
+        const int InitializationInterval = 1000;        
         int InitAttemptCount = 0;        
         const int InitAttemptLimit = 300; // (failed) OpenVR initialization attempt seems to leak about 0.1MB memory. Set a global limit (and request app restart)
         const int SleepTimeAfterQuit = 15000;
@@ -375,6 +375,24 @@ namespace CableGuardian
             return true;            
         }
 
+        public void SetSteamVRAutoStart(bool autoStart)
+        {
+            if (autoStart)
+            {
+                OpenVR.Applications.AddApplicationManifest(Config.ManifestPath, false);
+                OpenVR.Applications.SetApplicationAutoLaunch(Config.ManifestAppKey, true);
+            }
+            else
+            {
+                OpenVR.Applications.SetApplicationAutoLaunch(Config.ManifestAppKey, false);
+                OpenVR.Applications.RemoveApplicationManifest(Config.ManifestPath);                
+            }
+        }
+
+        public bool IsSteamAutoStartEnabled()
+        {
+            return OpenVR.Applications.GetApplicationAutoLaunch(Config.ManifestAppKey);
+        }
 
         HmdQuaternion_t GetOrientation(HmdMatrix34_t matrix)
         {

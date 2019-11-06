@@ -54,6 +54,7 @@
             this.numericUpDownLimit.Name = "numericUpDownLimit";
             this.numericUpDownLimit.Size = new System.Drawing.Size(37, 20);
             this.numericUpDownLimit.TabIndex = 4;
+            this.numericUpDownLimit.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // labelLimit
             // 

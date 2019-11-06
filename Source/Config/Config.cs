@@ -15,6 +15,9 @@ namespace CableGuardian
         public const string ProfilesName = "CGProfiles";
         public const string RegistryPathForStartup = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         public const string ProgramTitle = "Cable Guardian";
+        public const string ManifestAppKey = "cableguardian";
+        public static string ManifestPath { get { return Program.ExeFolder + "\\CableGuardian.vrmanifest"; } }
+        public static string ManifestContents { get; private set; }
         public static readonly Color CGColor = Color.FromArgb(86, 184, 254);
         public static readonly  Color CGErrorColor = Color.FromArgb(254, 84, 84);
         public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);                
@@ -22,7 +25,7 @@ namespace CableGuardian
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
         public static string SteamVRProcessName { get; private set; } = "vrserver";        
         public static bool MinimizeAtUserStartup { get; set; } = false;
-        public static bool MinimizeAtWindowsStartup { get; set; } = false;        
+        public static bool MinimizeAtAutoStartup { get; set; } = false;        
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
         public static bool ConnLostNotificationIsSticky { get; set; } = true;
         public static bool NotifyOnAPIQuit { get; set; } = false;
@@ -40,6 +43,10 @@ namespace CableGuardian
         public static bool ConfigFileMissingAtStartup { get; private set; } = false;
         public static bool ProfilesFileMissingAtStartup { get; private set; } = false;
         public static string LastSessionProfileName { get; private set; } = "";
+        public static uint LastExitSeconds { get; private set; } = 0;
+        public static int LastHalfTurn { get; private set; } = 0;
+        public static double LastYawValue { get; private set; } = 0;
+        public static int TurnCountMemoryMinutes { get; set; } = -1;        
         /// <summary>
         /// backwards compatibility only
         /// </summary>
@@ -50,6 +57,11 @@ namespace CableGuardian
         static Config()
         {   
             ProfilesFile = Program.ExeFolder + $@"\{ProfilesName}.xml";
+
+            ManifestContents = Properties.Resources.CableGuardianVrManifest;
+            ManifestContents = ManifestContents.Replace("$APPKEY$", ManifestAppKey);
+            ManifestContents = ManifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
+            ManifestContents = ManifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
         }
 
         public static void WriteWindowsStartupToRegistry(bool startWithWindows)
@@ -57,7 +69,7 @@ namespace CableGuardian
             using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(RegistryPathForStartup, true))
             {
                 if (startWithWindows)
-                    reg.SetValue(Program.ConfigName, "\"" + Program.ExeFile + "\" winstartup");
+                    reg.SetValue(Program.ConfigName, "\"" + Program.ExeFile + "\" " + Program.Arg_WinStartup);
                 else
                     reg.DeleteValue(Program.ConfigName, false);
             }
@@ -68,6 +80,66 @@ namespace CableGuardian
             using (RegistryKey reg = Registry.CurrentUser.OpenSubKey(RegistryPathForStartup, true))
             {
                 return (reg.GetValue(Program.ConfigName) != null);
+            }
+        }
+
+        public static uint GetCurrentSeconds()
+        {
+            try
+            {
+                DateTime zero = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                return (uint)Math.Floor((DateTime.Now.ToUniversalTime() - zero).TotalSeconds);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        public static int GetInitialHalfTurn()
+        {
+            if (TurnCountMemoryMinutes == 0)
+            {
+                return LastHalfTurn;
+            }
+            else if (TurnCountMemoryMinutes > 0) // -1 = disabled
+            {
+                if (LastExitSeconds > 0)
+                {
+                    uint elapsedSeconds = GetCurrentSeconds() - LastExitSeconds;
+                    if (elapsedSeconds <= (TurnCountMemoryMinutes * 60))
+                    {
+                        return LastHalfTurn;
+                    }
+                }
+                else
+                {
+                    WriteLog($"Last exit time was not recorded properly. Unable to check elapsed time. Returning last half turn ({LastHalfTurn}).");
+                    return LastHalfTurn;
+                }                
+            }
+            return 0;            
+        }
+
+        public static void WriteLog(string message)
+        {
+            try
+            {
+                if (File.Exists(Program.LogFile))
+                {
+                    FileInfo i = new System.IO.FileInfo(Program.LogFile);
+                    if (i.Length > 1000000) // delete log at about 1 MB. (probably never grows that big, since normally nothing is written there)
+                    {
+                        File.Delete(Program.LogFile);
+                    }
+                }
+
+                File.AppendAllText(Program.LogFile, DateTime.Now.ToString() + Environment.NewLine +
+                                                 message + Environment.NewLine + Environment.NewLine);
+            }
+            catch (Exception)
+            {
+                // intentionally ignore... 
             }
         }
 
@@ -184,12 +256,17 @@ namespace CableGuardian
             ConnLost.LoopCount = 1;
         }
 
-        public static void WriteConfigToFile()
+        public static void WriteManifestFile()
+        {
+            File.WriteAllText(ManifestPath, ManifestContents);
+        }
+
+        public static void WriteConfigToFile(bool isExit = false)
         {
             XDocument xCableGuardian =
                     new XDocument(
                         new XDeclaration("1.0", "UTF-8", "yes"),
-                        GetConfigXml());                        
+                        GetConfigXml(isExit));                        
                         
             // UTF-8 (with BOM):
             xCableGuardian.Save(Program.ConfigFile);
@@ -273,12 +350,20 @@ namespace CableGuardian
                 if (xConfig.GetElementValueOrNull("StartMinimized") != null) // backwards compatibility
                 {
                     MinimizeAtUserStartup = xConfig.GetElementValueBool("StartMinimized");
-                    MinimizeAtWindowsStartup = MinimizeAtUserStartup;
+                    MinimizeAtAutoStartup = MinimizeAtUserStartup;
                 }
                 else
                 {
                     MinimizeAtUserStartup = xConfig.GetElementValueBool("MinimizeAtUserStartup");
-                    MinimizeAtWindowsStartup = xConfig.GetElementValueBool("MinimizeAtWindowsStartup");
+
+                    if (xConfig.GetElementValueOrNull("MinimizeAtWindowsStartup") != null) // backwards compatibility
+                    {
+                        MinimizeAtAutoStartup = xConfig.GetElementValueBool("MinimizeAtWindowsStartup");
+                    }
+                    else
+                    {
+                        MinimizeAtAutoStartup = xConfig.GetElementValueBool("MinimizeAtAutoStartup");
+                    }   
                 }
                 
                 NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
@@ -288,6 +373,14 @@ namespace CableGuardian
                 PlaySoundOnHMDinteractionStart = xConfig.GetElementValueBool("PlaySoundOnHMDinteractionStart");
                 ShowResetMessageBox = xConfig.GetElementValueBool("ShowResetMessageBox", true);
                 LastSessionProfileName = xConfig.GetElementValueTrimmed("LastSessionProfileName");
+                LastExitSeconds = xConfig.GetElementValueUInt("LastExitSeconds");                
+                LastHalfTurn = xConfig.GetElementValueInt("LastHalfTurn");
+                LastYawValue = xConfig.GetElementValueDouble("LastYawValue");
+                
+                if (xConfig.GetElementValueOrNull("TurnCountMemoryMinutes") != null)
+                    TurnCountMemoryMinutes = xConfig.GetElementValueInt("TurnCountMemoryMinutes");
+                else
+                    TurnCountMemoryMinutes = -1;
 
                 XElement xAlarm = xConfig.Element("Alarm");               
                 Alarm.LoadFromXml(xAlarm?.Element("CGActionWaveFile"));
@@ -324,11 +417,11 @@ namespace CableGuardian
             }
         }
 
-        public static XElement GetConfigXml()
+        public static XElement GetConfigXml(bool isExit = false)
         {
             return new XElement(Program.ConfigName, 
                                 new XElement("MinimizeAtUserStartup", MinimizeAtUserStartup),
-                                new XElement("MinimizeAtWindowsStartup", MinimizeAtWindowsStartup),
+                                new XElement("MinimizeAtAutoStartup", MinimizeAtAutoStartup),
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
                                 new XElement("ConnLostNotificationIsSticky", ConnLostNotificationIsSticky),
                                 new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
@@ -336,6 +429,10 @@ namespace CableGuardian
                                 new XElement("PlaySoundOnHMDinteractionStart", PlaySoundOnHMDinteractionStart),
                                 new XElement("ShowResetMessageBox", ShowResetMessageBox),
                                 new XElement("LastSessionProfileName", ActiveProfile?.Name),
+                                new XElement("LastExitSeconds", (isExit) ? GetCurrentSeconds() : 0), 
+                                new XElement("LastHalfTurn", FormMain.Tracker.CurrentHalfTurn.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                                new XElement("LastYawValue", FormMain.Tracker.YawValue.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                                new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("Alarm", Alarm.GetXml()),
                                 new XElement("Jingle", Jingle.GetXml()),
                                 new XElement("CONSTANTS",

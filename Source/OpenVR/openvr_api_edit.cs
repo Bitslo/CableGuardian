@@ -3728,26 +3728,85 @@ public class CVRSpatialAnchors
 
 public class OpenVRInterop
 {
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_InitInternal", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern uint InitInternal(ref EVRInitError peError, EVRApplicationType eApplicationType);
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_InitInternal2", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern uint InitInternal2(ref EVRInitError peError, EVRApplicationType eApplicationType,[In, MarshalAs(UnmanagedType.LPStr)] string pStartupInfo);
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_ShutdownInternal", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern void ShutdownInternal();
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_IsHmdPresent", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern bool IsHmdPresent();
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_IsRuntimeInstalled", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern bool IsRuntimeInstalled();
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_RuntimePath", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern string RuntimePath();
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_GetStringForHmdError", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern IntPtr GetStringForHmdError(EVRInitError error);
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_GetGenericInterface", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern IntPtr GetGenericInterface([In, MarshalAs(UnmanagedType.LPStr)] string pchInterfaceVersion, ref EVRInitError peError);
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_IsInterfaceVersionValid", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern bool IsInterfaceVersionValid([In, MarshalAs(UnmanagedType.LPStr)] string pchInterfaceVersion);
-	[DllImportAttribute("openvr_api", EntryPoint = "VR_GetInitToken", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern uint GetInitToken();
+        internal static uint InitInternal(ref EVRInitError peError, EVRApplicationType eApplicationType)
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.InitInternal(ref peError, eApplicationType);
+            else
+                return OpenVRInterop32.InitInternal(ref peError, eApplicationType);
+        }
+
+        internal static uint InitInternal2(ref EVRInitError peError, EVRApplicationType eApplicationType, [In, MarshalAs(UnmanagedType.LPStr)] string pStartupInfo)
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.InitInternal2(ref peError, eApplicationType, pStartupInfo);
+            else
+                return OpenVRInterop32.InitInternal2(ref peError, eApplicationType, pStartupInfo);
+        }
+
+        internal static void ShutdownInternal()
+        {
+            if (Environment.Is64BitProcess)
+                OpenVRInterop64.ShutdownInternal();
+            else
+                OpenVRInterop32.ShutdownInternal();
+        }
+
+        internal static bool IsHmdPresent()
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.IsHmdPresent();
+            else
+                return OpenVRInterop32.IsHmdPresent();
+        }
+
+        internal static bool IsRuntimeInstalled()
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.IsRuntimeInstalled();
+            else
+                return OpenVRInterop32.IsRuntimeInstalled();
+        }
+
+        internal static string RuntimePath()
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.RuntimePath();
+            else
+                return OpenVRInterop32.RuntimePath();
+        }
+
+        internal static IntPtr GetStringForHmdError(EVRInitError error)
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.GetStringForHmdError(error);
+            else
+                return OpenVRInterop32.GetStringForHmdError(error);
+        }               
+
+        internal static IntPtr GetGenericInterface([In, MarshalAs(UnmanagedType.LPStr)] string pchInterfaceVersion, ref EVRInitError peError)
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.GetGenericInterface(pchInterfaceVersion, ref peError);
+            else
+                return OpenVRInterop32.GetGenericInterface(pchInterfaceVersion, ref peError);
+        }
+
+        internal static bool IsInterfaceVersionValid([In, MarshalAs(UnmanagedType.LPStr)] string pchInterfaceVersion)
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.IsInterfaceVersionValid(pchInterfaceVersion);
+            else
+                return OpenVRInterop32.IsInterfaceVersionValid(pchInterfaceVersion);
+        }
+
+        internal static uint GetInitToken()
+        {
+            if (Environment.Is64BitProcess)
+                return OpenVRInterop64.GetInitToken();
+            else
+                return OpenVRInterop32.GetInitToken();
+        }
 }
 
     public class OpenVRInterop64
@@ -5902,83 +5961,53 @@ public class OpenVR
 
 	public static uint InitInternal(ref EVRInitError peError, EVRApplicationType eApplicationType)
 	{       
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.InitInternal(ref peError, eApplicationType);
-            else
-                return OpenVRInterop32.InitInternal(ref peError, eApplicationType);
+        return OpenVRInterop.InitInternal(ref peError, eApplicationType);            
     }
 
 	public static uint InitInternal2(ref EVRInitError peError, EVRApplicationType eApplicationType, string pchStartupInfo)
-	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.InitInternal2(ref peError, eApplicationType, pchStartupInfo);
-            else
-                return OpenVRInterop32.InitInternal2(ref peError, eApplicationType, pchStartupInfo);
+	{       
+        return OpenVRInterop.InitInternal2(ref peError, eApplicationType, pchStartupInfo);
     }
 
 	public static void ShutdownInternal()
-	{
-            if (Environment.Is64BitProcess)
-                OpenVRInterop64.ShutdownInternal();
-            else
-                OpenVRInterop32.ShutdownInternal();
-        }
+	{   
+        OpenVRInterop.ShutdownInternal();
+    }
 
 	public static bool IsHmdPresent()
-	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.IsHmdPresent();
-            else
-                return OpenVRInterop32.IsHmdPresent();
-        }
+	{     
+        return OpenVRInterop.IsHmdPresent();
+    }
 
 	public static bool IsRuntimeInstalled()
-	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.IsRuntimeInstalled();
-            else
-                return OpenVRInterop32.IsRuntimeInstalled();
-        }
+	{       
+        return OpenVRInterop.IsRuntimeInstalled();
+    }
 
 	public static string RuntimePath()
-	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.RuntimePath();
-            else
-                return OpenVRInterop32.RuntimePath();
-        }
+	{            
+        return OpenVRInterop.RuntimePath();
+    }
 
 	public static string GetStringForHmdError(EVRInitError error)
 	{
-            if (Environment.Is64BitProcess)
-                return Marshal.PtrToStringAnsi(OpenVRInterop64.GetStringForHmdError(error));
-            else
-                return Marshal.PtrToStringAnsi(OpenVRInterop32.GetStringForHmdError(error));
-        }
+        return Marshal.PtrToStringAnsi(OpenVRInterop.GetStringForHmdError(error));
+    }
 
 	public static IntPtr GetGenericInterface(string pchInterfaceVersion, ref EVRInitError peError)
 	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.GetGenericInterface(pchInterfaceVersion, ref peError);
-            else
-                return OpenVRInterop32.GetGenericInterface(pchInterfaceVersion, ref peError);
-        }
+        return OpenVRInterop.GetGenericInterface(pchInterfaceVersion, ref peError);
+    }
 
 	public static bool IsInterfaceVersionValid(string pchInterfaceVersion)
 	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.IsInterfaceVersionValid(pchInterfaceVersion);
-            else
-                return OpenVRInterop32.IsInterfaceVersionValid(pchInterfaceVersion);
-        }
+        return OpenVRInterop.IsInterfaceVersionValid(pchInterfaceVersion);
+    }
 
 	public static uint GetInitToken()
-	{
-            if (Environment.Is64BitProcess)
-                return OpenVRInterop64.GetInitToken();
-            else
-                return OpenVRInterop32.GetInitToken();
-        }
+	{      
+        return OpenVRInterop.GetInitToken();
+    }
 
 	public const uint k_nDriverNone = 4294967295;
 	public const uint k_unMaxDriverDebugResponseSize = 32768;

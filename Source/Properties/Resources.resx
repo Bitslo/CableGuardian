@@ -196,4 +196,10 @@
   <data name="CG_icon_pic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\CG_icon_pic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CableGuardianVrManifest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Config\CableGuardianVrManifest.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Attention" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Attention.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

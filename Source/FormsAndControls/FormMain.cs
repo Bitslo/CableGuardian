@@ -55,7 +55,7 @@ namespace CableGuardian
         /// </summary>
         bool ForceHide = true;
         bool IsRestart = false;
-        string RestartArgs = "";
+        string RestartArgs = "";        
 
 
         public FormMain()
@@ -66,16 +66,7 @@ namespace CableGuardian
             // (head rotation must stay below 180 degrees between samples)
             Observer = new VRObserver(OculusConn, 150);
             Observer.Start();
-
-            int initialHalfTurns = 0;
-            Regex rx = new Regex(@"-?\d");
-            MatchCollection matches = rx.Matches(Program.CmdArgsLCase);
-            if (matches.Count > 0)
-            {
-                int.TryParse(matches[0].Value, out initialHalfTurns);
-            } 
-            Tracker = new YawTracker(Observer, initialHalfTurns);
-                        
+                                    
             if (!RunFromDesigner)
             {
                 InitializeTrayMenu();
@@ -85,12 +76,16 @@ namespace CableGuardian
             AddEventHandlers();
 
             ReadConfigFromFileAndCheckDefaultSounds();
+            Tracker = new YawTracker(Observer, GetInitialHalfTurn(), Config.LastYawValue); // after reading config but before reading profiles
+
             ReadProfilesFromFile();
             LoadConfigToGui();
             LoadStartupProfile();
 
             if (Config.ConfigFileMissingAtStartup || Config.IsLegacyConfig)            
-                UpdateMissingOrLegacyConfig();            
+                UpdateMissingOrLegacyConfig();
+
+            SaveConfigurationToFile(); // always save config at startup to reset last exit
 
             if (Config.ProfilesFileMissingAtStartup || Config.IsLegacyConfig)
                 SaveProfilesToFile();
@@ -113,6 +108,23 @@ namespace CableGuardian
             base.SetVisibleCore(ForceHide ? false : value);
         }
 
+        int GetInitialHalfTurn()
+        {
+            // first from command line (overrides config)
+            int initialHalfTurn = 0;
+            Regex rx = new Regex(@"-?\d");
+            MatchCollection matches = rx.Matches(Program.CmdArgsLCase);
+            if (matches.Count > 0)
+            {
+                int.TryParse(matches[0].Value, out initialHalfTurn);
+                return initialHalfTurn;
+            }
+
+            // then config:
+            return Config.GetInitialHalfTurn();
+        }
+
+       
         void UpdateMissingOrLegacyConfig()
         {
             try
@@ -134,8 +146,7 @@ namespace CableGuardian
                 checkBoxOnAPIQuit.Checked = true;
                 SkipFlaggedEventHandlers = false;
             }
-
-            SaveConfigurationToFile();
+                        
         }
                
         void ReadConfigFromFileAndCheckDefaultSounds()
@@ -147,6 +158,7 @@ namespace CableGuardian
             catch (Exception ex)
             {
                 string msg = String.Format("Unable* to load default sounds.  {0}{0} * {1}", Environment.NewLine, ex.Message);
+                Config.WriteLog(msg);
                 RestoreFromTray();
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -155,12 +167,13 @@ namespace CableGuardian
             {
                 Config.ReadConfigFromFile();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // intentionally ignore... atm there's nothing that vital in the config
+                Config.WriteLog($"Error when reading configuration ({Program.ConfigFile})." + Environment.NewLine + e.Message);                
             }
         }
 
+       
         void ReadProfilesFromFile()
         {
             try
@@ -179,24 +192,26 @@ namespace CableGuardian
         {
             SkipFlaggedEventHandlers = true;            
             checkBoxStartMinUser.Checked = Config.MinimizeAtUserStartup;
-            checkBoxStartMinWin.Checked = Config.MinimizeAtWindowsStartup;
+            checkBoxStartMinAuto.Checked = Config.MinimizeAtAutoStartup;
             checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
             checkBoxSticky.Checked = Config.ConnLostNotificationIsSticky;
             checkBoxOnAPIQuit.Checked = Config.NotifyOnAPIQuit;
             checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;
             checkBoxPlaySoundOnHMDInteraction.Checked = Config.PlaySoundOnHMDinteractionStart;
+            checkBoxRememberRotation.Checked = Config.TurnCountMemoryMinutes > -1;
+            numericUpDownRotMemory.Value = (Config.TurnCountMemoryMinutes > -1) ? Config.TurnCountMemoryMinutes : 0 ;
             SkipFlaggedEventHandlers = false;
 
-            if (Program.CmdArgsLCase.Contains("maximized"))
+            if (Program.CmdArgsLCase.Contains(Program.Arg_Maximized))
             {
                 RestoreFromTray();
             }
-            else if (Program.CmdArgsLCase.Contains("minimized") == false)
+            else if (Program.CmdArgsLCase.Contains(Program.Arg_Minimized) == false)
             {
-                if (!Config.MinimizeAtUserStartup && !Program.IsWindowsStartup)
+                if (!Config.MinimizeAtUserStartup && !Program.IsAutoStartup)
                     RestoreFromTray();
 
-                if (!Config.MinimizeAtWindowsStartup && Program.IsWindowsStartup)
+                if (!Config.MinimizeAtAutoStartup && Program.IsAutoStartup)
                     RestoreFromTray();
             }
 
@@ -215,6 +230,31 @@ namespace CableGuardian
             {
                 checkBoxPlaySoundOnHMDInteraction.Text = "Play confirmation sound";
                 buttonJingle.Visible = false;
+            }
+
+            if (checkBoxRememberRotation.Checked)
+            {
+                checkBoxRememberRotation.Text = "Remember turn count for   ---> ";
+                numericUpDownRotMemory.Visible = true;
+                labelRotMemMinutes.Visible = true;
+
+                if (numericUpDownRotMemory.Value == 0)
+                {
+                    labelRotMemMinutes.Text = "ever";
+                    labelRotMemMinutes.Location = new Point(numericUpDownRotMemory.Location.X + 17, numericUpDownRotMemory.Location.Y + 2);
+                }
+                else
+                {
+                    labelRotMemMinutes.Text = "minutes";
+                    labelRotMemMinutes.Location = new Point(numericUpDownRotMemory.Location.X + numericUpDownRotMemory.Width + 10, numericUpDownRotMemory.Location.Y + 2);
+                }
+
+            }
+            else
+            {
+                checkBoxRememberRotation.Text = "Remember turn count";
+                numericUpDownRotMemory.Visible = false;
+                labelRotMemMinutes.Visible = false;
             }
         }
 
@@ -309,14 +349,27 @@ namespace CableGuardian
                 + "NOTES for OpenVR users:" + Environment.NewLine
                 + "- Purely checking the proximity sensor through OpenVR API seemed impossible. Their implementation of \"User Interaction\" is based on both: movement and the prox sensor." + Environment.NewLine
                 + "      \u2022 User interaction starts   a) when SteamVR is opened   b) when the proximity sensor is covered (after a stop). " + Environment.NewLine
-                + "      \u2022 User interaction stops when the proximity sensor is uncovered but ONLY after the headset has been completely stationary (e.g. on a table) for 10 seconds.");
+                + "      \u2022 User interaction stops when the proximity sensor is uncovered but ONLY after the headset has been completely stationary (e.g. on a table) for 10 seconds." + Environment.NewLine + Environment.NewLine
+                + "UPDATE Nov 2019: Apparently the behaviour was changed in SteamVR version 1.8 to prefer the proximity sensor if available.");
             TTip.SetToolTip(buttonJingle, $"Adjust the sound that plays when you put on the headset.");
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
+            TTip.SetToolTip(labelAutoStart, $"After dialing in your rotation settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
+                                            + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API." + Environment.NewLine + Environment.NewLine
+                                            + "p.s. I also recommend trying the \"Play confirmation sound\" -feature that let's you know that the app is alive and well when you enter VR.");
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
-                                                + $"Note that the program will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
+                                                + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
-            TTip.SetToolTip(checkBoxStartMinWin, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
+            TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine 
+                                                + "NOTE: You can toggle this only when an OpenVR connection has been established." + Environment.NewLine
+                                                + $"NOTE2: {Config.ProgramTitle} will exit automatically only if it has been automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
+                                                + $"NOTE3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running.");
+            TTip.SetToolTip(checkBoxStartMinAuto, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
             TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
+            TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
+                                                    + "You may find this convenient when using the SteamVR auto start & exit feature (OpenVR only).");
+            TTip.SetToolTip(numericUpDownRotMemory, $"Time limit (minutes) for the turn count memory (when {Config.ProgramTitle} is closed). The last turn count will be used at startup if the elapsed time since the last exit is less or equal to this value." + Environment.NewLine
+                                                    + "If more time has passed, turn count will be zero at startup. Useful when you want to make sure the turn count will be zero after a longer pause (during which you probably unwinded the cable)." + Environment.NewLine + Environment.NewLine
+                                                    + "***    0 = no limit = remember forever    ***");
 
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
@@ -371,13 +424,16 @@ namespace CableGuardian
             comboBoxProfile.SelectedIndexChanged += ComboBoxProfile_SelectedIndexChanged;
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
             checkBoxWindowsStart.CheckedChanged += CheckBoxWindowsStart_CheckedChanged;
+            checkBoxSteamVRStart.CheckedChanged += CheckBoxSteamVRStart_CheckedChanged;
             checkBoxStartMinUser.CheckedChanged += CheckBoxStartMinUser_CheckedChanged;
-            checkBoxStartMinWin.CheckedChanged += CheckBoxStartMinWin_CheckedChanged;
+            checkBoxStartMinAuto.CheckedChanged += CheckBoxStartMinWin_CheckedChanged;
             checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
             checkBoxSticky.CheckedChanged += CheckBoxSticky_CheckedChanged;
             checkBoxOnAPIQuit.CheckedChanged += CheckBoxOnAPIQuit_CheckedChanged;
             checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;
             checkBoxPlaySoundOnHMDInteraction.CheckedChanged += CheckBoxPlayJingle_CheckedChanged;
+            checkBoxRememberRotation.CheckedChanged += CheckBoxRememberRotation_CheckedChanged;
+            numericUpDownRotMemory.ValueChanged += NumericUpDownRotMemory_ValueChanged;
 
             Observer.StateRefreshed += Observer_StateRefreshed;            
             profileEditor.ProfileNameChanged += (s, e) => { RefreshProfileCombo(); };
@@ -408,12 +464,25 @@ namespace CableGuardian
         {
             if (ForceHide) // form has never been shown
             {
+                ExitRoutines();
+                StartNewProcessIfRestart();
                 Application.Exit();
             }
             else
             {
-                Close();
+                Close(); // form close events contain exit routines & restart
             }            
+        }
+
+        void ExitRoutines()
+        {
+            Config.WriteConfigToFile(true); // to save last used profile etc.
+
+            OculusConn.StatusChanged -= OnVRConnectionStatusChanged; // to prevent running eventhandler after form close
+            OpenVRConn.StatusChanged -= OnVRConnectionStatusChanged;
+            OpenVRConn?.Dispose();
+            OculusConn?.Dispose();
+            AlarmTimer.Dispose();
         }
        
         void AddEventHandlersCommon(Control ctl)
@@ -640,6 +709,26 @@ namespace CableGuardian
             SaveConfigurationToFile();
         }
 
+        private void CheckBoxRememberRotation_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+            
+            SetControlVisibility();            
+            Config.TurnCountMemoryMinutes = (checkBoxRememberRotation.Checked) ? (int)numericUpDownRotMemory.Value : -1 ;            
+            SaveConfigurationToFile();
+        }
+
+        private void NumericUpDownRotMemory_ValueChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            SetControlVisibility();
+            Config.TurnCountMemoryMinutes = (int)numericUpDownRotMemory.Value;
+            SaveConfigurationToFile();
+        }
+
         private void ButtonRetry_Click(object sender, EventArgs e)
         {
             Enabled = false;
@@ -762,11 +851,13 @@ namespace CableGuardian
             if (connectionToOpen == OculusConn) 
             {                
                 pictureBoxLogo.Image = Properties.Resources.CGLogo;
+                checkBoxSteamVRStart.Visible = (checkBoxSteamVRStart.Checked);
+                pictureBoxSteamVRStartUp.Visible = (pictureBoxSteamVRStartUp.Visible && checkBoxSteamVRStart.Visible);
                 connToClose = OpenVRConn;                
             }
             else
             {             
-                pictureBoxLogo.Image = Properties.Resources.CGLogo_Index;
+                pictureBoxLogo.Image = Properties.Resources.CGLogo_Index;                
                 connToClose = OculusConn;                
             }            
                         
@@ -815,7 +906,7 @@ namespace CableGuardian
             if (SkipFlaggedEventHandlers)
                 return;
 
-            Config.MinimizeAtWindowsStartup = checkBoxStartMinWin.Checked;
+            Config.MinimizeAtAutoStartup = checkBoxStartMinAuto.Checked;
             SaveConfigurationToFile();
         }
 
@@ -946,8 +1037,9 @@ namespace CableGuardian
             {
                 string msg = String.Format("Unable* to access registry to set startup status. Try running this app as Administrator.{0}{0}", Environment.NewLine);
                 msg += String.Format("Alternatively, you can manually add a shortcut into your startup folder: {1}{0}{0}" 
-                                    + "Point the shortcut to: {2}{0}{0}Remember to add the \"winstartup\" -parameter! {0}{0}" 
-                                     ,Environment.NewLine, Environment.GetFolderPath(Environment.SpecialFolder.Startup), "\"" + Program.ExeFile + "\" winstartup");                
+                                    + "Point the shortcut to: {2}{0}{0}Remember to add the \"{3}\" -parameter! {0}{0}" 
+                                     ,Environment.NewLine, Environment.GetFolderPath(Environment.SpecialFolder.Startup),
+                                       "\"" + Program.ExeFile + "\" " + Program.Arg_WinStartup, Program.Arg_WinStartup);                
                 msg += "*" + ex.Message;
                 MessageBox.Show(this, msg, Config.ProgramTitle);
             }
@@ -971,6 +1063,73 @@ namespace CableGuardian
             checkBoxWindowsStart.Checked = check;
             SkipFlaggedEventHandlers = false;
         }
+        
+        private void CheckBoxSteamVRStart_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+          
+            try
+            {
+                if (OpenVRConn.Status != VRConnectionStatus.AllOK)
+                    throw new Exception("OpenVR connection not established.");
+
+                if (checkBoxSteamVRStart.Checked)
+                {
+                    Config.WriteManifestFile();
+                    OpenVRConn.SetSteamVRAutoStart(true);
+                }
+                else
+                {
+                    OpenVRConn.SetSteamVRAutoStart(false);
+                }
+                pictureBoxSteamVRStartUp.Visible = false;
+                CheckSteamVRStartUpStatus(checkBoxSteamVRStart.Checked);
+            }
+            catch (Exception ex)
+            {
+                string msg = $"Unable to configure SteamVR startup.{Environment.NewLine}{ex.Message}";
+                TTip.SetToolTip(pictureBoxSteamVRStartUp, msg);                    
+                pictureBoxSteamVRStartUp.Visible = true;
+
+                SkipFlaggedEventHandlers = true;
+                checkBoxSteamVRStart.Checked = !checkBoxSteamVRStart.Checked;
+                SkipFlaggedEventHandlers = false;
+            }                   
+        }
+
+        void CheckSteamVRStartUpStatus(bool? expectedStatus = null)
+        {
+            if (OpenVRConn.Status != VRConnectionStatus.AllOK)
+                return;
+
+            checkBoxSteamVRStart.Visible = true;
+            pictureBoxSteamVRStartUp.Visible = false;
+
+            bool check = false;
+            try
+            {
+                check = OpenVRConn.IsSteamAutoStartEnabled();
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+
+            SkipFlaggedEventHandlers = true;
+            checkBoxSteamVRStart.Checked = check;
+            SkipFlaggedEventHandlers = false;
+
+            if (expectedStatus != null && check != (bool)expectedStatus)
+            {
+                string msg = "Verifying SteamVR startup status failed. Please try again." + Environment.NewLine + Environment.NewLine
+                            + $"NOTE that SteamVR auto start doesn't seem to work if there are non-ASCII characters (umlauts and such) in the {Config.ProgramTitle} path." + Environment.NewLine                            
+                            + $"Current path: \"{Program.ExeFolder}\"";
+                TTip.SetToolTip(pictureBoxSteamVRStartUp, msg);
+                pictureBoxSteamVRStartUp.Visible = true;
+            }
+        }
+
 
         private void CheckBoxShowYaw_CheckedChanged(object sender, EventArgs e)
         {
@@ -1037,6 +1196,12 @@ namespace CableGuardian
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.ActiveProfile.API} - {conn.Status.ToString()}";
                 TrayMenuTitle.ForeColor = Config.CGErrorColor;
                 TrayMenuTitle.Text = Config.ProgramTitle + " - NOT OK";
+                // to ensure the app is shutdown after auto-start if SteamVR disappears without a quit message (probably never happens)
+                if (OpenVRConn.OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR && Program.IsSteamVRStartup)
+                {
+                    ProfilesSaved = true; // bypass save dialog if not saved                             
+                    Exit();                    
+                }
             }
             else
             {
@@ -1049,6 +1214,7 @@ namespace CableGuardian
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.ActiveProfile.API} - {conn.Status.ToString()}";
                 TrayMenuTitle.ForeColor = Config.CGColor;
                 TrayMenuTitle.Text = Config.ProgramTitle + " - All OK";
+                CheckSteamVRStartUpStatus();
             }
 
             labelStatus.Text = $"VR Headset Connection Status:{Environment.NewLine}{Environment.NewLine}" + conn.StatusMessage;
@@ -1058,7 +1224,7 @@ namespace CableGuardian
             if (conn.Status == VRConnectionStatus.InitLimitReached)
             {
                 Restart();
-            }
+            }            
         }
 
         void OnVRConnectionLost(object sender, EventArgs e)
@@ -1090,19 +1256,27 @@ namespace CableGuardian
 
                     System.Threading.Thread.Sleep(1000);
                     Config.ConnLost.Play();
-                }                
+                }
+
+                // Close program if it was started automatically with SteamVR
+                if (controlledAPIQuit && Program.IsSteamVRStartup)
+                {
+                    ProfilesSaved = true; // bypass save dialog if not saved                              
+                    Exit();
+                }
             }
 
             IntentionalAPIChange = false;
-        }
+        }                
 
         void Restart()
-        {   
-            RestartArgs = (Visible) ? "maximized" : "minimized";
-            RestartArgs += Tracker.CompletedHalfTurns_Signed.ToString();
+        {
+            RestartArgs = Program.Arg_IsRestart;
+            RestartArgs += (Visible) ? Program.Arg_Maximized : Program.Arg_Minimized;
+            RestartArgs += Tracker.CurrentHalfTurn.ToString(); 
             ProfilesSaved = true; // bypass save dialog if not saved            
             IsRestart = true;
-            Close();
+            Exit();
         }
 
         private void PictureBoxClose_MouseClick(object sender, MouseEventArgs e)
@@ -1171,23 +1345,22 @@ namespace CableGuardian
 
             if (!e.Cancel)
             {
-                Config.WriteConfigToFile(); // to save last used profile
-                
-                OculusConn.StatusChanged -= OnVRConnectionStatusChanged; // to prevent running eventhandler after form close
-                OpenVRConn.StatusChanged -= OnVRConnectionStatusChanged;
-                OpenVRConn?.Dispose();
-                OculusConn?.Dispose();
-                AlarmTimer.Dispose();
+                ExitRoutines();
             }
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
-        {   
+        {               
+            StartNewProcessIfRestart();
+        }
+
+        void StartNewProcessIfRestart()
+        {
             notifyIcon1.Visible = false;
             if (IsRestart)
             {
                 try
-                {                    
+                {
                     System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo(Program.ExeFile, RestartArgs);
                     System.Diagnostics.Process.Start(startInfo);
                 }
@@ -1195,7 +1368,7 @@ namespace CableGuardian
                 {
                     // intentionally ignore
                 }
-                
+
                 IsRestart = false;
             }
         }
@@ -1245,8 +1418,8 @@ namespace CableGuardian
                 string msg = String.Format("Turn counter has been reset to zero. " +
                                             "It is assumed that the headset cable is currently completely untwisted.{0}{0}" +
                                             "Note that the reset position is always set to 0 degrees (facing forward) " +
-                                            "regardless of the headset orientation when applying this reset operation. Also note that " +
-                                            "the turn counter is automatically reset when {1} is started. " +
+                                            "regardless of the headset orientation when applying this reset operation. Also note that by default " +
+                                            "the turn counter is reset when {1} is started. You can change this behaviour with the \"Remember turn count\" -feature. " +
                                             "You can perform the reset from the tray icon as well. {0}{0}" +
                                             "Hide this message in the future?", Environment.NewLine, Config.ProgramTitle);
                 if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)

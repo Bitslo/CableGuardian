@@ -65,6 +65,8 @@ namespace CableGuardian
         public const string S_Yaw0Yaw180 = "facing Front or Back";
         public const string S_ResetPosition = "total rotation = 0 (reset position)";
 
+        const double Threshold180Abs = 3.14F;
+
         /// <summary>
         /// Occurs when Yaw axis value 0 is crossed in the reset position (= zero rotation)
         /// </summary>
@@ -81,8 +83,8 @@ namespace CableGuardian
         VRObserver HmdObserver { get; }
         public double YawValue { get { return (_YawValue == null) ? 0.0 : (double)_YawValue ; } } 
         double? _YawValue { get; set; } = null;
-        int InitialHalfTurns = 0;
-        
+        int InitialHalfTurn = 0;
+        double ExpectedInitialYaw = 0;
 
         /// <summary>
         /// The highest amount of half rotations in one direction since leaving ResetPosition.
@@ -96,10 +98,10 @@ namespace CableGuardian
         /// Updated from UpdateRotation().
         /// NOTE: never zero (0): ...-3,-2,-1,1,2,3...
         /// </summary>
-        int CurrentHalfTurn
+        public int CurrentHalfTurn
         {
             get { return _CurrentHalfTurn; }
-            set
+            private set
             {                
                 _CurrentHalfTurn = value;                
                 CompletedHalfTurns = (uint)Math.Abs((_CurrentHalfTurn < 0) ? _CurrentHalfTurn + 1 : _CurrentHalfTurn - 1);
@@ -124,11 +126,12 @@ namespace CableGuardian
         /// </summary>
         public Direction RotationSide { get; private set; }
 
-        public YawTracker(VRObserver hmdObserver, int initialHalfTurns = 0)
+        public YawTracker(VRObserver hmdObserver, int initialHalfTurn = 0, double expectedInitialYaw = 0)
         {            
             HmdObserver = hmdObserver;                     
             _YawValue = null;
-            InitialHalfTurns = initialHalfTurns;    // in case we start counting from a non-zero value (autorestart app)      
+            InitialHalfTurn = initialHalfTurn;    // in case we start from a recorded rotation value (auto-restart or "Remember turn count" -feature)      
+            ExpectedInitialYaw = expectedInitialYaw; // same as above. This will be the last recorded yaw value to use as a reference point.
 
             HmdObserver.StateRefreshed += OnHmdStateRefreshed;            
         }
@@ -154,17 +157,21 @@ namespace CableGuardian
             // Oculus rotation axis range is in radians from -pi to +pi. 
             // Zero is the middle point (facing forward). Rotation is positive when turning left. 
 
-            // only when starting from a non-zero number of completed turns
-            if (InitialHalfTurns != 0)
+            
+            // *****************
+            // only once at startup IF starting from a saved point of rotation (turn count memory)
+            if (InitialHalfTurn != 0)
             {
                 _YawValue = newYawValue;                
-                CurrentHalfTurn = (int)((InitialHalfTurns < 0) ? InitialHalfTurns - 1 : InitialHalfTurns + 1);
-                InitialHalfTurns = 0;
+                CurrentHalfTurn = GetCorrectedInitialHalfTurn(newYawValue);
+                InitialHalfTurn = 0; 
             }
+            // *****************
+
 
             if (_YawValue != null) // null = first time (or after reset)
             {                
-                if (Math.Abs((double)(_YawValue - newYawValue)) < 3.14F) 
+                if (Math.Abs((double)(_YawValue - newYawValue)) < Threshold180Abs) 
                 {
                     bool resetPos = false;
                     Direction moveDir = Direction.Either;
@@ -216,7 +223,43 @@ namespace CableGuardian
             }
             _YawValue = newYawValue;
         }
-        
+
+        int GetCorrectedInitialHalfTurn(double actualYawValue)
+        {
+            if (InitialHalfTurn == 0)
+                throw new Exception("InitialHalfTurn cannot be zero when calling GetCorrectedInitialHalfTurn().");
+
+            int output = InitialHalfTurn;
+            // Check the current orientation of the HMD to get the correct initial turn count.
+            // (even though the user's intention is to not rotate the headset when the app is not running (e.g. with SteamVR autostart/stop feature))...
+            // ...the exact orientation is not the same at startup as it was at exit. It might have crossed either the zero or 180 during offline...
+            // ... requiring to correct the initial half turn. Obviously this will only work when offline rotation < 180.
+
+            // flatten edge cases
+            if (ExpectedInitialYaw > Threshold180Abs)
+                ExpectedInitialYaw = Threshold180Abs;
+
+            // Correction needed only if the current orientation is not on the expected side (left vs right, + vs -):
+            int expectedSide = ((InitialHalfTurn % 2 == 0) ? -1 * InitialHalfTurn : InitialHalfTurn) / Math.Abs(InitialHalfTurn);  // 1 or -1          
+            if (expectedSide * actualYawValue < 0) // on different sides
+            {
+                // In case ExpectedInitialYaw == 0, we just take a point from the middle of the half circle abs scale (Threshold180Abs / 2).
+                // This will result in blindly going via the pole closest to the actual yaw value. 
+                //  --> User has a smaller window in which to rotate the hmd during offline.
+                // (Missing yaw value is most likely the result of a failure to save the last yaw value at exit, highly unlikely)                
+                double expectedInitialYawAbs = (ExpectedInitialYaw == 0) ? Threshold180Abs / 2 : Math.Abs(ExpectedInitialYaw) ;
+                
+                // find the shortest route (via north pole or south pole) from the expected yaw point to the actual yaw point...
+                // ...and decrease or increase the initial half turn accordingly.
+                if (Math.Abs(actualYawValue) < Threshold180Abs - expectedInitialYawAbs)                
+                    output = InitialHalfTurn - (expectedSide); // via north pole (zero)                
+                else                
+                    output = InitialHalfTurn + (expectedSide); // via south pole (180)                                    
+                
+            }
+            return (output == 0) ? expectedSide * -1 : output; // current half-turn is never zero. (-3, -2, -1, 1, 2, 3)
+        }
+
         public void Reset()
         {   
             CurrentHalfTurn = (YawValue < 0) ? -1 : 1;            

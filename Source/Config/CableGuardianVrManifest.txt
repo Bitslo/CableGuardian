@@ -1,0 +1,18 @@
+{
+    "applications": [
+        {
+            "app_key": "$APPKEY$",
+            "arguments": "$ARGS$",
+            "binary_path_windows": "$EXEPATH$",
+            "image_path": "",
+            "is_dashboard_overlay": true,
+            "launch_type": "binary",
+            "strings": {
+                "en_us": {
+                    "description": "Cable Guardian",
+                    "name": "Cable Guardian"
+                }
+            }
+        }
+    ]
+}

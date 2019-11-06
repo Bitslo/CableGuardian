@@ -68,6 +68,7 @@
             this.numericUpDownHalfTurns.Name = "numericUpDownHalfTurns";
             this.numericUpDownHalfTurns.Size = new System.Drawing.Size(37, 20);
             this.numericUpDownHalfTurns.TabIndex = 8;
+            this.numericUpDownHalfTurns.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label4
             // 
@@ -99,6 +100,7 @@
             this.numericUpDownPeak.Name = "numericUpDownPeak";
             this.numericUpDownPeak.Size = new System.Drawing.Size(37, 20);
             this.numericUpDownPeak.TabIndex = 20;
+            this.numericUpDownPeak.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // labelPeak
             // 
@@ -215,6 +217,7 @@
             this.numericUpDownHalfTurnsMax.Name = "numericUpDownHalfTurnsMax";
             this.numericUpDownHalfTurnsMax.Size = new System.Drawing.Size(37, 20);
             this.numericUpDownHalfTurnsMax.TabIndex = 12;
+            this.numericUpDownHalfTurnsMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // labelHalfTurnsMax
             // 

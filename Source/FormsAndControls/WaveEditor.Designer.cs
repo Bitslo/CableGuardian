@@ -210,6 +210,7 @@
             this.numericUpDownLoop.Name = "numericUpDownLoop";
             this.numericUpDownLoop.Size = new System.Drawing.Size(37, 20);
             this.numericUpDownLoop.TabIndex = 60;
+            this.numericUpDownLoop.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numericUpDownLoop.Value = new decimal(new int[] {
             1,
             0,
