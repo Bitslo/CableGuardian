@@ -12,7 +12,7 @@ namespace CableGuardian
     static class Program
     {
         public static string ExeFile { get; private set; }
-        public static string ExeFolder { get; private set; }
+        public static string ExeFolder { get; private set; }        
         public const string ConfigName = "CGConfig";        
         public static string LogFile { get; private set; }
         public static string ConfigFile { get; private set; }        
@@ -37,14 +37,23 @@ namespace CableGuardian
         {
             ExeFile = System.Reflection.Assembly.GetEntryAssembly().Location;
             ExeFolder = Path.GetDirectoryName(ExeFile);
+            Environment.CurrentDirectory = ExeFolder; // always run from exe folder to avoid problems with dlls         
+
             ConfigFile = ExeFolder + $@"\{ConfigName}.xml";
-            LogFile = ExeFolder + $@"\CGLog.txt";
-            
-            Environment.CurrentDirectory = ExeFolder; // always run from exe folder to avoid problems with dlls                        
+            LogFile = ExeFolder + $@"\CGLog.txt";            
+
+            CleanLegacyOpenVRFiles();
+            WaveFilePool.MigrateWaveFiles();            
 
             if (args.Count() > 0)
             {
                 CmdArgsLCase = String.Concat(args).ToLower();
+            }
+
+            if (CmdArgsLCase.Contains("bulkcga"))
+            {
+                WaveFilePool.BulkCga();
+                Environment.Exit(0);
             }
 
             try
@@ -108,6 +117,19 @@ namespace CableGuardian
                     }
                 }
             }
+        }
+
+      
+        /// <summary>
+        /// The folder structure was changed after version 1.2.5
+        /// In case of a manual update, try to remove the previous version OpenVR API dlls from their previous location.
+        /// </summary>
+        static void CleanLegacyOpenVRFiles()
+        {
+            try{File.Delete(ExeFolder + "\\openvr_api_32\\openvr_api.dll");} catch (Exception){}
+            try{File.Delete(ExeFolder + "\\openvr_api_64\\openvr_api.dll");} catch (Exception){}
+            try{Directory.Delete(ExeFolder + "\\openvr_api_32");} catch (Exception){}
+            try{Directory.Delete(ExeFolder + "\\openvr_api_64");}catch (Exception){}
         }
     }
 }

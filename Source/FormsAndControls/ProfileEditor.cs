@@ -30,7 +30,7 @@ namespace CableGuardian
 
             comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
             comboBoxDeviceSource.DataSource = Enum.GetValues(typeof(AudioDeviceSource));
-            comboBoxManual.DataSource = AudioDevicePool.WaveOutDevices;
+            comboBoxManual.DataSource = AudioDevicePool.GetWaveOutDevices();
 
             TTip.SetToolTip(comboBoxAPI, $"Choose {VRAPI.OculusVR} for Oculus headsets, {VRAPI.OpenVR} for others.{Environment.NewLine}"
                                             + $"If you switch between different headsets (with different API / Audio device), it is recommended to make a separate profile for each.{Environment.NewLine}" 
@@ -76,6 +76,7 @@ namespace CableGuardian
             checkBoxStartup.CheckedChanged += CheckBoxStartup_CheckedChanged;            
             listBoxActions.DrawItem += listBoxActions_DrawItem;
             WaveActionCtl.ChangeMade += OnActionControlChangeMade;
+            comboBoxManual.DropDown += ComboBoxManual_DropDown;
 
 
             KeyUp += AnyControl_KeyUp;
@@ -85,6 +86,54 @@ namespace CableGuardian
                     ctl.KeyUp += AnyControl_KeyUp;
             }
 
+        }
+
+        private void ComboBoxManual_DropDown(object sender, EventArgs e)
+        {
+            RefreshManualDeviceCombo();
+        }
+
+        void RefreshManualDeviceCombo()
+        {
+            WaveOutDevice previouslySelected = (comboBoxManual.SelectedItem as WaveOutDevice);
+
+            SkipFlaggedEventHandlers = true;
+            Enabled = false;
+            comboBoxManual.DataSource = null;
+            comboBoxManual.DataSource = AudioDevicePool.GetWaveOutDevices();
+            Enabled = true;
+
+            object matchToPreviouslySelected = null;
+            foreach (var item in comboBoxManual.Items)
+            {
+                if ((item as WaveOutDevice).ValueEquals(previouslySelected))
+                {
+                    matchToPreviouslySelected = item;
+                }
+            }
+
+            object matchToCurrentProfile = null;
+            foreach (var item in comboBoxManual.Items)
+            {
+                if ((item as WaveOutDevice).ValueEquals(TheProfile?.TheWaveOutDevice))
+                {
+                    matchToCurrentProfile = item;
+                }
+            }
+
+            if (matchToPreviouslySelected != null)
+            {
+                comboBoxManual.SelectedItem = matchToPreviouslySelected;
+            }
+            else if (matchToCurrentProfile != null)
+            {
+                comboBoxManual.SelectedItem = matchToCurrentProfile;
+            }
+            else if (previouslySelected != null)
+            {
+                TheProfile.TheWaveOutDevice = previouslySelected;
+            }
+            SkipFlaggedEventHandlers = false;                        
         }
 
         private void PictureBoxClone_Click(object sender, EventArgs e)

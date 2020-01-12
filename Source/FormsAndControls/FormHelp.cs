@@ -23,9 +23,7 @@ namespace CableGuardian
             buttonClose.Click += ButtonClose_Click;
             buttonPage.Click += ButtonPage_Click;
 
-            labelAddWaves.Text = $"You can add your own sound files (*.wav) by copying them into: \"{Program.ExeFolder}\"";            
-            labelCopyDll.Text = $"For Oculus users: If you get a dll-error (unlikely), try copying LibOVRRT64_1.dll and LibOVRRT32_1.dll from {Environment.NewLine} " +
-                                $"\".\\Oculus\\Support\\oculus-runtime\" into: \"{Program.ExeFolder}\"";
+            labelAddWaves.Text = $"You can add your own sound files (*.wav) by copying them into: \"{WaveFilePool.WaveFolder}\"";            
             
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
@@ -35,8 +33,7 @@ namespace CableGuardian
             {
                 labelAddWaves.ForeColor = Config.CGColor;
                 labelTray.ForeColor = Config.CGColor;
-                labelSaves.ForeColor = Config.CGColor;
-                labelCopyDll.ForeColor = Config.CGErrorColor;
+                labelSaves.ForeColor = Config.CGColor;             
                 labelRestart.ForeColor = Config.CGErrorColor;
             }
 

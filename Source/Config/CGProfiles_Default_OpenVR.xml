@@ -24,7 +24,7 @@
             </RotationCondition>
           </Trigger>
           <CGActionWaveFile>
-            <Wave>Bilibom</Wave>
+            <Wave>\default\CG_AllClear.cga</Wave>
             <Pan>0</Pan>
             <Volume>14</Volume>
             <LoopCount>1</LoopCount>
@@ -44,7 +44,7 @@
             </RotationCondition>
           </Trigger>
           <CGActionWaveFile>
-            <Wave>Beep_loud</Wave>
+            <Wave>\default\CG_BeepBeep.cga</Wave>
             <Pan>-100</Pan>
             <Volume>75</Volume>
             <LoopCount>1</LoopCount>
@@ -64,7 +64,7 @@
             </RotationCondition>
           </Trigger>
           <CGActionWaveFile>
-            <Wave>Beep_loud</Wave>
+            <Wave>\default\CG_BeepBeep.cga</Wave>
             <Pan>100</Pan>
             <Volume>75</Volume>
             <LoopCount>1</LoopCount>
@@ -94,7 +94,7 @@
             </RotationCondition>
           </Trigger>
           <CGActionWaveFile>
-            <Wave>TurnRight</Wave>
+            <Wave>\default\CG_TurnRight.cga</Wave>
             <Pan>50</Pan>
             <Volume>75</Volume>
             <LoopCount>1</LoopCount>
@@ -114,7 +114,7 @@
             </RotationCondition>
           </Trigger>
           <CGActionWaveFile>
-            <Wave>TurnLeft</Wave>
+            <Wave>\default\CG_TurnLeft.cga</Wave>
             <Pan>-50</Pan>
             <Volume>75</Volume>
             <LoopCount>1</LoopCount>

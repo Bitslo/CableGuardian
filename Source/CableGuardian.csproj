@@ -69,6 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioDevices\WaveFileInfo.cs" />
+    <Compile Include="AudioDevices\WaveFilePool.cs" />
     <Compile Include="FormsAndControls\FormHelp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -226,17 +228,10 @@
     <None Include="Art\CG_icon_pic.png" />
     <None Include="Art\Help2.png" />
     <None Include="Art\Help1.png" />
-    <None Include="Config\TurnRight.wav" />
-    <None Include="Config\TurnLeft.wav" />
-    <None Include="Config\CG_ConnLost.wav" />
-    <None Include="Config\CG_Jingle.wav" />
     <None Include="Config\CGProfiles_Default_OpenVR.xml" />
     <None Include="Config\CGProfiles_Default_Oculus.xml" />
     <None Include="Art\CloneSmall.png" />
-    <None Include="Config\Beep_loud.wav" />
     <None Include="Art\CGLogo_Index.png" />
-    <None Include="Config\TickTock.wav" />
-    <None Include="Config\Bilibom.wav" />
     <None Include="Art\Close.png" />
     <None Include="Art\Minimize.png" />
     <None Include="Art\CGLogo.png" />

@@ -39,7 +39,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.labelAddWaves = new System.Windows.Forms.Label();
-            this.labelCopyDll = new System.Windows.Forms.Label();
             this.labelRestart = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.buttonPage = new System.Windows.Forms.Button();
@@ -180,18 +179,6 @@
     "xecutable folder.";
             this.labelAddWaves.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // labelCopyDll
-            // 
-            this.labelCopyDll.BackColor = System.Drawing.Color.Transparent;
-            this.labelCopyDll.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCopyDll.ForeColor = System.Drawing.Color.Yellow;
-            this.labelCopyDll.Location = new System.Drawing.Point(12, 418);
-            this.labelCopyDll.Name = "labelCopyDll";
-            this.labelCopyDll.Size = new System.Drawing.Size(1005, 55);
-            this.labelCopyDll.TabIndex = 12;
-            this.labelCopyDll.Text = "Try copying LibOVRRT64_1.dll or LibOVRRT32_1.dll";
-            this.labelCopyDll.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // labelRestart
             // 
             this.labelRestart.BackColor = System.Drawing.Color.Transparent;
@@ -297,7 +284,6 @@
             this.Controls.Add(this.buttonPage);
             this.Controls.Add(this.labelRestart);
             this.Controls.Add(this.labelVersion);
-            this.Controls.Add(this.labelCopyDll);
             this.Controls.Add(this.labelAddWaves);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -325,7 +311,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label labelAddWaves;
-        private System.Windows.Forms.Label labelCopyDll;
         private System.Windows.Forms.Label labelRestart;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button buttonPage;

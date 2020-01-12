@@ -27,8 +27,8 @@ namespace CableGuardian
         ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at");
         ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm");
         ToolStripSeparator TrayMenuSeparator2 = new ToolStripSeparator();
-        ToolStripMenuItem TrayMenuGUI = new ToolStripMenuItem("GUI");
-        ToolStripMenuItem TrayMenuExit = new ToolStripMenuItem("Exit");
+        ToolStripMenuItem TrayMenuGUI = new ToolStripMenuItem("Restore from tray");
+        ToolStripMenuItem TrayMenuExit = new ToolStripMenuItem("Quit");
         public static bool RunFromDesigner { get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); } }
 
         internal static YawTracker Tracker { get; private set; }
@@ -153,6 +153,15 @@ namespace CableGuardian
         {
             try
             {
+                Config.ReadConfigFromFile();
+            }
+            catch (Exception e)
+            {
+                Config.WriteLog($"Error when reading configuration ({Program.ConfigFile})." + Environment.NewLine + e.Message);                
+            }
+
+            try
+            {
                 Config.CheckDefaultSounds();
             }
             catch (Exception ex)
@@ -161,15 +170,6 @@ namespace CableGuardian
                 Config.WriteLog(msg);
                 RestoreFromTray();
                 MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            try
-            {
-                Config.ReadConfigFromFile();
-            }
-            catch (Exception e)
-            {
-                Config.WriteLog($"Error when reading configuration ({Program.ConfigFile})." + Environment.NewLine + e.Message);                
             }
         }
 
@@ -331,6 +331,7 @@ namespace CableGuardian
             notifyIcon1.Text = Config.ProgramTitle;
             notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;            
             Icon = CableGuardian.Properties.Resources.CG_error;
+            TTip.SetToolTip(pictureBoxMinimize, "Minimize to tray");
             TTip.SetToolTip(pictureBoxPlus, "Add a new empty profile");
             TTip.SetToolTip(pictureBoxClone, "Clone the current profile");
             TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");            
@@ -359,10 +360,10 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
-            TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine 
+            TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
                                                 + "NOTE: You can toggle this only when an OpenVR connection has been established." + Environment.NewLine
-                                                + $"NOTE2: {Config.ProgramTitle} will exit automatically only if it has been automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
-                                                + $"NOTE3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running.");
+                                                + $"NOTE2: {Config.ProgramTitle} will exit automatically only if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
+                                                + $"NOTE3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location.");
             TTip.SetToolTip(checkBoxStartMinAuto, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
             TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
             TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
@@ -982,24 +983,24 @@ namespace CableGuardian
                         IntentionalAPIChange = true; // dirty way to prevent connection lost notification on user interaction
                     }
                 }
-
+                
                 profileEditor.Visible = true;
                 Config.SetActiveProfile(p);
                 profileEditor.LoadProfile(p);
 
                 WaveOutPool.WaveOutDeviceSource = p.WaveOutDeviceSource;
                 if (p.WaveOutDeviceSource == AudioDeviceSource.Manual)
-                    WaveOutPool.SetWaveOutDevice(p.TheWaveOutDevice);                
+                    WaveOutPool.SetWaveOutDevice(p.TheWaveOutDevice);
 
                 RefreshVRConnectionForActiveProfile(); // after audio device has been set (to refresh Oculus Home audio)
 
                 if (p.OriginalWaveOutDeviceNotFound)
                 {
-                    string msg = $"Audio device for the profile \"{p.Name}\" was not found!{Environment.NewLine}Device name: \"{p.NotFoundDeviceName}\"{Environment.NewLine + Environment.NewLine}"
-                                + $"If the device is disconnected, you need to plug it in and restart {Config.ProgramTitle}. "
-                                + "If the device is not available anymore, please re-save the profiles with valid audio configuration.";                                
-                    RestoreFromTray();
-                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    string msg = $"Audio device for the profile \"{p.Name}\" was not found!{Environment.NewLine}Device name: \"{p.NotFoundDeviceName}\"";
+                    Config.WriteLog(msg);                    
+                    
+                    RestoreFromTray();                    
+                    notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, msg, ToolTipIcon.Warning);                    
                 }
             }
             else
@@ -1336,8 +1337,10 @@ namespace CableGuardian
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
-        {            
-            if (!ProfilesSaved)
+        {
+            // Warn about unsaved profiles except in case of win shutdown. 
+            // Preventing shutdown might feel more annoying than losing (most likely unimportant?) changes to profiles...             
+            if (!ProfilesSaved && e.CloseReason != CloseReason.WindowsShutDown) 
             {                
                 string msg = String.Format("There are unsaved changes to your profiles. Close anyway?");
                 e.Cancel = (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Cancel);                                    
@@ -1346,6 +1349,12 @@ namespace CableGuardian
             if (!e.Cancel)
             {
                 ExitRoutines();
+                
+                // Restore the following bit if save warning is shown during win shutdown (see above):
+                //if (e.CloseReason == CloseReason.WindowsShutDown)
+                //{
+                //    Environment.Exit(0); // for some reason the application did not close on windows shutdown when save warning was shown
+                //}
             }
         }
 

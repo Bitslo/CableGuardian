@@ -3811,7 +3811,7 @@ public class OpenVRInterop
 
     public class OpenVRInterop64
     {
-        const string openvr_api_dll = "openvr_api_64\\openvr_api";
+        const string openvr_api_dll = "openvr_api\\64\\openvr_api";
 
         [DllImportAttribute(openvr_api_dll, EntryPoint = "VR_InitInternal", CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint InitInternal(ref EVRInitError peError, EVRApplicationType eApplicationType);
@@ -3837,7 +3837,7 @@ public class OpenVRInterop
 
     public class OpenVRInterop32
     {
-        const string openvr_api_dll = "openvr_api_32\\openvr_api";
+        const string openvr_api_dll = "openvr_api\\32\\openvr_api";
 
         [DllImportAttribute(openvr_api_dll, EntryPoint = "VR_InitInternal", CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint InitInternal(ref EVRInitError peError, EVRApplicationType eApplicationType);

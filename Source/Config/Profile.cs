@@ -118,7 +118,7 @@ namespace CableGuardian
                 foreach (var trig in xUserProfile.Descendants().Where(element => element.Name == "TriggeredAction"))
                 {
                     TriggeredAction newAct = new TriggeredAction(FormMain.Tracker, this);
-                    newAct.LoadFromXml(trig);                    
+                    newAct.LoadFromXml(trig, false);                    
                 }
             }
         }

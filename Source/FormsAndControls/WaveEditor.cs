@@ -25,11 +25,14 @@ namespace CableGuardian
 
             if (!FormMain.RunFromDesigner)
             {
-                comboBoxWave.DataSource = CGActionWave.AvailableWaves;
-                TTip.SetToolTip(pictureBoxRefresh, $"Scan for sound files (*.wav) in: \"{Program.ExeFolder}\"");
-                TTip.SetToolTip(labelNoWaves, $"Please add sound files (*.wav) to \"{Program.ExeFolder}\" and click the refresh button.");
+                comboBoxWave.DataSource = WaveFilePool.GetAvailableWaves();
+                TTip.SetToolTip(pictureBoxRefresh, $"Refresh available sounds." + Environment.NewLine +
+                                                    $"Put your custom sound files ({WaveFilePool.WaveFileExtension}) in: \"{WaveFilePool.WaveFolder}\"");
+                TTip.SetToolTip(pictureBoxAddWaves, $"Open Windows explorer to manage your custom sounds ({WaveFilePool.WaveFileExtension}).");
+                TTip.SetToolTip(labelNoWaves, $"Please add sound files ({WaveFilePool.WaveFileExtension}) to \"{WaveFilePool.WaveFolder}\" and click the refresh button.");
                 TTip.SetToolTip(comboBoxWave, $"Select the sound file to play. Due to audio implementation, only the first 5 seconds of the wave will be played.");
                 TTip.SetToolTip(numericUpDownLoop, $"Loop count. How many times the sound is played in succession per single trigger. Max=9.");
+                TTip.SetToolTip(trackBarPan, $"Mouse middle button = center");
 
                 InitializeAppearance();
             }
@@ -55,14 +58,43 @@ namespace CableGuardian
             comboBoxWave.SelectedIndexChanged += ComboBoxWave_SelectedIndexChanged;
             trackBarVolume.ValueChanged += TrackBarVolume_ValueChanged;
             trackBarPan.ValueChanged += TrackBarPan_ValueChanged;
+            trackBarPan.MouseUp += TrackBarPan_MouseUp;
             numericUpDownLoop.ValueChanged += NumericUpDownLoop_ValueChanged;
             pictureBoxPlay.Click += PictureBoxPlay_Click;
             pictureBoxRefresh.Click += PictureBoxRefresh_Click;
+            pictureBoxAddWaves.Click += PictureBoxAddWaves_Click;
 
             KeyUp += AnyControl_KeyUp;
             foreach (Control ctl in Controls)
             {
                 ctl.KeyUp += AnyControl_KeyUp;
+            }
+        }
+
+        private void PictureBoxAddWaves_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (System.Diagnostics.Process p = new System.Diagnostics.Process())
+                {
+                    p.StartInfo.FileName = "explorer";
+                    p.StartInfo.Arguments = "\"" + WaveFilePool.WaveFolder + "\"";
+                    p.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = $"Unable to open location: {WaveFilePool.WaveFolder} {Environment.NewLine}{ex.Message}";
+                Config.WriteLog(msg);
+                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);                
+            }
+        }
+
+        private void TrackBarPan_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                trackBarPan.Value = 0;
             }
         }
 
@@ -88,14 +120,22 @@ namespace CableGuardian
                 RefreshWaveCombo();
                 Config.WaveComboRefreshRequired = false;
             }
+            
+            object match = null;
+            foreach (var item in comboBoxWave.Items)
+            {
+                if ((item as WaveFileInfo).ValueEquals(TheWave.Wave))
+                {
+                    match = item;
+                }
+            }
 
-            string wave = TheWave.Wave;
-            if (!String.IsNullOrWhiteSpace(wave) && comboBoxWave.Items.Contains(wave))
-                comboBoxWave.SelectedItem = wave;
+            if (match != null)
+                comboBoxWave.SelectedItem = match;
             else if (comboBoxWave.Items.Count > 0)
             {
                 comboBoxWave.SelectedItem = comboBoxWave.Items[0];
-                TheWave.Wave = comboBoxWave.Items[0].ToString();
+                TheWave.SetWave(comboBoxWave.Items[0] as WaveFileInfo);
             }
 
             trackBarVolume.Value = TheWave.Volume;
@@ -161,32 +201,49 @@ namespace CableGuardian
             if (SkipFlaggedEventHandlers)
                 return;
 
-            TheWave.Wave = comboBoxWave.SelectedItem.ToString();
+            TheWave.SetWave(comboBoxWave.SelectedItem as WaveFileInfo);
             InvokeChangeMade(new ChangeEventArgs(comboBoxWave));
         }
 
         void RefreshWaveCombo()
         {            
-            object selectedItem = comboBoxWave.SelectedItem;
+            WaveFileInfo previouslySelected = (comboBoxWave.SelectedItem as WaveFileInfo);
 
             SkipFlaggedEventHandlers = true;
             Enabled = false;
             comboBoxWave.DataSource = null;
-            CGActionWave.ScanWaveFilesInFolder(Program.ExeFolder);
-            comboBoxWave.DataSource = CGActionWave.AvailableWaves;
+            comboBoxWave.DataSource = WaveFilePool.GetAvailableWaves();
             Enabled = true;
-           
-            if (selectedItem != null && comboBoxWave.Items.Contains(selectedItem))
+
+            object matchToPreviouslySelected = null;
+            foreach (var item in comboBoxWave.Items)
             {
-                comboBoxWave.SelectedItem = selectedItem;
+                if ((item as WaveFileInfo).ValueEquals(previouslySelected))
+                {
+                    matchToPreviouslySelected = item;
+                }
             }
-            else if (TheWave.Wave != null && comboBoxWave.Items.Contains(TheWave.Wave))
+
+            object matchToCurrentWave = null;
+            foreach (var item in comboBoxWave.Items)
             {
-                comboBoxWave.SelectedItem = TheWave.Wave;
+                if ((item as WaveFileInfo).ValueEquals(TheWave?.Wave))
+                {
+                    matchToCurrentWave = item;
+                }
             }
-            else if (comboBoxWave.SelectedItem != null)
+
+            if (matchToPreviouslySelected != null)
             {
-                TheWave.Wave = comboBoxWave.SelectedItem.ToString();
+                comboBoxWave.SelectedItem = matchToPreviouslySelected;
+            }
+            else if (matchToCurrentWave != null)
+            {
+                comboBoxWave.SelectedItem = matchToCurrentWave;
+            }
+            else if (previouslySelected != null)
+            {
+                TheWave.SetWave(previouslySelected);
             }
             SkipFlaggedEventHandlers = false;
 
@@ -198,7 +255,7 @@ namespace CableGuardian
             bool enabled = (comboBoxWave.Items.Count > 0);
             foreach (Control ctl in Controls)
             {
-                if (ctl != pictureBoxRefresh && ctl != labelNoWaves)
+                if (ctl != pictureBoxRefresh && ctl != labelNoWaves && ctl != pictureBoxAddWaves)
                 {
                     ctl.Enabled = enabled;
                 }

@@ -43,16 +43,18 @@
             this.labelNoWaves = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDownLoop = new System.Windows.Forms.NumericUpDown();
+            this.pictureBoxAddWaves = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarPan)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRefresh)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLoop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAddWaves)).BeginInit();
             this.SuspendLayout();
             // 
             // trackBarVolume
             // 
-            this.trackBarVolume.Location = new System.Drawing.Point(180, 4);
+            this.trackBarVolume.Location = new System.Drawing.Point(186, 4);
             this.trackBarVolume.Maximum = 100;
             this.trackBarVolume.Name = "trackBarVolume";
             this.trackBarVolume.Size = new System.Drawing.Size(104, 45);
@@ -63,7 +65,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(188, 34);
+            this.label1.Location = new System.Drawing.Point(194, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 3;
@@ -71,7 +73,7 @@
             // 
             // trackBarPan
             // 
-            this.trackBarPan.Location = new System.Drawing.Point(287, 4);
+            this.trackBarPan.Location = new System.Drawing.Point(291, 4);
             this.trackBarPan.Maximum = 100;
             this.trackBarPan.Minimum = -100;
             this.trackBarPan.Name = "trackBarPan";
@@ -83,7 +85,7 @@
             // labelL
             // 
             this.labelL.ForeColor = System.Drawing.Color.White;
-            this.labelL.Location = new System.Drawing.Point(294, 34);
+            this.labelL.Location = new System.Drawing.Point(298, 34);
             this.labelL.Name = "labelL";
             this.labelL.Size = new System.Drawing.Size(51, 13);
             this.labelL.TabIndex = 5;
@@ -92,7 +94,7 @@
             // labelR
             // 
             this.labelR.ForeColor = System.Drawing.Color.White;
-            this.labelR.Location = new System.Drawing.Point(341, 34);
+            this.labelR.Location = new System.Drawing.Point(345, 34);
             this.labelR.Name = "labelR";
             this.labelR.Size = new System.Drawing.Size(46, 13);
             this.labelR.TabIndex = 6;
@@ -105,7 +107,7 @@
             this.comboBoxWave.FormattingEnabled = true;
             this.comboBoxWave.Location = new System.Drawing.Point(6, 25);
             this.comboBoxWave.Name = "comboBoxWave";
-            this.comboBoxWave.Size = new System.Drawing.Size(141, 21);
+            this.comboBoxWave.Size = new System.Drawing.Size(128, 21);
             this.comboBoxWave.TabIndex = 0;
             // 
             // label4
@@ -121,7 +123,7 @@
             // labelVolVal
             // 
             this.labelVolVal.ForeColor = System.Drawing.Color.White;
-            this.labelVolVal.Location = new System.Drawing.Point(254, 34);
+            this.labelVolVal.Location = new System.Drawing.Point(260, 34);
             this.labelVolVal.Name = "labelVolVal";
             this.labelVolVal.Size = new System.Drawing.Size(35, 13);
             this.labelVolVal.TabIndex = 10;
@@ -142,7 +144,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(326, 34);
+            this.label2.Location = new System.Drawing.Point(330, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 13;
@@ -152,7 +154,7 @@
             // 
             this.pictureBoxRefresh.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBoxRefresh.Image = global::CableGuardian.Properties.Resources.Refresh24;
-            this.pictureBoxRefresh.Location = new System.Drawing.Point(151, 22);
+            this.pictureBoxRefresh.Location = new System.Drawing.Point(160, 22);
             this.pictureBoxRefresh.Name = "pictureBoxRefresh";
             this.pictureBoxRefresh.Size = new System.Drawing.Size(24, 24);
             this.pictureBoxRefresh.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -175,7 +177,7 @@
             this.labelNoWaves.AutoSize = true;
             this.labelNoWaves.BackColor = System.Drawing.Color.White;
             this.labelNoWaves.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.labelNoWaves.Location = new System.Drawing.Point(15, 29);
+            this.labelNoWaves.Location = new System.Drawing.Point(9, 29);
             this.labelNoWaves.Name = "labelNoWaves";
             this.labelNoWaves.Size = new System.Drawing.Size(106, 13);
             this.labelNoWaves.TabIndex = 15;
@@ -187,7 +189,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(95, 6);
+            this.label3.Location = new System.Drawing.Point(82, 6);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(14, 13);
             this.label3.TabIndex = 61;
@@ -196,7 +198,7 @@
             // 
             // numericUpDownLoop
             // 
-            this.numericUpDownLoop.Location = new System.Drawing.Point(110, 3);
+            this.numericUpDownLoop.Location = new System.Drawing.Point(97, 3);
             this.numericUpDownLoop.Maximum = new decimal(new int[] {
             9,
             0,
@@ -217,11 +219,23 @@
             0,
             0});
             // 
+            // pictureBoxAddWaves
+            // 
+            this.pictureBoxAddWaves.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxAddWaves.Image = global::CableGuardian.Properties.Resources.PlusSmall;
+            this.pictureBoxAddWaves.Location = new System.Drawing.Point(139, 27);
+            this.pictureBoxAddWaves.Name = "pictureBoxAddWaves";
+            this.pictureBoxAddWaves.Size = new System.Drawing.Size(16, 16);
+            this.pictureBoxAddWaves.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBoxAddWaves.TabIndex = 62;
+            this.pictureBoxAddWaves.TabStop = false;
+            // 
             // WaveEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.Controls.Add(this.pictureBoxAddWaves);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.numericUpDownLoop);
             this.Controls.Add(this.labelNoWaves);
@@ -244,6 +258,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxRefresh)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownLoop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAddWaves)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -265,5 +280,6 @@
         private System.Windows.Forms.Label labelNoWaves;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown numericUpDownLoop;
+        private System.Windows.Forms.PictureBox pictureBoxAddWaves;
     }
 }

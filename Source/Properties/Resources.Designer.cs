@@ -71,29 +71,11 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Beep_loud {
-            get {
-                return ResourceManager.GetStream("Beep_loud", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream Bilibom {
-            get {
-                return ResourceManager.GetStream("Bilibom", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;applications&quot;: [
         ///        {
         ///            &quot;app_key&quot;: &quot;$APPKEY$&quot;,
-        ///            &quot;arguments&quot;: &quot;&quot;,
+        ///            &quot;arguments&quot;: &quot;$ARGS$&quot;,
         ///            &quot;binary_path_windows&quot;: &quot;$EXEPATH$&quot;,
         ///            &quot;image_path&quot;: &quot;&quot;,
         ///            &quot;is_dashboard_overlay&quot;: true,
@@ -126,15 +108,6 @@ namespace CableGuardian.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream CG_ConnLost {
-            get {
-                return ResourceManager.GetStream("CG_ConnLost", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon CG_error {
@@ -151,15 +124,6 @@ namespace CableGuardian.Properties {
             get {
                 object obj = ResourceManager.GetObject("CG_icon_pic", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream CG_Jingle {
-            get {
-                return ResourceManager.GetStream("CG_Jingle", resourceCulture);
             }
         }
         
@@ -349,33 +313,6 @@ namespace CableGuardian.Properties {
             get {
                 object obj = ResourceManager.GetObject("Refresh24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream TickTock {
-            get {
-                return ResourceManager.GetStream("TickTock", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream TurnLeft {
-            get {
-                return ResourceManager.GetStream("TurnLeft", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream TurnRight {
-            get {
-                return ResourceManager.GetStream("TurnRight", resourceCulture);
             }
         }
     }

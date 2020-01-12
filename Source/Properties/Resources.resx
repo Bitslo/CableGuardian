@@ -118,12 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Beep_loud" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\Beep_loud.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Bilibom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\Bilibom.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="CG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\CG.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -139,14 +133,8 @@
   <data name="CGProfiles_Default_OpenVR" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Config\CGProfiles_Default_OpenVR.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="CG_ConnLost" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\CG_ConnLost.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="CG_error" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\CG_error.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="CG_Jingle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\CG_Jingle.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="CloneSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\CloneSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -177,15 +165,6 @@
   </data>
   <data name="Refresh24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\Refresh24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="TickTock" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\TickTock.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="TurnLeft" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\TurnLeft.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="TurnRight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Config\TurnRight.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Help1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\Help1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

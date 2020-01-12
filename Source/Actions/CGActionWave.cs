@@ -16,13 +16,7 @@ namespace CableGuardian
     // But it's also not blindly stupid and seems to work fine, so I'll stick with it for now. 
 
     class CGActionWave : CGAction, IDisposable
-    {
-        const string WaveFileExtension = ".wav";
-
-        static List<string> _AvailableWaves { get; set; } = new List<string>();
-        public static IList<string> AvailableWaves { get { return _AvailableWaves.AsReadOnly(); } }
-
-        public string ErrorMessage { get; private set; } = null;
+    {           
         public bool Error { get; private set; } = false;
 
         bool _Enabled = true;
@@ -42,10 +36,11 @@ namespace CableGuardian
             }
         }
 
-        AudioDevicePool AudioDevices;        
+        AudioDevicePool AudioDevices;
         WaveOutEvent WaveOut;
         WaveChannel32 MixedWave;
         WaveFileReader Reader;
+        MemoryStream WaveStream;
 
         BackgroundWorker Worker = new BackgroundWorker();
 
@@ -56,8 +51,8 @@ namespace CableGuardian
         /// <summary>
         /// -100 (left) to 100 (right)
         /// </summary>
-        public int Pan { get { return _Pan; } set { _Pan = value; if (MixedWave != null) MixedWave.Pan = PanF; } }        
-        float PanF 
+        public int Pan { get { return _Pan; } set { _Pan = value; if (MixedWave != null) MixedWave.Pan = PanF; } }
+        float PanF
         {
             get
             {
@@ -85,46 +80,32 @@ namespace CableGuardian
             }
         }
 
-        string _Wave;
-        public string Wave
-        {
-            get { return _Wave; }
-            set
-            {
-                if (!String.IsNullOrWhiteSpace(value))
-                {
-                    _Wave = value;
-                    InitializeWave();                                   
-                }
-            }
-        }
+        public WaveFileInfo Wave { get; private set; }
 
-
-        static CGActionWave()
-        {
-            ScanWaveFilesInFolder(Program.ExeFolder);
-        }
-              
-
-        public CGActionWave(AudioDevicePool audioDevices, string wave, int volume = 100, int pan = 0)
-        {
-            CommonConstructor(audioDevices);
-
-            Wave = wave;
-            Volume = volume;
-            Pan = pan;
-        }
 
         public CGActionWave(AudioDevicePool audioDevices)
         {
-            CommonConstructor(audioDevices);       
+            CommonConstructor(audioDevices);
         }
         void CommonConstructor(AudioDevicePool audioDevices)
         {
             AudioDevices = audioDevices ?? throw new Exception("Audio device is required.");
-            AudioDevices.WaveOutDeviceChanged += (s, e) => { InitializeWave(); };
-            
-            Worker.DoWork += DoWork;           
+            AudioDevices.WaveOutDeviceChanged += (s, e) => { if (Enabled) InitializeWave(); };
+
+            Worker.DoWork += DoWork;
+        }
+
+
+        public void SetWave(WaveFileInfo wave, bool initialize = true)
+        {
+            if (wave != null)
+            {
+                Wave = wave;
+                if (initialize)
+                {
+                    InitializeWave();
+                }
+            }
         }
 
         /// <summary>
@@ -136,23 +117,39 @@ namespace CableGuardian
             {
                 DisposeNAudioComponents();
                 WaveOut = new WaveOutEvent();
-                Reader = new WaveFileReader(_Wave + WaveFileExtension);
+
+                ProcessWaveStream();
+                Reader = new WaveFileReader(WaveStream);
+
                 MixedWave = new WaveChannel32(Reader, VolumeF, PanF);
-                WaveDurationMs = (int)MixedWave.TotalTime.TotalMilliseconds + 100; // add some buffer
+                WaveDurationMs = (int)MixedWave.TotalTime.TotalMilliseconds + 5; // add some buffer
                 WaveOut.DeviceNumber = AudioDevices.GetWaveOutDeviceNumber();
                 WaveOut.Init(MixedWave);
 
-                Error = false;
-                ErrorMessage = null;
+                Error = false;                
             }
             catch (Exception e)
             {
-                Error = true;
-                ErrorMessage = e.Message;
+                Error = true;                
+                Config.WriteLog("Unable to initialize audio for " + (Wave?.DisplayName ?? "") + Environment.NewLine + e.Message);
             }
         }
 
-               
+        void ProcessWaveStream()
+        {
+            if (Wave.Type == WaveFileType.Wav)
+            {
+                WaveStream = new MemoryStream(File.ReadAllBytes(Wave.FullPath));
+            }
+            else
+            {                   
+                string b64 = File.ReadAllText(Wave.FullPath, Encoding.UTF8);
+                int chop = b64.Length / 2;
+                b64 = b64.Substring(b64.Length - (chop + 5), chop) + b64.Substring(0, b64.Length - (chop + 5)) + b64.Substring(b64.Length - 5);
+                WaveStream = new MemoryStream(Convert.FromBase64String(b64));                                    
+            }
+        }
+        
 
         void DoWork(object sender, DoWorkEventArgs e)
         {
@@ -168,7 +165,7 @@ namespace CableGuardian
                         Thread.Sleep(5000);
 
                     WaveOut.Stop();
-                    Thread.Sleep(20);
+                    Thread.Sleep(5);
                 }
             }
             catch (Exception)
@@ -176,9 +173,7 @@ namespace CableGuardian
                 // intentionally ignore
             }
         }
-
-
-
+               
         public void Dispose()
         {
             DisposeNAudioComponents();
@@ -194,6 +189,20 @@ namespace CableGuardian
             MixedWave = null;
             Reader?.Dispose();
             Reader = null;
+            WaveStream?.Dispose();
+            WaveStream = null;
+
+            // They say you shouldn't (have to) manually call the garbage collector, but... 
+            // after testing I can't find any problems with it, and this way memory usage is kept consistently lower than without calling the GC.
+            // I know the memory would be eventually freed anyway, and there's no real benefit from doing this, but...
+            // Without immediately purging the unused wave-streams, the task manager is showing a higher memory usage than necessary, 
+            // which might lead some users to (erroneously, but understandably) conclude that there's a memory leak or something.
+            // And since I know this is a logical place to free the memory in my app, why not let the GC know?
+            //
+            // Waves will only be disposed when the user is interacting with the GUI which is a rare event and not performance critical.
+            // Depending on the user operation (e.g. changing the audio device), this might get called several times in succession,
+            // but it doesn't seem to cause any side-effects.
+            GC.Collect();
         }
 
         protected override void DeleteImplementation()
@@ -201,28 +210,10 @@ namespace CableGuardian
             Dispose();
         }
 
-        public static void ScanWaveFilesInFolder(string path)
-        {
-            _AvailableWaves.Clear();
-            try
-            {
-                _AvailableWaves.AddRange(Directory.GetFiles(path, "*" + WaveFileExtension));
-                for (int i = 0; i < _AvailableWaves.Count; i++)
-                {
-                    _AvailableWaves[i] = Path.GetFileNameWithoutExtension(_AvailableWaves[i]);
-                }
-            }
-            catch (Exception)
-            {
-                // intentionally ignore
-            }
-
-            // add internal default waves... pistä pilkkua nimeen tai jotain 
-        }
                         
         public void Play()
         {
-            if (!Error && !String.IsNullOrWhiteSpace(Wave) && Enabled)
+            if (!Error && Wave != null && Enabled)
             {
                 if (!Worker.IsBusy)
                 {
@@ -237,14 +228,27 @@ namespace CableGuardian
         }
 
 
-        
         public override void LoadFromXml(XElement xCGActionWaveFile)
+        {
+            LoadFromXml(xCGActionWaveFile, true);
+        }
+
+
+
+        public void LoadFromXml(XElement xCGActionWaveFile, bool initialize)
         {
             if (xCGActionWaveFile != null)
             {
                 base.LoadFromXml(xCGActionWaveFile);
 
-                Wave = xCGActionWaveFile.GetElementValueTrimmed("Wave");
+                string wavePath = xCGActionWaveFile.GetElementValueTrimmed("Wave");
+                // backwards compatibility:
+                if (!wavePath.Contains("\\"))
+                {
+                    wavePath = WaveFilePool.WaveFolder_Rel + "\\" + wavePath + WaveFilePool.WaveFileExtension;
+                }
+
+                SetWave(new WaveFileInfo(wavePath), initialize);
                 Pan = xCGActionWaveFile.GetElementValueInt("Pan");
                 Volume = xCGActionWaveFile.GetElementValueInt("Volume");
                 LoopCount = xCGActionWaveFile.GetElementValueInt("LoopCount");
@@ -259,7 +263,7 @@ namespace CableGuardian
         {   
             return new XElement("CGActionWaveFile",
                                     base.GetXml().Elements(),
-                                    new XElement("Wave", Wave),
+                                    new XElement("Wave", Wave.RelativePath),
                                     new XElement("Pan", Pan),
                                     new XElement("Volume", Volume),
                                     new XElement("LoopCount", LoopCount));
@@ -268,7 +272,7 @@ namespace CableGuardian
 
         public override string ToString()
         {
-            return (String.IsNullOrEmpty(Wave)) ? "_______" : $"\"{Wave}\"";
+            return (Wave == null) ? "_______" : $"\"{Wave.DisplayName}\"";
         }
     }
 }

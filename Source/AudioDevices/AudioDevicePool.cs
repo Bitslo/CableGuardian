@@ -17,8 +17,7 @@ namespace CableGuardian
     {
         public EventHandler<EventArgs> WaveOutDeviceChanged;
 
-        static List<WaveOutDevice> _WaveOutDevices = new List<WaveOutDevice>();
-        public static IList<WaveOutDevice> WaveOutDevices { get { return _WaveOutDevices.AsReadOnly(); } }
+        static List<WaveOutDevice> _WaveOutDevices = new List<WaveOutDevice>();        
 
         bool SuppressFlaggedEvents = false;
         AudioDeviceSource _WaveOutDeviceSource = AudioDeviceSource.OculusHome;
@@ -44,7 +43,7 @@ namespace CableGuardian
                 
         static AudioDevicePool()
         {
-            FindWaveOutDevices();
+            RefreshWaveOutDevices();
         }
 
 
@@ -56,15 +55,21 @@ namespace CableGuardian
         
         void CommonConstructor()
         {
-            if (WaveOutDevices.Count > 0)
+            if (_WaveOutDevices.Count > 0)
             {
-                ManualDevice = WaveOutDevices[0];
+                ManualDevice = _WaveOutDevices[0];
             }
         }
 
-
-        static void FindWaveOutDevices()
+        public static IList<WaveOutDevice> GetWaveOutDevices()
         {
+            RefreshWaveOutDevices();
+            return _WaveOutDevices.AsReadOnly();
+        }
+
+        public static void RefreshWaveOutDevices()
+        {
+            _WaveOutDevices.Clear();
             for (int i = 0; i < WaveOut.DeviceCount; i++)
             {
                 try
@@ -77,6 +82,7 @@ namespace CableGuardian
                     // intentionally ignore
                 }
             }
+            _WaveOutDevices.Sort((a, b) => a.Name.CompareTo(b.Name));
         }
 
         /// <summary>
@@ -136,7 +142,7 @@ namespace CableGuardian
         /// <param name="name"></param>
         public static WaveOutDevice GetWaveOutDevice(string name)
         {
-            return WaveOutDevices.Where(d => d.Name == name).FirstOrDefault();            
+            return _WaveOutDevices.Where(d => d.Name == name).FirstOrDefault();            
         }
 
         void InvokeWaveOutDeviceChanged(EventArgs e)
@@ -157,8 +163,8 @@ namespace CableGuardian
                 string waveOutName = xAudioDevicePool.GetElementValueTrimmed("WaveOutDeviceName");
                 if (String.IsNullOrWhiteSpace(waveOutName))
                 {
-                    WaveOutDevice device = WaveOutDevices.Where(d => d.Name == waveOutName).FirstOrDefault();
-                    ManualDevice = device ?? WaveOutDevices.FirstOrDefault();
+                    WaveOutDevice device = _WaveOutDevices.Where(d => d.Name == waveOutName).FirstOrDefault();
+                    ManualDevice = device ?? _WaveOutDevices.FirstOrDefault();
                 }
             }
         }

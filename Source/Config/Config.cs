@@ -166,91 +166,26 @@ namespace CableGuardian
 
         public static void CheckDefaultSounds()
         {
-            string exeFolder = Program.ExeFolder;
-
-            // Write baked in default sounds to disk if missing. A bit of double waste of space but IIRC they have to be on disk due to the audio implementation.
-            string wavePath = exeFolder + $@"\TickTock.wav";
-            if (!File.Exists(wavePath))
+            if (Alarm.Wave == null)
             {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.TickTock.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.TickTock.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true; // a bit unfortunate gimmick, but whatever
+                // default alarm:
+                Alarm.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_TickTock" + WaveFilePool.CgAudioExtension));
+                Alarm.Pan = 0;
+                Alarm.Volume = 100;
+                Alarm.LoopCount = 3;
             }
-            wavePath = exeFolder + $@"\Bilibom.wav";
-            if (!File.Exists(wavePath))
+            
+            if (Jingle.Wave == null)
             {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.Bilibom.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.Bilibom.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
+                // default jingle:
+                Jingle.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_Jingle" + WaveFilePool.CgAudioExtension));
+                Jingle.Pan = 0;
+                Jingle.Volume = 50;
+                Jingle.LoopCount = 1;
             }
-            wavePath = exeFolder + $@"\Beep_loud.wav";
-            if (!File.Exists(wavePath))
-            {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.Beep_loud.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.Beep_loud.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
-            }
-
-            wavePath = exeFolder + $@"\CG_Jingle.wav";
-            if (!File.Exists(wavePath))
-            {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.CG_Jingle.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.CG_Jingle.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
-            }
-
-            wavePath = exeFolder + $@"\CG_ConnLost.wav";
-            if (!File.Exists(wavePath))
-            {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.CG_ConnLost.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.CG_ConnLost.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
-            }
-
-            wavePath = exeFolder + $@"\TurnLeft.wav";
-            if (!File.Exists(wavePath))
-            {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.TurnLeft.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.TurnLeft.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
-            }
-
-            wavePath = exeFolder + $@"\TurnRight.wav";
-            if (!File.Exists(wavePath))
-            {
-                var fileStream = File.Create(wavePath);
-                CableGuardian.Properties.Resources.TurnRight.Seek(0, SeekOrigin.Begin);
-                CableGuardian.Properties.Resources.TurnRight.CopyTo(fileStream);
-                fileStream.Close();
-                WaveComboRefreshRequired = true;
-            }
-
-            // default alarm:
-            Alarm.Wave = "TickTock";
-            Alarm.Pan = 0;
-            Alarm.Volume = 100;
-            Alarm.LoopCount = 3;
-
-            // default jingle:
-            Jingle.Wave = "CG_Jingle";
-            Jingle.Pan = 0;
-            Jingle.Volume = 50;
-            Jingle.LoopCount = 1;
 
             // Connection lost sound:
-            ConnLost.Wave = "CG_ConnLost";
+            ConnLost.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_ConnLost" + WaveFilePool.CgAudioExtension)); 
             ConnLost.Pan = 0;
             ConnLost.Volume = 70;
             ConnLost.LoopCount = 1;

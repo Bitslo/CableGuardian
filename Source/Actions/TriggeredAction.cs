@@ -57,10 +57,10 @@ namespace CableGuardian
             TheAction?.Run();
         }
 
-        public void LoadFromXml(XElement xTriggeredAction)
+        public void LoadFromXml(XElement xTriggeredAction, bool initializeAction = true)
         {
             if (TheAction != null)
-                throw new Exception("Instance has already been initialilzed.");
+                throw new Exception("This instance of TriggeredAction has already been loaded.");
 
             if (xTriggeredAction != null)
             {                
@@ -70,7 +70,7 @@ namespace CableGuardian
                 if (xWaveFile != null)
                 {
                     CGActionWave wav = new CGActionWave(FormMain.WaveOutPool);
-                    wav.LoadFromXml(xWaveFile);
+                    wav.LoadFromXml(xWaveFile, initializeAction);
                     TheAction = wav;                    
                 }
             }
