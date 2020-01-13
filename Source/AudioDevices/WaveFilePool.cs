@@ -16,8 +16,8 @@ namespace CableGuardian
         public static string WaveFolder { get { return Program.ExeFolder + WaveFolder_Rel; } }
 
         public const string WaveFolder_Rel = "\\wav";
-        public const string DefaultAudioFolder_Rel = "\\default";
-        
+        public const string DefaultAudioFolder_Rel = "\\default";        
+
         public static IList<WaveFileInfo> GetAvailableWaves()
         {
             ScanForWaveFiles();
@@ -32,18 +32,22 @@ namespace CableGuardian
             AddToAvailableWavesFromLocation(WaveFolder_Rel, WaveFileExtension);
 
             // default waves:
-            AddToAvailableWavesFromLocation(DefaultAudioFolder_Rel, CgAudioExtension);                        
-                      
-             _AvailableWaves.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
+            AddToAvailableWavesFromLocation(DefaultAudioFolder_Rel, CgAudioExtension, 8);                        
+
+            _AvailableWaves.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
         }
 
-        static void AddToAvailableWavesFromLocation(string relativeFolder, string fileExtension)
+        static void AddToAvailableWavesFromLocation(string relativeFolder, string fileExtension, int limit = 0)
         {
             string dir = Program.ExeFolder + relativeFolder;
             if (Directory.Exists(dir))
             {
-                foreach (var item in Directory.GetFiles(dir, "*" + fileExtension, SearchOption.AllDirectories))
+                int count = 0;
+                foreach (var item in Directory.GetFiles(dir, "*" + fileExtension, SearchOption.TopDirectoryOnly))
                 {
+                    if (limit > 0 && count >= limit)
+                        break;
+
                     try
                     {
                         _AvailableWaves.Add(new WaveFileInfo(relativeFolder + "\\" + Path.GetFileName(item)));
@@ -51,7 +55,8 @@ namespace CableGuardian
                     catch (Exception e)
                     {
                         Config.WriteLog("Unable to add wave " + item + Environment.NewLine + e.Message);
-                    }                    
+                    }
+                    count++;
                 }
             }            
         }

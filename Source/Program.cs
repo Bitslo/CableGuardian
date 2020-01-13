@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.IO;
-using System.Diagnostics;
 
 namespace CableGuardian
 {
@@ -77,23 +76,7 @@ namespace CableGuardian
             {
                 IsSteamVRStartup = true;                
             }
-
-            // Exit if already running (autostart only)
-            if (IsAutoStartup)
-            {                
-                string cgName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                Process current = Process.GetCurrentProcess();
-                if (Process.GetProcessesByName(cgName).Where
-                    (
-                        p => p.Id != current.Id
-                        &&
-                        String.Compare(p.MainModule.FileName, current.MainModule.FileName, true) == 0 // only check instances from the same location
-                    ).Any())
-                {
-                    Environment.Exit(0);
-                }                
-            }
-                                  
+                                                         
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FormMain());

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 
 namespace CableGuardian
@@ -61,7 +62,9 @@ namespace CableGuardian
         public FormMain()
         {   
             InitializeComponent();
-            
+
+            ExitIfAlreadyRunning();                
+
             // poll interval of 180ms should suffice (5.5 Hz) ...// UPDATE: Tightened to 150ms (6.67 Hz) just to be on the safe side. Still not too much CPU usage.
             // (head rotation must stay below 180 degrees between samples)
             Observer = new VRObserver(OculusConn, 150);
@@ -106,6 +109,40 @@ namespace CableGuardian
         protected override void SetVisibleCore(bool value)
         {
             base.SetVisibleCore(ForceHide ? false : value);
+        }
+
+        void ExitIfAlreadyRunning()
+        {
+            // Exit if already running from the same location. Multiple instances are allowed from different locations for no particular reason.
+
+            // Rather than showing a notification from this new instance...
+            // ...it might be cleaner to use a mutex and send a message to the existing instance without ever starting forms but... nah            
+
+            try
+            {
+                string cgName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+                Process current = Process.GetCurrentProcess();
+                if (Process.GetProcessesByName(cgName).Where
+                    (
+                        p => p.Id != current.Id
+                        &&
+                        String.Compare(p.MainModule.FileName, current.MainModule.FileName, true) == 0 // only from the same location
+                    ).Any())
+                {
+                    notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;
+                    if (!Program.IsAutoStartup) // show notification only on user startup
+                    {
+                        ShowTemporaryTrayNotification(3300, "", $"{Config.ProgramTitle} is already running.");
+                        System.Threading.Thread.Sleep(3300);
+                    }
+                    notifyIcon1.Visible = false; // otherwise the empty icon lingers in the tray
+                    Environment.Exit(0);
+                }
+            }
+            catch (Exception e)
+            {
+                Config.WriteLog("Failed to check existing instance. " + e.Message);
+            }
         }
 
         int GetInitialHalfTurn()
