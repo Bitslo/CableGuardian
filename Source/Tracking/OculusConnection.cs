@@ -30,6 +30,8 @@ namespace CableGuardian
         IntPtr SessionPtr;
         GraphicsLuid pLuid;
         BackgroundWorker Worker = new BackgroundWorker();
+        BackgroundWorker WorkerManager = new BackgroundWorker();
+        bool WorkerFailed = false;
         public bool RequireHome { get; set; }
         bool StopRequested = false;
         SessionStatus SesStatus = new SessionStatus();       
@@ -183,6 +185,10 @@ namespace CableGuardian
             Worker.WorkerReportsProgress = true;
             Worker.DoWork += DoWork;
             OculusStatus = OculusConnectionStatus.Stopped;
+
+            WorkerManager.WorkerReportsProgress = true;
+            WorkerManager.DoWork += DoManagementWork;
+            WorkerManager.ProgressChanged += WorkerManager_ProgressChanged;
         }
 
         protected override bool OpenImplementation()
@@ -194,7 +200,12 @@ namespace CableGuardian
                 SuppressStatusEvents = true;
                 OculusStatus = OculusConnectionStatus.Initializing;
                 SuppressStatusEvents = false;
+                WorkerFailed = false;
                 Worker.RunWorkerAsync();
+
+                if (!WorkerManager.IsBusy)
+                    WorkerManager.RunWorkerAsync();
+
                 return true;
             }
             else
@@ -217,20 +228,47 @@ namespace CableGuardian
             }            
         }
 
-        void DoWork(object sender, DoWorkEventArgs e)
+        void DoManagementWork(object sender, DoWorkEventArgs e)
         {
             while (!StopFlag)
             {
-                try
+                if (WorkerFailed)
                 {
-                    KeepAlive();
+                    // wait until the worker method has completed
+                    int safety = 0;
+                    while (Worker.IsBusy && safety < 50) // safety in case the worker was restarted elsewhere (most likely won't happen)
+                    {
+                        safety++;
+                        Thread.Sleep(100);
+                    }
+
+                    WorkerManager.ReportProgress(0);
                 }
-                catch (Exception ex)
+
+                Thread.Sleep(2000);
+            }
+        }
+        private void WorkerManager_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // currently the managers only task is to report when the worker has unexpectedly stopped --> restart            
+            OpenImplementation();
+        }
+
+        void DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                while (!StopFlag)
                 {
-                    LastExceptionMessage = ex.Message;
-                    OculusStatus = OculusConnectionStatus.UnexpectedError;
+                    KeepAlive();                 
+                    Thread.Sleep(PollInterval);
                 }
-                Thread.Sleep(PollInterval);
+            }
+            catch (Exception ex)
+            {
+                WorkerFailed = true;
+                LastExceptionMessage = ex.Message;
+                OculusStatus = OculusConnectionStatus.UnexpectedError;
             }
 
             EndCurrentSession();

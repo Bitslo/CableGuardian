@@ -15,6 +15,8 @@ namespace CableGuardian
     {
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
+        BackgroundWorker WorkerManager = new BackgroundWorker();
+        bool WorkerFailed = false;
         bool StopFlag = false;
         const int PollInterval = 11; //100; // needs to be quick enough to reliably catch the quit message from steamvr. 90 fps = 11,1 so I'd imagine that should do it...        
         const int InitializationInterval = 1000;        
@@ -136,7 +138,10 @@ namespace CableGuardian
             Worker.DoWork += DoWork;
             LastStopMessage = "Uninitialized.";
             OpenVRConnStatus = OpenVRConnectionStatus.Stopped;
-            
+
+            WorkerManager.WorkerReportsProgress = true;
+            WorkerManager.DoWork += DoManagementWork;
+            WorkerManager.ProgressChanged += WorkerManager_ProgressChanged;
         }
 
         protected override bool OpenImplementation()
@@ -144,8 +149,13 @@ namespace CableGuardian
             if (!Worker.IsBusy && Status != VRConnectionStatus.InitLimitReached)
             {
                 StopFlag = false;
-                StopRequested = false;                
+                StopRequested = false;
+                WorkerFailed = false;
                 Worker.RunWorkerAsync();
+                
+                if (!WorkerManager.IsBusy)                
+                    WorkerManager.RunWorkerAsync();                
+                
                 return true;
             }
             else
@@ -176,24 +186,51 @@ namespace CableGuardian
             }
         }
 
+        void DoManagementWork(object sender, DoWorkEventArgs e)
+        {           
+            while (!StopFlag)
+            {   
+                if (WorkerFailed)
+                {
+                    // wait until the worker method has completed
+                    int safety = 0;
+                    while (Worker.IsBusy && safety < 50) // safety in case the worker was restarted elsewhere (most likely won't happen)
+                    {
+                        safety++;
+                        Thread.Sleep(100);
+                    }
+                                                
+                    WorkerManager.ReportProgress(0);
+                }
+
+                Thread.Sleep(2000);
+            }           
+        }
+        private void WorkerManager_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // currently the managers only task is to report when the worker has unexpectedly stopped --> restart            
+            OpenImplementation();
+        }
+
+
         void DoWork(object sender, DoWorkEventArgs e)
         {
             if (!StopFlag)            
-                OpenVRConnStatus = OpenVRConnectionStatus.Initializing;            
+                OpenVRConnStatus = OpenVRConnectionStatus.Initializing;
 
-            while (!StopFlag)
-            {                
-                try
+            try
+            {
+                while (!StopFlag)
                 {
                     KeepAlive();
+                    Thread.Sleep(PollInterval);
                 }
-                catch (Exception ex)
-                {
-                    LastExceptionMessage = ex.Message;
-                    OpenVRConnStatus = OpenVRConnectionStatus.UnexpectedError;
-                }
-                
-                Thread.Sleep(PollInterval);
+            }
+            catch (Exception ex)
+            {
+                WorkerFailed = true;
+                LastExceptionMessage = ex.Message;
+                OpenVRConnStatus = OpenVRConnectionStatus.UnexpectedError;
             }
 
             EndCurrentSession();
