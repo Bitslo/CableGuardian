@@ -80,7 +80,7 @@
             // 
             // buttonReset
             // 
-            this.buttonReset.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonReset.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
             this.buttonReset.Location = new System.Drawing.Point(177, 260);
@@ -104,7 +104,7 @@
             // pictureBoxMinimize
             // 
             this.pictureBoxMinimize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxMinimize.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxMinimize.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxMinimize.Image = global::CableGuardian.Properties.Resources.Minimize;
             this.pictureBoxMinimize.Location = new System.Drawing.Point(969, 10);
             this.pictureBoxMinimize.Name = "pictureBoxMinimize";
@@ -116,7 +116,7 @@
             // pictureBoxClose
             // 
             this.pictureBoxClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxClose.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxClose.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxClose.Image = global::CableGuardian.Properties.Resources.Close;
             this.pictureBoxClose.Location = new System.Drawing.Point(999, 10);
             this.pictureBoxClose.Name = "pictureBoxClose";
@@ -183,7 +183,7 @@
             // 
             // buttonSave
             // 
-            this.buttonSave.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonSave.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSave.ForeColor = System.Drawing.Color.White;
             this.buttonSave.Location = new System.Drawing.Point(783, 10);
@@ -195,7 +195,7 @@
             // 
             // pictureBoxPlus
             // 
-            this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxPlus.Image = global::CableGuardian.Properties.Resources.PlusSmall;
             this.pictureBoxPlus.Location = new System.Drawing.Point(522, 14);
             this.pictureBoxPlus.Name = "pictureBoxPlus";
@@ -226,7 +226,7 @@
             // 
             // pictureBoxMinus
             // 
-            this.pictureBoxMinus.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxMinus.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxMinus.Image = global::CableGuardian.Properties.Resources.MinusSmall;
             this.pictureBoxMinus.Location = new System.Drawing.Point(566, 14);
             this.pictureBoxMinus.Name = "pictureBoxMinus";
@@ -238,7 +238,7 @@
             // pictureBoxHelp
             // 
             this.pictureBoxHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxHelp.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxHelp.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxHelp.Image = global::CableGuardian.Properties.Resources.Help;
             this.pictureBoxHelp.Location = new System.Drawing.Point(939, 10);
             this.pictureBoxHelp.Name = "pictureBoxHelp";
@@ -249,7 +249,7 @@
             // 
             // buttonRetry
             // 
-            this.buttonRetry.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonRetry.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonRetry.ForeColor = System.Drawing.Color.White;
             this.buttonRetry.Location = new System.Drawing.Point(177, 388);
@@ -273,7 +273,7 @@
             // 
             // buttonAlarm
             // 
-            this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonAlarm.ForeColor = System.Drawing.Color.White;
             this.buttonAlarm.Location = new System.Drawing.Point(177, 289);
@@ -296,7 +296,7 @@
             // 
             // pictureBoxClone
             // 
-            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxClone.Image = global::CableGuardian.Properties.Resources.CloneSmall;
             this.pictureBoxClone.Location = new System.Drawing.Point(544, 14);
             this.pictureBoxClone.Name = "pictureBoxClone";
@@ -342,7 +342,7 @@
             // 
             // buttonJingle
             // 
-            this.buttonJingle.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonJingle.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonJingle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonJingle.ForeColor = System.Drawing.Color.White;
             this.buttonJingle.Location = new System.Drawing.Point(177, 318);

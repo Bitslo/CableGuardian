@@ -152,7 +152,7 @@
             // 
             // pictureBoxRefresh
             // 
-            this.pictureBoxRefresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxRefresh.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxRefresh.Image = global::CableGuardian.Properties.Resources.Refresh24;
             this.pictureBoxRefresh.Location = new System.Drawing.Point(160, 22);
             this.pictureBoxRefresh.Name = "pictureBoxRefresh";
@@ -163,7 +163,7 @@
             // 
             // pictureBoxPlay
             // 
-            this.pictureBoxPlay.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxPlay.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxPlay.Image = global::CableGuardian.Properties.Resources.Play;
             this.pictureBoxPlay.Location = new System.Drawing.Point(408, 3);
             this.pictureBoxPlay.Name = "pictureBoxPlay";
@@ -221,7 +221,7 @@
             // 
             // pictureBoxAddWaves
             // 
-            this.pictureBoxAddWaves.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxAddWaves.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxAddWaves.Image = global::CableGuardian.Properties.Resources.PlusSmall;
             this.pictureBoxAddWaves.Location = new System.Drawing.Point(139, 27);
             this.pictureBoxAddWaves.Name = "pictureBoxAddWaves";

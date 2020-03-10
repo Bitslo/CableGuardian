@@ -94,7 +94,7 @@
             // 
             // pictureBoxPlus
             // 
-            this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxPlus.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxPlus.Image = global::CableGuardian.Properties.Resources.PlusSmall;
             this.pictureBoxPlus.Location = new System.Drawing.Point(623, 39);
             this.pictureBoxPlus.Name = "pictureBoxPlus";
@@ -152,7 +152,7 @@
             // 
             // pictureBoxMinus
             // 
-            this.pictureBoxMinus.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxMinus.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxMinus.Image = global::CableGuardian.Properties.Resources.MinusSmall;
             this.pictureBoxMinus.Location = new System.Drawing.Point(667, 39);
             this.pictureBoxMinus.Name = "pictureBoxMinus";
@@ -213,7 +213,7 @@
             // 
             // pictureBoxClone
             // 
-            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureBoxClone.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxClone.Image = global::CableGuardian.Properties.Resources.CloneSmall;
             this.pictureBoxClone.Location = new System.Drawing.Point(645, 39);
             this.pictureBoxClone.Name = "pictureBoxClone";
