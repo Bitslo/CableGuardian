@@ -19,6 +19,7 @@ namespace CableGuardian
         public bool RequireHome { get; set; } = false;        
         public string Name { get; set; }
         public bool Frozen { get; set; }
+        public bool ResetOnMount { get; set; } = false;
 
         public Profile()
         {
@@ -74,9 +75,10 @@ namespace CableGuardian
         {
             if (xUserProfile != null)
             {
-                Name = xUserProfile.GetElementValueTrimmed("Name");
+                Name = xUserProfile.GetElementValueTrimmed("Name");                
                 Frozen = xUserProfile.GetElementValueBool("Frozen");                
                 RequireHome = xUserProfile.GetElementValueBool("RequireHome");
+                ResetOnMount = xUserProfile.GetElementValueBool("ResetOnMount");
 
                 if (xUserProfile.GetElementValueOrNull("API") == null) 
                 {
@@ -129,6 +131,7 @@ namespace CableGuardian
                                    new XElement("Name", Name),
                                    new XElement("Frozen", Frozen),                                   
                                    new XElement("RequireHome", RequireHome),
+                                   new XElement("ResetOnMount", ResetOnMount),
                                    new XElement("API", API),
                                    new XElement("WaveOutDeviceSource", WaveOutDeviceSource),
                                    new XElement("WaveOutDeviceName", TheWaveOutDevice?.Name),

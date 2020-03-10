@@ -335,9 +335,9 @@
             this.checkBoxPlaySoundOnHMDInteraction.ForeColor = System.Drawing.Color.White;
             this.checkBoxPlaySoundOnHMDInteraction.Location = new System.Drawing.Point(9, 323);
             this.checkBoxPlaySoundOnHMDInteraction.Name = "checkBoxPlaySoundOnHMDInteraction";
-            this.checkBoxPlaySoundOnHMDInteraction.Size = new System.Drawing.Size(116, 17);
+            this.checkBoxPlaySoundOnHMDInteraction.Size = new System.Drawing.Size(102, 17);
             this.checkBoxPlaySoundOnHMDInteraction.TabIndex = 61;
-            this.checkBoxPlaySoundOnHMDInteraction.Text = "Confirmation sound";
+            this.checkBoxPlaySoundOnHMDInteraction.Text = "Mounting sound";
             this.checkBoxPlaySoundOnHMDInteraction.UseVisualStyleBackColor = true;
             // 
             // buttonJingle
@@ -349,7 +349,7 @@
             this.buttonJingle.Name = "buttonJingle";
             this.buttonJingle.Size = new System.Drawing.Size(142, 23);
             this.buttonJingle.TabIndex = 62;
-            this.buttonJingle.Text = "Confirmation sound...";
+            this.buttonJingle.Text = "Mounting sound...";
             this.buttonJingle.UseVisualStyleBackColor = true;
             // 
             // checkBoxOnAPIQuit

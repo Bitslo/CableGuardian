@@ -22,7 +22,10 @@ namespace CableGuardian
         /// Don't disable event handlers before method calls. Use only within a single method when accessing properties.
         /// </summary>
         bool SkipFlaggedEventHandlers = false;
-        
+
+        readonly string ResetOnMountWarning = $"CAUTION!!! Enabling this will reset the turn counter each time you put on the headset.{Environment.NewLine}" +
+                                         $"Usually better disabled, this setting might be useful if your headset only tracks rotation when wearing it.{Environment.NewLine}" +
+                                            $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.";
 
         public ProfileEditor()
         {
@@ -45,6 +48,7 @@ namespace CableGuardian
             TTip.SetToolTip(labelOcuChanges, $"Change in Oculus Home audio device is only updated to {Config.ProgramTitle} at startup OR when you change the device here.");            
             TTip.SetToolTip(checkBoxHome, $"When checked, the headset orientation is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +
                                          $"The presence of Home is polled once in two seconds.");
+            TTip.SetToolTip(checkBoxResetOnMount, ResetOnMountWarning);
 
             if (!FormMain.RunFromDesigner)
             {   
@@ -65,6 +69,7 @@ namespace CableGuardian
         {
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxHome.CheckedChanged += CheckBoxHome_CheckedChanged;
+            checkBoxResetOnMount.CheckedChanged += CheckBoxResetOnMount_CheckedChanged;
             checkBoxFreeze.CheckedChanged += CheckBoxFreeze_CheckedChanged;
             comboBoxDeviceSource.SelectedIndexChanged += ComboBoxDeviceSource_SelectedIndexChanged;
             comboBoxManual.SelectedIndexChanged += ComboBoxManual_SelectedIndexChanged;
@@ -86,6 +91,18 @@ namespace CableGuardian
                     ctl.KeyUp += AnyControl_KeyUp;
             }
 
+        }
+
+        private void CheckBoxResetOnMount_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            if (checkBoxResetOnMount.Checked)
+                MessageBox.Show(this, ResetOnMountWarning.Replace(Environment.NewLine, Environment.NewLine + Environment.NewLine), Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            TheProfile.ResetOnMount = checkBoxResetOnMount.Checked;
+            InvokeChangeMade(new ChangeEventArgs(sender as Control));
         }
 
         private void ComboBoxManual_DropDown(object sender, EventArgs e)
@@ -378,6 +395,7 @@ namespace CableGuardian
 
             SkipFlaggedEventHandlers = true;
 
+            checkBoxResetOnMount.Checked = TheProfile.ResetOnMount;
             checkBoxFreeze.Checked = TheProfile.Frozen;
             checkBoxStartup.Checked = (Config.StartUpProfile == TheProfile);
             checkBoxHome.Checked = TheProfile.RequireHome;            

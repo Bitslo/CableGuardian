@@ -45,6 +45,7 @@
             this.checkBoxHome = new System.Windows.Forms.CheckBox();
             this.WaveActionCtl = new CableGuardian.WaveActionControl();
             this.pictureBoxClone = new System.Windows.Forms.PictureBox();
+            this.checkBoxResetOnMount = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).BeginInit();
@@ -193,7 +194,7 @@
             // checkBoxHome
             // 
             this.checkBoxHome.ForeColor = System.Drawing.Color.White;
-            this.checkBoxHome.Location = new System.Drawing.Point(194, 38);
+            this.checkBoxHome.Location = new System.Drawing.Point(354, 38);
             this.checkBoxHome.Name = "checkBoxHome";
             this.checkBoxHome.Size = new System.Drawing.Size(131, 17);
             this.checkBoxHome.TabIndex = 63;
@@ -221,12 +222,23 @@
             this.pictureBoxClone.TabIndex = 64;
             this.pictureBoxClone.TabStop = false;
             // 
+            // checkBoxResetOnMount
+            // 
+            this.checkBoxResetOnMount.ForeColor = System.Drawing.Color.White;
+            this.checkBoxResetOnMount.Location = new System.Drawing.Point(191, 38);
+            this.checkBoxResetOnMount.Name = "checkBoxResetOnMount";
+            this.checkBoxResetOnMount.Size = new System.Drawing.Size(162, 17);
+            this.checkBoxResetOnMount.TabIndex = 65;
+            this.checkBoxResetOnMount.Text = "Reset turn counter on mount";
+            this.checkBoxResetOnMount.UseVisualStyleBackColor = true;
+            // 
             // ProfileEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.Controls.Add(this.checkBoxResetOnMount);
             this.Controls.Add(this.pictureBoxClone);
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.checkBoxStartup);
@@ -272,5 +284,6 @@
         private System.Windows.Forms.ComboBox comboBoxAPI;
         private System.Windows.Forms.CheckBox checkBoxHome;
         private System.Windows.Forms.PictureBox pictureBoxClone;
+        private System.Windows.Forms.CheckBox checkBoxResetOnMount;
     }
 }

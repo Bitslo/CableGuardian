@@ -260,12 +260,12 @@ namespace CableGuardian
         {
             if (checkBoxPlaySoundOnHMDInteraction.Checked)
             {
-                checkBoxPlaySoundOnHMDInteraction.Text = "Play confirmation sound   --->";
+                checkBoxPlaySoundOnHMDInteraction.Text = "Play mounting sound      --->";
                 buttonJingle.Visible = true;
             }
             else
             {
-                checkBoxPlaySoundOnHMDInteraction.Text = "Play confirmation sound";
+                checkBoxPlaySoundOnHMDInteraction.Text = "Play mounting sound";
                 buttonJingle.Visible = false;
             }
 
@@ -383,17 +383,13 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxTrayNotifications, $"When checked, a Windows notification is displayed when you make selections in the {Config.ProgramTitle} tray menu. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");
-            TTip.SetToolTip(checkBoxPlaySoundOnHMDInteraction, $"Play a sound when putting on the VR headset. Check this if you want to be sure that {Config.ProgramTitle} is up and running when starting a VR session." + Environment.NewLine + Environment.NewLine
-                + "NOTES for OpenVR users:" + Environment.NewLine
-                + "- Purely checking the proximity sensor through OpenVR API seemed impossible. Their implementation of \"User Interaction\" is based on both: movement and the prox sensor." + Environment.NewLine
-                + "      \u2022 User interaction starts   a) when SteamVR is opened   b) when the proximity sensor is covered (after a stop). " + Environment.NewLine
-                + "      \u2022 User interaction stops when the proximity sensor is uncovered but ONLY after the headset has been completely stationary (e.g. on a table) for 10 seconds." + Environment.NewLine + Environment.NewLine
-                + "UPDATE Nov 2019: Apparently the behaviour was changed in SteamVR version 1.8 to prefer the proximity sensor if available.");
+            TTip.SetToolTip(checkBoxPlaySoundOnHMDInteraction, $"Play a sound when putting on the VR headset. Check this if you want to be sure that {Config.ProgramTitle} is up and running when starting a VR session." + Environment.NewLine
+                + "NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
             TTip.SetToolTip(buttonJingle, $"Adjust the sound that plays when you put on the headset.");
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
             TTip.SetToolTip(labelAutoStart, $"After dialing in your rotation settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
                                             + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API." + Environment.NewLine + Environment.NewLine
-                                            + "p.s. I also recommend trying the \"Play confirmation sound\" -feature that let's you know that the app is alive and well when you enter VR.");
+                                            + "p.s. I also recommend trying the \"Play mounting sound\" -feature that let's you know that the app is alive and well when you enter VR.");
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
@@ -1209,6 +1205,10 @@ namespace CableGuardian
             {
                 Config.Jingle.Play();
             }
+            if (Config.ActiveProfile != null && Config.ActiveProfile.ResetOnMount)
+            {
+                ResetRotations(true);
+            }
         }
 
         void OnHMDUserInteractionStopped(object sender, EventArgs e)
@@ -1447,11 +1447,11 @@ namespace CableGuardian
             }            
         }
 
-        void ResetRotations()
+        void ResetRotations(bool suppressNotification = false)
         {
             Tracker.Reset();
             labelHalfTurns.Text = "0";
-            if (Config.TrayMenuNotifications)
+            if (Config.TrayMenuNotifications && !suppressNotification)
                 ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Reset successful. Turn count = 0.");
         }
 
