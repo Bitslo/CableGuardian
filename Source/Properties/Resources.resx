@@ -181,4 +181,28 @@
   <data name="Attention" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Art\Attention.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Refresh24_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Refresh24_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CloneSmall_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\CloneSmall_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Close_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Close_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Help_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Help_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Minimize_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Minimize_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MinusSmall_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\MinusSmall_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Play_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\Play_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PlusSmall_hover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Art\PlusSmall_hover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

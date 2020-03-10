@@ -449,6 +449,19 @@ namespace CableGuardian
             pictureBoxClone.MouseClick += (s, e) => { CloneProfile(); SetProfilesSaveStatus(false); };
             pictureBoxHelp.Click += PictureBoxHelp_Click;
 
+            pictureBoxPlus.MouseEnter += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall_hover; };
+            pictureBoxPlus.MouseLeave += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall; };
+            pictureBoxClone.MouseEnter += (s, e) => { pictureBoxClone.Image = Properties.Resources.CloneSmall_hover; };
+            pictureBoxClone.MouseLeave += (s, e) => { pictureBoxClone.Image = Properties.Resources.CloneSmall; };
+            pictureBoxMinus.MouseEnter += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall_hover; };
+            pictureBoxMinus.MouseLeave += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall; };
+            pictureBoxHelp.MouseEnter += (s, e) => { pictureBoxHelp.Image = Properties.Resources.Help_hover; };
+            pictureBoxHelp.MouseLeave += (s, e) => { pictureBoxHelp.Image = Properties.Resources.Help; };
+            pictureBoxMinimize.MouseEnter += (s, e) => { pictureBoxMinimize.Image = Properties.Resources.Minimize_hover; };
+            pictureBoxMinimize.MouseLeave += (s, e) => { pictureBoxMinimize.Image = Properties.Resources.Minimize; };
+            pictureBoxClose.MouseEnter += (s, e) => { pictureBoxClose.Image = Properties.Resources.Close_hover; };
+            pictureBoxClose.MouseLeave += (s, e) => { pictureBoxClose.Image = Properties.Resources.Close; };
+
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
             buttonRetry.Click += ButtonRetry_Click;

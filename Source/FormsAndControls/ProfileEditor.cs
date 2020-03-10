@@ -83,6 +83,13 @@ namespace CableGuardian
             WaveActionCtl.ChangeMade += OnActionControlChangeMade;
             comboBoxManual.DropDown += ComboBoxManual_DropDown;
 
+            pictureBoxPlus.MouseEnter += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall_hover; };
+            pictureBoxPlus.MouseLeave += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall; };
+            pictureBoxClone.MouseEnter += (s, e) => { pictureBoxClone.Image = Properties.Resources.CloneSmall_hover; };
+            pictureBoxClone.MouseLeave += (s, e) => { pictureBoxClone.Image = Properties.Resources.CloneSmall; };
+            pictureBoxMinus.MouseEnter += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall_hover; };
+            pictureBoxMinus.MouseLeave += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall; };
+
 
             KeyUp += AnyControl_KeyUp;
             foreach (Control ctl in Controls)

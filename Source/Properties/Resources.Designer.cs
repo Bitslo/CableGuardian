@@ -163,7 +163,8 @@ namespace CableGuardian.Properties {
         ///        &lt;TriggeredAction&gt;
         ///          &lt;Trigger&gt;
         ///            &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
-        ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimi [rest of string was truncated]&quot;;.
+        ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///      [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CGProfiles_Default_Oculus {
             get {
@@ -188,7 +189,7 @@ namespace CableGuardian.Properties {
         ///          &lt;Trigger&gt;
         ///            &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
         ///            &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
-        ///  [rest of string was truncated]&quot;;.
+        ///            &lt;Rota [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CGProfiles_Default_OpenVR {
             get {
@@ -209,6 +210,16 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CloneSmall_hover {
+            get {
+                object obj = ResourceManager.GetObject("CloneSmall_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Close {
             get {
                 object obj = ResourceManager.GetObject("Close", resourceCulture);
@@ -219,9 +230,29 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Close_hover {
+            get {
+                object obj = ResourceManager.GetObject("Close_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Help {
             get {
                 object obj = ResourceManager.GetObject("Help", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Help_hover {
+            get {
+                object obj = ResourceManager.GetObject("Help_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -259,6 +290,16 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Minimize_hover {
+            get {
+                object obj = ResourceManager.GetObject("Minimize_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Minus3 {
             get {
                 object obj = ResourceManager.GetObject("Minus3", resourceCulture);
@@ -279,9 +320,29 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap MinusSmall_hover {
+            get {
+                object obj = ResourceManager.GetObject("MinusSmall_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Play {
             get {
                 object obj = ResourceManager.GetObject("Play", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Play_hover {
+            get {
+                object obj = ResourceManager.GetObject("Play_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -309,9 +370,29 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap PlusSmall_hover {
+            get {
+                object obj = ResourceManager.GetObject("PlusSmall_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Refresh24 {
             get {
                 object obj = ResourceManager.GetObject("Refresh24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Refresh24_hover {
+            get {
+                object obj = ResourceManager.GetObject("Refresh24_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

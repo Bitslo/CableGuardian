@@ -61,8 +61,15 @@ namespace CableGuardian
             trackBarPan.MouseUp += TrackBarPan_MouseUp;
             numericUpDownLoop.ValueChanged += NumericUpDownLoop_ValueChanged;
             pictureBoxPlay.Click += PictureBoxPlay_Click;
-            pictureBoxRefresh.Click += PictureBoxRefresh_Click;
+            pictureBoxRefresh.Click += PictureBoxRefresh_Click;            
             pictureBoxAddWaves.Click += PictureBoxAddWaves_Click;
+
+            pictureBoxRefresh.MouseEnter += (s, e) => { pictureBoxRefresh.Image = Properties.Resources.Refresh24_hover; };
+            pictureBoxRefresh.MouseLeave += (s, e) => { pictureBoxRefresh.Image = Properties.Resources.Refresh24; };
+            pictureBoxAddWaves.MouseEnter += (s, e) => { pictureBoxAddWaves.Image = Properties.Resources.PlusSmall_hover; };
+            pictureBoxAddWaves.MouseLeave += (s, e) => { pictureBoxAddWaves.Image = Properties.Resources.PlusSmall; };
+            pictureBoxPlay.MouseEnter += (s, e) => { pictureBoxPlay.Image = Properties.Resources.Play_hover; };
+            pictureBoxPlay.MouseLeave += (s, e) => { pictureBoxPlay.Image = Properties.Resources.Play; };
 
             KeyUp += AnyControl_KeyUp;
             foreach (Control ctl in Controls)
