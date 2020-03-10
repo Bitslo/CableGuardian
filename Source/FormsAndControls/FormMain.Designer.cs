@@ -81,6 +81,7 @@
             // buttonReset
             // 
             this.buttonReset.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
             this.buttonReset.Location = new System.Drawing.Point(177, 260);
@@ -184,6 +185,7 @@
             // buttonSave
             // 
             this.buttonSave.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSave.ForeColor = System.Drawing.Color.White;
             this.buttonSave.Location = new System.Drawing.Point(783, 10);
@@ -250,6 +252,7 @@
             // buttonRetry
             // 
             this.buttonRetry.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonRetry.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonRetry.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonRetry.ForeColor = System.Drawing.Color.White;
             this.buttonRetry.Location = new System.Drawing.Point(177, 388);
@@ -274,6 +277,7 @@
             // buttonAlarm
             // 
             this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonAlarm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonAlarm.ForeColor = System.Drawing.Color.White;
             this.buttonAlarm.Location = new System.Drawing.Point(177, 289);
@@ -343,6 +347,7 @@
             // buttonJingle
             // 
             this.buttonJingle.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonJingle.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonJingle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonJingle.ForeColor = System.Drawing.Color.White;
             this.buttonJingle.Location = new System.Drawing.Point(177, 318);
