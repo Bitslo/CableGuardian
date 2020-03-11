@@ -64,7 +64,16 @@ namespace CableGuardian
         {   
             InitializeComponent();
 
-            ExitIfAlreadyRunning();                
+            ExitIfAlreadyRunning();
+
+            // BackgroundWorkers (which I happen to have used for threading) run on the ThreadPool. 
+            // By default the limit of instantly created threads seems to be 12 (at least on my setup).
+            // Once the limit is exceeded, the ThreadPool waits a certain period of time for threads to be freed before creating a new Thread.
+            // This means some actions in this app may struggle to run instantaneously as intended (depending on the profile). 
+            // What to do: Either re-design the whole threading model or increase the limit.
+            // --> I'll just increase it since it doesn't seem to do any harm. 
+            // The number of concurrent threads is the same either way, but now every new thread will run right away.
+            System.Threading.ThreadPool.SetMinThreads(100, 100); // 100 should be more than enough for intended use cases
 
             // poll interval of 180ms should suffice (5.5 Hz) ...// UPDATE: Tightened to 150ms (6.67 Hz) just to be on the safe side. Still not too much CPU usage.
             // (head rotation must stay below 180 degrees between samples)
@@ -101,7 +110,7 @@ namespace CableGuardian
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
                         $"1. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
                         $"2. For an overview, click the \"?\" in the top right corner.{Environment.NewLine}{Environment.NewLine}" +
-                        $"3. For a quick menu, right click the CG icon in the system tray.";
+                        $"3. For a quick menu, click the CG icon in the system tray.";
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
