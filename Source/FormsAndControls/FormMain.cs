@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Reflection;
 
 
 namespace CableGuardian
@@ -323,8 +324,8 @@ namespace CableGuardian
             TrayMenu.Items.Add(TrayMenuAlarmAt);
             TrayMenu.Items.Add(TrayMenuAlarmClear);            
             TrayMenu.Items.Add(TrayMenuSeparator2);
-            TrayMenu.Items.Add(TrayMenuGUI);
             TrayMenu.Items.Add(TrayMenuExit);
+            TrayMenu.Items.Add(TrayMenuGUI);            
 
             BuilAlarmMenu();
         }
@@ -440,7 +441,7 @@ namespace CableGuardian
 
             FormClosing += FormMain_FormClosing;
             FormClosed += FormMain_FormClosed;
-            notifyIcon1.MouseDoubleClick += NotifyIcon1_MouseDoubleClick;
+            notifyIcon1.MouseClick += NotifyIcon1_MouseClick;
 
             pictureBoxMinimize.MouseClick += PictureBoxMinimize_MouseClick;
             pictureBoxClose.MouseClick += PictureBoxClose_MouseClick;            
@@ -498,7 +499,7 @@ namespace CableGuardian
 
             TrayMenuReset.Click += TrayMenutReset_Click;
             TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
-            TrayMenuGUI.Click += (s,e) => { RestoreFromTray();};
+            TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
             TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
 
@@ -549,7 +550,8 @@ namespace CableGuardian
         {
             uint halfTurns = Tracker.CompletedHalfTurns;
             Direction rotSide = Tracker.RotationSide;
-            TrayMenuRotations.Text = "Half turns: " + halfTurns.ToString() + ((halfTurns > 0) ? " (" + rotSide.ToString() + ")" : "");
+            TrayMenuRotations.Text = "Half turns: " + halfTurns.ToString() + ((halfTurns > 0) ? " (" + rotSide.ToString() + ")" : "");           
+            TrayMenuGUI.Text = (Visible) ? "Hide main window" : "Show main window";           
 
             if (TimerHours == 0 && TimerMinutes == 0 && TimerSeconds == 0)
             {
@@ -1349,16 +1351,23 @@ namespace CableGuardian
             Show();
         }
 
-        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
             if (SkipFlaggedEventHandlers)
                 return;
 
-            //if (WindowState == FormWindowState.Normal)
-            if (Visible)
-                MinimizeToTray();
-            else
-                RestoreFromTray();            
+            if (e.Button == MouseButtons.Left) // make context menu open also with the left
+            {
+                MethodInfo mi = typeof(NotifyIcon).GetMethod("ShowContextMenu", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi.Invoke(notifyIcon1, null);
+            }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                if (Visible)
+                    MinimizeToTray();
+                else
+                    RestoreFromTray();
+            }
         }
 
         private void PictureBoxMinimize_MouseClick(object sender, MouseEventArgs e)
