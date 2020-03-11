@@ -216,6 +216,8 @@
     <None Include="Art\Close_hover.png" />
     <None Include="Art\Help_hover.png" />
     <None Include="Art\Minimize_hover.png" />
+    <None Include="Art\GetPro.png" />
+    <None Include="Art\GetPro_hover.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

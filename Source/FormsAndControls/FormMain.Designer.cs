@@ -66,6 +66,7 @@
             this.numericUpDownRotMemory = new System.Windows.Forms.NumericUpDown();
             this.labelRotMemMinutes = new System.Windows.Forms.Label();
             this.profileEditor = new CableGuardian.ProfileEditor();
+            this.pictureBoxGetPro = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -76,6 +77,7 @@
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonReset
@@ -482,6 +484,16 @@
             this.profileEditor.Size = new System.Drawing.Size(695, 445);
             this.profileEditor.TabIndex = 48;
             // 
+            // pictureBoxGetPro
+            // 
+            this.pictureBoxGetPro.Image = global::CableGuardian.Properties.Resources.GetPro;
+            this.pictureBoxGetPro.Location = new System.Drawing.Point(234, 166);
+            this.pictureBoxGetPro.Name = "pictureBoxGetPro";
+            this.pictureBoxGetPro.Size = new System.Drawing.Size(85, 32);
+            this.pictureBoxGetPro.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBoxGetPro.TabIndex = 74;
+            this.pictureBoxGetPro.TabStop = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -489,6 +501,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.pictureBoxGetPro);
             this.Controls.Add(this.labelRotMemMinutes);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.checkBoxSticky);
@@ -535,6 +548,7 @@
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -577,6 +591,7 @@
         private System.Windows.Forms.CheckBox checkBoxRememberRotation;
         private System.Windows.Forms.NumericUpDown numericUpDownRotMemory;
         private System.Windows.Forms.Label labelRotMemMinutes;
+        private System.Windows.Forms.PictureBox pictureBoxGetPro;
     }
 }
 
