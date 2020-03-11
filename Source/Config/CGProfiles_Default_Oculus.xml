@@ -3,7 +3,7 @@
   <StartupProfile />
   <Profiles>       
     <Profile>
-      <Name>Default</Name>
+      <Name>CG_Beep</Name>
       <Frozen>false</Frozen>
       <RequireHome>false</RequireHome>
       <API>OculusVR</API>
@@ -73,7 +73,7 @@
       </Actions>
     </Profile>
     <Profile>
-      <Name>Speech</Name>
+      <Name>CG_Speech</Name>
       <Frozen>false</Frozen>
       <RequireHome>false</RequireHome>
       <API>OculusVR</API>

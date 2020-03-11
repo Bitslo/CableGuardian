@@ -60,10 +60,10 @@ namespace CableGuardian
         public bool InvertLeftRight { get { return (LeftRightMultiplier == -1); } set { LeftRightMultiplier = (value) ? -1 : 1; } } 
         int LeftRightMultiplier = 1;
 
-        public const string S_Yaw0 = "facing Front (0\u00B0)";        
-        public const string S_Yaw180 = "facing Back (180\u00B0)";
+        public const string S_Yaw0 = "facing Front  (0\u00B0)";        
+        public const string S_Yaw180 = "facing Back  (180\u00B0)";
         public const string S_Yaw0Yaw180 = "facing Front or Back";
-        public const string S_ResetPosition = "total rotation = 0 (neutral)";
+        public const string S_ResetPosition = "total rotation = 0  (NEUTRAL)";
 
         const double Threshold180Abs = 3.14F;
 
