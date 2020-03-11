@@ -25,7 +25,7 @@ namespace CableGuardian
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
         public static string SteamVRProcessName { get; private set; } = "vrserver";        
         public static bool MinimizeAtUserStartup { get; set; } = false;
-        public static bool MinimizeAtAutoStartup { get; set; } = false;        
+        public static bool MinimizeAtAutoStartup { get; set; } = true;        
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
         public static bool ConnLostNotificationIsSticky { get; set; } = true;
         public static bool NotifyOnAPIQuit { get; set; } = false;

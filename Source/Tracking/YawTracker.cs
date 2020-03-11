@@ -63,12 +63,12 @@ namespace CableGuardian
         public const string S_Yaw0 = "facing Front (0\u00B0)";        
         public const string S_Yaw180 = "facing Back (180\u00B0)";
         public const string S_Yaw0Yaw180 = "facing Front or Back";
-        public const string S_ResetPosition = "total rotation = 0 (reset position)";
+        public const string S_ResetPosition = "total rotation = 0 (neutral)";
 
         const double Threshold180Abs = 3.14F;
 
         /// <summary>
-        /// Occurs when Yaw axis value 0 is crossed in the reset position (= zero rotation)
+        /// Occurs when Yaw axis value 0 is crossed in neutral orientation (= zero rotation)
         /// </summary>
         public EventHandler<RotationEventArgs> ResetPosition;
         /// <summary>

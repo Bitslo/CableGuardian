@@ -59,6 +59,7 @@
             // 
             // numericUpDownHalfTurns
             // 
+            this.numericUpDownHalfTurns.BackColor = System.Drawing.Color.Yellow;
             this.numericUpDownHalfTurns.Location = new System.Drawing.Point(140, 3);
             this.numericUpDownHalfTurns.Maximum = new decimal(new int[] {
             99,
@@ -91,6 +92,7 @@
             // 
             // numericUpDownPeak
             // 
+            this.numericUpDownPeak.BackColor = System.Drawing.Color.Yellow;
             this.numericUpDownPeak.Location = new System.Drawing.Point(108, 3);
             this.numericUpDownPeak.Maximum = new decimal(new int[] {
             99,

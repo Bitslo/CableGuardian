@@ -1485,7 +1485,7 @@ namespace CableGuardian
             {
                 string msg = String.Format("Turn counter has been reset to zero. " +
                                             "It is assumed that the headset cable is currently completely untwisted.{0}{0}" +
-                                            "Note that the reset position is always set to 0 degrees (facing forward) " +
+                                            "Note that the neutral orientation (no twist) is always set to 0 degrees (facing forward) " +
                                             "regardless of the headset orientation when applying this reset operation. Also note that by default " +
                                             "the turn counter is reset when {1} is started. You can change this behaviour with the \"Remember turn count\" -feature. " +
                                             "You can perform the reset from the tray icon as well. {0}{0}" +

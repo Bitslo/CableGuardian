@@ -30,13 +30,13 @@ namespace CableGuardian
 
             labelPeak.Text = "peak half-turns   \u2265";
             labelHalfTurnsMax.Text = "AND    half-turns   \u2264";
-            TTip.SetToolTip(numericUpDownHalfTurns, "Number of half-turns (180\u00B0) to one side.");
+            TTip.SetToolTip(numericUpDownHalfTurns, "The required number of half-turns (180\u00B0) to one side before triggering the sound.");
             TTip.SetToolTip(numericUpDownHalfTurnsMax, $"Half-turns upper limit. Trigger won't fire when half-turn count is higher than this value.");
             TTip.SetToolTip(comboBoxAccu,$"Movement direction at trigger point.{Environment.NewLine}" +
                                         $"For example if you only want to be alerted when your current movement direction is increasing the cable twisting. ");
-            TTip.SetToolTip(numericUpDownPeak, $"Required peak number of half-turns (180\u00B0) to one side before triggering.{Environment.NewLine}" +
-                                                $"When returning to reset position, the trigger will fire (once) ONLY if this number of half-turns has been reached.");
-            TTip.SetToolTip(comboBoxSide, "Direction of the overall rotation from reset position. ( = the direction where cable twisting increases)");            
+            TTip.SetToolTip(numericUpDownPeak, $"The required PEAK number of half-turns (180\u00B0) to one side before triggering the sound.{Environment.NewLine}" +
+                                                $"--> When returning to neutral orientation, the trigger will fire (once) ONLY if this number of half-turns has been reached.");
+            TTip.SetToolTip(comboBoxSide, "Direction of the overall rotation from neutral orientation. ( = the direction where cable twisting increases)");            
                        
         }
               

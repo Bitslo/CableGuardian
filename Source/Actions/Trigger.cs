@@ -31,7 +31,7 @@ namespace CableGuardian
 
         uint FireCountSinceLastResetPos = 0;
         /// <summary>
-        /// Max number of times the trigger can be fired until it must be reset by the tracker returning to reset position.
+        /// Max number of times the trigger can be fired until it must be reset by the tracker returning to neutral orientation.
         /// 0 = unlimited.
         /// </summary>
         public uint FireLimitPerReset { get; set; }
