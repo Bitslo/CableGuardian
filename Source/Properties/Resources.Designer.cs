@@ -153,7 +153,7 @@ namespace CableGuardian.Properties {
         ///  &lt;StartupProfile /&gt;
         ///  &lt;Profiles&gt;       
         ///    &lt;Profile&gt;
-        ///      &lt;Name&gt;Default&lt;/Name&gt;
+        ///      &lt;Name&gt;CG_Beep&lt;/Name&gt;
         ///      &lt;Frozen&gt;false&lt;/Frozen&gt;
         ///      &lt;RequireHome&gt;false&lt;/RequireHome&gt;
         ///      &lt;API&gt;OculusVR&lt;/API&gt;
@@ -178,7 +178,7 @@ namespace CableGuardian.Properties {
         ///  &lt;StartupProfile /&gt;
         ///  &lt;Profiles&gt;
         ///    &lt;Profile&gt;
-        ///      &lt;Name&gt;Default&lt;/Name&gt;
+        ///      &lt;Name&gt;CG_Beep&lt;/Name&gt;
         ///      &lt;Frozen&gt;false&lt;/Frozen&gt;
         ///      &lt;RequireHome&gt;false&lt;/RequireHome&gt;
         ///      &lt;API&gt;OpenVR&lt;/API&gt;
@@ -233,6 +233,26 @@ namespace CableGuardian.Properties {
         internal static System.Drawing.Bitmap Close_hover {
             get {
                 object obj = ResourceManager.GetObject("Close_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Explorer {
+            get {
+                object obj = ResourceManager.GetObject("Explorer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Explorer_hover {
+            get {
+                object obj = ResourceManager.GetObject("Explorer_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

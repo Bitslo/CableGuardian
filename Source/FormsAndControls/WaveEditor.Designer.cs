@@ -54,7 +54,7 @@
             // 
             // trackBarVolume
             // 
-            this.trackBarVolume.Location = new System.Drawing.Point(186, 4);
+            this.trackBarVolume.Location = new System.Drawing.Point(189, 4);
             this.trackBarVolume.Maximum = 100;
             this.trackBarVolume.Name = "trackBarVolume";
             this.trackBarVolume.Size = new System.Drawing.Size(104, 45);
@@ -65,7 +65,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(194, 34);
+            this.label1.Location = new System.Drawing.Point(197, 34);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 3;
@@ -73,7 +73,7 @@
             // 
             // trackBarPan
             // 
-            this.trackBarPan.Location = new System.Drawing.Point(291, 4);
+            this.trackBarPan.Location = new System.Drawing.Point(294, 4);
             this.trackBarPan.Maximum = 100;
             this.trackBarPan.Minimum = -100;
             this.trackBarPan.Name = "trackBarPan";
@@ -85,7 +85,7 @@
             // labelL
             // 
             this.labelL.ForeColor = System.Drawing.Color.White;
-            this.labelL.Location = new System.Drawing.Point(298, 34);
+            this.labelL.Location = new System.Drawing.Point(301, 34);
             this.labelL.Name = "labelL";
             this.labelL.Size = new System.Drawing.Size(51, 13);
             this.labelL.TabIndex = 5;
@@ -94,7 +94,7 @@
             // labelR
             // 
             this.labelR.ForeColor = System.Drawing.Color.White;
-            this.labelR.Location = new System.Drawing.Point(345, 34);
+            this.labelR.Location = new System.Drawing.Point(348, 34);
             this.labelR.Name = "labelR";
             this.labelR.Size = new System.Drawing.Size(46, 13);
             this.labelR.TabIndex = 6;
@@ -123,7 +123,7 @@
             // labelVolVal
             // 
             this.labelVolVal.ForeColor = System.Drawing.Color.White;
-            this.labelVolVal.Location = new System.Drawing.Point(260, 34);
+            this.labelVolVal.Location = new System.Drawing.Point(263, 34);
             this.labelVolVal.Name = "labelVolVal";
             this.labelVolVal.Size = new System.Drawing.Size(35, 13);
             this.labelVolVal.TabIndex = 10;
@@ -134,7 +134,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(395, 34);
+            this.label5.Location = new System.Drawing.Point(397, 34);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(42, 13);
             this.label5.TabIndex = 12;
@@ -144,7 +144,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(330, 34);
+            this.label2.Location = new System.Drawing.Point(333, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 13;
@@ -154,7 +154,7 @@
             // 
             this.pictureBoxRefresh.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxRefresh.Image = global::CableGuardian.Properties.Resources.Refresh24;
-            this.pictureBoxRefresh.Location = new System.Drawing.Point(160, 22);
+            this.pictureBoxRefresh.Location = new System.Drawing.Point(165, 22);
             this.pictureBoxRefresh.Name = "pictureBoxRefresh";
             this.pictureBoxRefresh.Size = new System.Drawing.Size(24, 24);
             this.pictureBoxRefresh.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -165,7 +165,7 @@
             // 
             this.pictureBoxPlay.Cursor = System.Windows.Forms.Cursors.Default;
             this.pictureBoxPlay.Image = global::CableGuardian.Properties.Resources.Play;
-            this.pictureBoxPlay.Location = new System.Drawing.Point(408, 3);
+            this.pictureBoxPlay.Location = new System.Drawing.Point(410, 3);
             this.pictureBoxPlay.Name = "pictureBoxPlay";
             this.pictureBoxPlay.Size = new System.Drawing.Size(20, 32);
             this.pictureBoxPlay.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -222,10 +222,10 @@
             // pictureBoxAddWaves
             // 
             this.pictureBoxAddWaves.Cursor = System.Windows.Forms.Cursors.Default;
-            this.pictureBoxAddWaves.Image = global::CableGuardian.Properties.Resources.PlusSmall;
-            this.pictureBoxAddWaves.Location = new System.Drawing.Point(139, 27);
+            this.pictureBoxAddWaves.Image = global::CableGuardian.Properties.Resources.Explorer;
+            this.pictureBoxAddWaves.Location = new System.Drawing.Point(138, 25);
             this.pictureBoxAddWaves.Name = "pictureBoxAddWaves";
-            this.pictureBoxAddWaves.Size = new System.Drawing.Size(16, 16);
+            this.pictureBoxAddWaves.Size = new System.Drawing.Size(24, 20);
             this.pictureBoxAddWaves.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxAddWaves.TabIndex = 62;
             this.pictureBoxAddWaves.TabStop = false;
