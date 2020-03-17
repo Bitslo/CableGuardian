@@ -108,9 +108,10 @@ namespace CableGuardian
             if (Config.ConfigFileMissingAtStartup) // Most likely a first time launch
             {                
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
-                        $"1. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
-                        $"2. For an overview, click the \"?\" in the top right corner.{Environment.NewLine}{Environment.NewLine}" +
-                        $"3. For a quick menu, click the CG icon in the system tray.";
+                        $"1. The intended control method is mouse + keyboard.   {Environment.NewLine}{Environment.NewLine}" +
+                        $"2. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
+                        $"3. For an overview, click the \"?\" in the top right corner.{Environment.NewLine}{Environment.NewLine}" +
+                        $"4. For a quick menu, click the CG icon in the system tray.";
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
