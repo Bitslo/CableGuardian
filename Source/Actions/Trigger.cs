@@ -36,7 +36,7 @@ namespace CableGuardian
         /// </summary>
         public uint FireLimitPerReset { get; set; }
 
-        YawTrackerOrientationEvent _TriggeringEvent = YawTrackerOrientationEvent.Yaw0;
+        YawTrackerOrientationEvent _TriggeringEvent = YawTrackerOrientationEvent.Yaw0Yaw180;
         public YawTrackerOrientationEvent TriggeringEvent 
         {
             get { return _TriggeringEvent; }
@@ -51,6 +51,7 @@ namespace CableGuardian
         {
             TriggeringTracker = triggeringTracker;            
             RotCondition = new RotationCondition(this);
+            TriggeringEvent = YawTrackerOrientationEvent.Yaw0Yaw180;
         }
 
         void RefreshTrackerEventsSubscription()
@@ -137,7 +138,7 @@ namespace CableGuardian
                 if (Enum.TryParse(xTrackerTrigger.GetElementValueTrimmed("TriggeringEvent"), out YawTrackerOrientationEvent trig))
                     TriggeringEvent = trig;
                 else
-                    TriggeringEvent =  YawTrackerOrientationEvent.Yaw0;
+                    TriggeringEvent =  YawTrackerOrientationEvent.Yaw0Yaw180;
 
                 FireLimitPerReset = (uint)xTrackerTrigger.GetElementValueInt("FireLimitPerZero");
 
