@@ -39,10 +39,7 @@ namespace CableGuardian
             Environment.CurrentDirectory = ExeFolder; // always run from exe folder to avoid problems with dlls         
 
             ConfigFile = ExeFolder + $@"\{ConfigName}.xml";
-            LogFile = ExeFolder + $@"\CGLog.txt";            
-
-            CleanLegacyOpenVRFiles();
-            WaveFilePool.MigrateWaveFiles();            
+            LogFile = ExeFolder + $@"\CGLog.txt";   
 
             if (args.Count() > 0)
             {
@@ -100,19 +97,6 @@ namespace CableGuardian
                     }
                 }
             }
-        }
-
-      
-        /// <summary>
-        /// The folder structure was changed after version 1.2.5
-        /// In case of a manual update, try to remove the previous version OpenVR API dlls from their previous location.
-        /// </summary>
-        static void CleanLegacyOpenVRFiles()
-        {
-            try{File.Delete(ExeFolder + "\\openvr_api_32\\openvr_api.dll");} catch (Exception){}
-            try{File.Delete(ExeFolder + "\\openvr_api_64\\openvr_api.dll");} catch (Exception){}
-            try{Directory.Delete(ExeFolder + "\\openvr_api_32");} catch (Exception){}
-            try{Directory.Delete(ExeFolder + "\\openvr_api_64");}catch (Exception){}
         }
     }
 }

@@ -80,34 +80,6 @@ namespace CableGuardian
                     File.AppendAllText(bulkDir + "\\errors.txt", item + Environment.NewLine + e.Message + Environment.NewLine + Environment.NewLine);
                 }
             }
-        }
-
-        /// <summary>
-        /// wav files were previously located in the exe folder. Try to migrate under wav folder.
-        /// </summary>
-        public static void MigrateWaveFiles()
-        {            
-            try
-            {
-                // this folder should already exist with a newer version... just in case:
-                Directory.CreateDirectory(WaveFolder);
-                foreach (var item in Directory.GetFiles(Program.ExeFolder, "*" + WaveFileExtension))
-                {
-                    try
-                    {
-                        FileInfo fi = new FileInfo(item);
-                        File.Move(item, WaveFolder + "\\" + fi.Name);
-                    }
-                    catch (Exception)
-                    {
-                        // intentionally ignore                        
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // intentionally ignore
-            }
-        }
+        }      
     }
 }
