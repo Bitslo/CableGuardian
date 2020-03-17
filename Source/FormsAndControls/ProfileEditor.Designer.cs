@@ -107,12 +107,12 @@
             // 
             this.labelAddHint.AutoSize = true;
             this.labelAddHint.ForeColor = System.Drawing.Color.White;
-            this.labelAddHint.Location = new System.Drawing.Point(526, 39);
+            this.labelAddHint.Location = new System.Drawing.Point(539, 40);
             this.labelAddHint.Name = "labelAddHint";
-            this.labelAddHint.Size = new System.Drawing.Size(94, 13);
+            this.labelAddHint.Size = new System.Drawing.Size(76, 13);
             this.labelAddHint.TabIndex = 52;
             this.labelAddHint.Tag = "MANUAL";
-            this.labelAddHint.Text = "Add an action  --->";
+            this.labelAddHint.Text = "Add a rule  --->";
             // 
             // textBoxName
             // 
