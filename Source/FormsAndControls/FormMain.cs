@@ -415,7 +415,7 @@ namespace CableGuardian
             TTip.SetToolTip(numericUpDownRotMemory, $"Time limit (minutes) for the turn count memory (when {Config.ProgramTitle} is closed). The last turn count will be used at startup if the elapsed time since the last exit is less or equal to this value." + Environment.NewLine
                                                     + "If more time has passed, turn count will be zero at startup. Useful when you want to make sure the turn count will be zero after a longer pause (during which you probably unwinded the cable)." + Environment.NewLine + Environment.NewLine
                                                     + "***    0 = no limit = remember forever    ***");
-            TTip.SetToolTip(pictureBoxGetPro, $"Cable Guardian Pro available!{Environment.NewLine}Click to visit the Steam Store page." + Environment.NewLine + Environment.NewLine
+            TTip.SetToolTip(pictureBoxGetPro, $"Cable Guardian Pro available!{Environment.NewLine}Click to visit the Steam store page." + Environment.NewLine + Environment.NewLine
                                         + "Features include:" + Environment.NewLine
                                        + $"\u2022 Visual indicators" + Environment.NewLine
                                        + $"\u2022 Floor markers" + Environment.NewLine
@@ -529,14 +529,21 @@ namespace CableGuardian
         private void PictureBoxGetPro_Click(object sender, EventArgs e)
         {
             try
-            {
-                Process.Start("https://store.steampowered.com/app/1261250");             
+            {                
+                Process.Start("steam://store/1261250");                
             }
             catch (Exception ex)
             {
-                string msg = "Sorry, unable to open the default web browser.  :(" 
-                        + Environment.NewLine + Environment.NewLine + ex.Message;
-                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    Process.Start("https://store.steampowered.com/app/1261250");
+                }
+                catch (Exception exx)
+                {
+                    string msg = "Sorry, unable to open the Steam store page.  :("
+                            + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine + exx.Message;
+                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
