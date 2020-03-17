@@ -15,8 +15,8 @@ namespace CableGuardian
         public const string CgAudioExtension = ".cga";
         public static string WaveFolder { get { return Program.ExeFolder + WaveFolder_Rel; } }
 
-        public const string WaveFolder_Rel = "\\wav";
-        public const string DefaultAudioFolder_Rel = "\\default";        
+        public const string WaveFolder_Rel = "\\CUSTOM\\sounds";
+        public const string DefaultAudioFolder_Rel = "\\default\\sounds";        
 
         public static IList<WaveFileInfo> GetAvailableWaves()
         {
