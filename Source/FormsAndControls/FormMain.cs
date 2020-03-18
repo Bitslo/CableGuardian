@@ -1377,17 +1377,14 @@ namespace CableGuardian
         }
 
         void MinimizeToTray()
-        {
-            //WindowState = FormWindowState.Minimized;
-            //ShowInTaskbar = false;
+        {            
             Hide();
         }
         void RestoreFromTray()
-        {
-            //WindowState = FormWindowState.Normal;
-            //ShowInTaskbar = true;         
+        {         
             ForceHide = false;
             Show();
+            Activate();
         }
 
         private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
