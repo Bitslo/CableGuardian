@@ -179,7 +179,7 @@ namespace CableGuardian
                             return;
                     }
                     
-                    WaveOut.Stop();
+                    WaveOut?.Stop();
                     Thread.Sleep(5);                    
                 }
             }
