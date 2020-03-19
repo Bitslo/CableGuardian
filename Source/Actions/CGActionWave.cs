@@ -44,6 +44,11 @@ namespace CableGuardian
 
         BackgroundWorker Worker = new BackgroundWorker();
 
+        bool WaveInitializationInProgress = false;
+        const int WaveMonitorLoopLength_ms = 20;
+        int WaveMonitorLoopCount = 0;
+        const int MaxPlayDuration_ms = 5000;
+
         int WaveDurationMs = 0;
         public int LoopCount { get; set; } = 1;
 
@@ -113,8 +118,9 @@ namespace CableGuardian
         /// </summary>
         void InitializeWave()
         {
+            WaveInitializationInProgress = true;
             try
-            {
+            {            
                 DisposeNAudioComponents();
                 WaveOut = new WaveOutEvent();
 
@@ -126,6 +132,10 @@ namespace CableGuardian
                 WaveOut.DeviceNumber = AudioDevices.GetWaveOutDeviceNumber();
                 WaveOut.Init(MixedWave);
 
+                // limit play duration in case wave length is reported incorrectly or a long sound is loaded   
+                int playDuration = (WaveDurationMs < MaxPlayDuration_ms && WaveDurationMs > WaveMonitorLoopLength_ms) ? WaveDurationMs : MaxPlayDuration_ms;                
+                WaveMonitorLoopCount = Convert.ToInt32(Math.Ceiling(playDuration / (float)WaveMonitorLoopLength_ms));
+
                 Error = false;                
             }
             catch (Exception e)
@@ -133,6 +143,7 @@ namespace CableGuardian
                 Error = true;                
                 Config.WriteLog("Unable to initialize audio for " + (Wave?.DisplayName ?? "") + Environment.NewLine + e.Message);
             }
+            WaveInitializationInProgress = false;
         }
 
         void ProcessWaveStream()
@@ -154,18 +165,22 @@ namespace CableGuardian
         void DoWork(object sender, DoWorkEventArgs e)
         {
             try
-            {
+            {                
                 for (int i = 0; i < LoopCount; i++)
                 {
                     MixedWave.Position = 0;
                     WaveOut.Play();
-                    if (WaveDurationMs < 5000) // in case wave length is reported incorrectly or a long sound is loaded
-                        Thread.Sleep(WaveDurationMs);
-                    else
-                        Thread.Sleep(5000);
 
+                    for (int j = 0; j < WaveMonitorLoopCount; j++)
+                    {
+                        Thread.Sleep(WaveMonitorLoopLength_ms);
+
+                        if (WaveInitializationInProgress)   // wave was changed mid play
+                            return;
+                    }
+                    
                     WaveOut.Stop();
-                    Thread.Sleep(5);
+                    Thread.Sleep(5);                    
                 }
             }
             catch (Exception)
@@ -213,7 +228,7 @@ namespace CableGuardian
                         
         public void Play()
         {
-            if (!Error && Wave != null && Enabled)
+            if (!Error && Wave != null && Enabled && !WaveInitializationInProgress)
             {
                 if (!Worker.IsBusy)
                 {
