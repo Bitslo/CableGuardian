@@ -194,7 +194,7 @@
             // checkBoxHome
             // 
             this.checkBoxHome.ForeColor = System.Drawing.Color.White;
-            this.checkBoxHome.Location = new System.Drawing.Point(354, 38);
+            this.checkBoxHome.Location = new System.Drawing.Point(346, 38);
             this.checkBoxHome.Name = "checkBoxHome";
             this.checkBoxHome.Size = new System.Drawing.Size(131, 17);
             this.checkBoxHome.TabIndex = 63;
@@ -224,12 +224,13 @@
             // 
             // checkBoxResetOnMount
             // 
+            this.checkBoxResetOnMount.AutoSize = true;
             this.checkBoxResetOnMount.ForeColor = System.Drawing.Color.White;
             this.checkBoxResetOnMount.Location = new System.Drawing.Point(191, 38);
             this.checkBoxResetOnMount.Name = "checkBoxResetOnMount";
-            this.checkBoxResetOnMount.Size = new System.Drawing.Size(162, 17);
+            this.checkBoxResetOnMount.Size = new System.Drawing.Size(152, 17);
             this.checkBoxResetOnMount.TabIndex = 65;
-            this.checkBoxResetOnMount.Text = "Reset turn counter on mount";
+            this.checkBoxResetOnMount.Text = "Reset turn count on mount";
             this.checkBoxResetOnMount.UseVisualStyleBackColor = true;
             // 
             // ProfileEditor

@@ -398,9 +398,8 @@ namespace CableGuardian
                 + "NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
             TTip.SetToolTip(buttonJingle, $"Adjust the sound that plays when you put on the headset.");
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
-            TTip.SetToolTip(labelAutoStart, $"After dialing in your rotation settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
-                                            + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API." + Environment.NewLine + Environment.NewLine
-                                            + "p.s. I also recommend trying the \"Play mounting sound\" -feature that let's you know that the app is alive and well when you enter VR.");
+            TTip.SetToolTip(labelAutoStart, $"After dialing in your settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
+                                            + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API.");
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
