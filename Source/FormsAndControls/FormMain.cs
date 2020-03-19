@@ -568,6 +568,10 @@ namespace CableGuardian
             OpenVRConn.StatusChanged -= OnVRConnectionStatusChanged;
             OpenVRConn?.Dispose();
             OculusConn?.Dispose();
+            System.Threading.Thread.Sleep(300); // no scientific basis. Got one super rare exception from OpenVRConn at exit, perhaps a small wait will help.
+                               // ... the vr connection keepalive system was built in ancient times and I'm sure I'd do it a bit differently now. 
+                               // ... but thankfully I don't have to since it has worked well enough.
+
             AlarmTimer.Dispose();
         }
        

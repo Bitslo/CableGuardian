@@ -107,8 +107,9 @@ namespace CableGuardian
                         StatusMessage = "OpenVR headset connection OK.";
                         Status = VRConnectionStatus.AllOK;
                     }
-                    
-                    Worker.ReportProgress(0, null);
+
+                    if (Worker != null && !Worker.CancellationPending)
+                        Worker.ReportProgress(0, null);
                 }
             }
         }
