@@ -528,8 +528,11 @@ namespace CableGuardian
         private void PictureBoxGetPro_Click(object sender, EventArgs e)
         {
             try
-            {                
-                Process.Start("steam://store/1261250");                
+            {
+                if (Process.GetProcessesByName("Steam").Any())
+                    Process.Start("steam://store/1261250");
+                else
+                    throw new Exception("Steam not running");
             }
             catch (Exception ex)
             {
