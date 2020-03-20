@@ -104,7 +104,22 @@ namespace CableGuardian
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
-            
+
+            if (Config.ProfilesLoadedFromBackup)
+            {
+                RestoreFromTray();
+                SetProfilesSaveStatus(false);
+                string msg = $"Failed to read profiles from the last save file.{Environment.NewLine}Profiles were loaded from the previous backup file but not saved to disk.";
+                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else if (Config.ProfilesFileLoadFailed)
+            {
+                RestoreFromTray();
+                SetProfilesSaveStatus(false);
+                string msg = $"Failed to read profiles from disk.{Environment.NewLine}Defaults were loaded but not saved to disk.";
+                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             if (Config.ConfigFileMissingAtStartup) // Most likely a first time launch
             {                
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +

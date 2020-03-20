@@ -42,6 +42,8 @@ namespace CableGuardian
         public static bool WaveComboRefreshRequired { get; set; }  = false;
         public static bool ConfigFileMissingAtStartup { get; private set; } = false;
         public static bool ProfilesFileMissingAtStartup { get; private set; } = false;
+        public static bool ProfilesFileLoadFailed { get; private set; } = false;
+        public static bool ProfilesLoadedFromBackup { get; private set; } = false;
         public static string LastSessionProfileName { get; private set; } = "";
         public static uint LastExitSeconds { get; private set; } = 0;
         public static int LastHalfTurn { get; private set; } = 0;
@@ -62,6 +64,13 @@ namespace CableGuardian
             ManifestContents = ManifestContents.Replace("$APPKEY$", ManifestAppKey);
             ManifestContents = ManifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
             ManifestContents = ManifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
+        }
+
+        static string GetLatestProfilesBackupFile()
+        {
+            List<string> files = Directory.GetFiles(Program.ExeFolder, ProfilesName + ".*", SearchOption.TopDirectoryOnly).ToList();
+            files?.Sort();
+            return files?.Where(str => str.ToUpper().Contains("XML") == false).FirstOrDefault();
         }
 
         public static void WriteWindowsStartupToRegistry(bool startWithWindows)
@@ -241,19 +250,52 @@ namespace CableGuardian
                 ConfigFileMissingAtStartup = true;
             }
         }
-           
+
         public static void ReadProfilesFromFile()
         {
-            XDocument XmlProfiles;
+            XDocument XmlProfiles = null;
+            bool error = false;
 
             if (File.Exists(ProfilesFile))
             {
-                XmlProfiles = XDocument.Load(ProfilesFile, LoadOptions.PreserveWhitespace);
+                try
+                {
+                    XmlProfiles = XDocument.Load(ProfilesFile, LoadOptions.PreserveWhitespace);
+                }
+                catch (Exception e)
+                {
+                    XmlProfiles = null;
+                    error = true;
+                    WriteLog($"Error loading {ProfilesFile}. {Environment.NewLine}{e.Message}");
+                }
             }
-            else
+            if (XmlProfiles == null)
             {
-                ProfilesFileMissingAtStartup = true;
-                
+                string latestBackup = GetLatestProfilesBackupFile();
+                if (latestBackup != null && File.Exists(latestBackup))
+                {
+                    try
+                    {
+                        XmlProfiles = XDocument.Load(latestBackup, LoadOptions.PreserveWhitespace);
+                        ProfilesLoadedFromBackup = (XmlProfiles != null);
+                    }
+                    catch (Exception e)
+                    {
+                        XmlProfiles = null;
+                        error = true;
+                        WriteLog($"Error loading {latestBackup}. {Environment.NewLine}{e.Message}");
+                    }
+                }
+                else
+                {
+                    ProfilesFileMissingAtStartup = true;
+                }
+            }
+
+            if (XmlProfiles == null)
+            {
+                ProfilesFileLoadFailed = error;
+
                 // try to detect Oculus HMD and set default profile accordingly
                 if (FormMain.OculusConn.OculusHMDConnected())
                     XmlProfiles = XDocument.Parse(CableGuardian.Properties.Resources.CGProfiles_Default_Oculus, LoadOptions.PreserveWhitespace);
