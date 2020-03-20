@@ -45,7 +45,7 @@ namespace CableGuardian
         BackgroundWorker Worker = new BackgroundWorker();
 
         bool WaveInitializationInProgress = false;
-        const int WaveMonitorLoopLength_ms = 20;
+        const int WaveMonitorLoopLength_ms = 10;
         int WaveMonitorLoopCount = 0;
         const int MaxPlayDuration_ms = 5000;
 
@@ -169,18 +169,20 @@ namespace CableGuardian
                 for (int i = 0; i < LoopCount; i++)
                 {
                     MixedWave.Position = 0;
-                    WaveOut.Play();
+                    WaveOut?.Play();
 
                     for (int j = 0; j < WaveMonitorLoopCount; j++)
                     {
-                        Thread.Sleep(WaveMonitorLoopLength_ms);
-
                         if (WaveInitializationInProgress)   // wave was changed mid play
                             return;
+
+                        Thread.Sleep(WaveMonitorLoopLength_ms);
                     }
-                    
-                    WaveOut?.Stop();
-                    Thread.Sleep(5);                    
+
+                    if (WaveInitializationInProgress)
+                        return;
+
+                    WaveOut?.Stop();                    
                 }
             }
             catch (Exception)
