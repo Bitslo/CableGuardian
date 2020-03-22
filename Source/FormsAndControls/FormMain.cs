@@ -548,9 +548,16 @@ namespace CableGuardian
             try
             {
                 if (Process.GetProcessesByName("Steam").Any())
+                {
+                    if (Process.GetProcessesByName(Config.SteamVRProcessName).Any())
+                        throw new Exception("SteamVR is running and preventing opening store.");
+
                     Process.Start("steam://store/1261250");
+                }
                 else
+                {
                     throw new Exception("Steam not running");
+                }
             }
             catch (Exception ex)
             {
