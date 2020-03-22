@@ -181,7 +181,7 @@ namespace CableGuardian
                 Alarm.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_TickTock" + WaveFilePool.CgAudioExtension));
                 Alarm.Pan = 0;
                 Alarm.Volume = 100;
-                Alarm.LoopCount = 3;
+                Alarm.LoopCount = 2;
             }
             
             if (Jingle.Wave == null)

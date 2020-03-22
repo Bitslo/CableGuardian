@@ -419,9 +419,9 @@ namespace CableGuardian
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
             TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
-                                                + "NOTE: You can toggle this only when an OpenVR connection has been established." + Environment.NewLine
-                                                + $"NOTE2: {Config.ProgramTitle} will exit automatically only if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
-                                                + $"NOTE3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location.");
+                                                + $"\u2022 NOTE 1: Steam will not show \"Now playing\" when {Config.ProgramTitle} is auto-started. This is intentional to prevent {Config.ProgramTitle} showing up in \"most played\"." + Environment.NewLine
+                                                + $"\u2022 NOTE 2: {Config.ProgramTitle} will exit automatically only if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
+                                                + $"\u2022 NOTE 3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location." + Environment.NewLine);
             TTip.SetToolTip(checkBoxStartMinAuto, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
             TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
             TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
