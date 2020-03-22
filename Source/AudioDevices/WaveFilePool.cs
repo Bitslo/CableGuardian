@@ -32,7 +32,7 @@ namespace CableGuardian
             AddToAvailableWavesFromLocation(WaveFolder_Rel, WaveFileExtension);
 
             // default waves:
-            AddToAvailableWavesFromLocation(DefaultAudioFolder_Rel, CgAudioExtension, 8);                        
+            AddToAvailableWavesFromLocation(DefaultAudioFolder_Rel, CgAudioExtension);                        
 
             _AvailableWaves.Sort((a, b) => a.DisplayName.CompareTo(b.DisplayName));
         }

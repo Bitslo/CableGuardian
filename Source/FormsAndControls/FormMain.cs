@@ -432,7 +432,7 @@ namespace CableGuardian
             TTip.SetToolTip(pictureBoxGetPro, $"Cable Guardian Pro available!{Environment.NewLine}Click to visit the Steam store page." + Environment.NewLine + Environment.NewLine
                                         + "Features include:" + Environment.NewLine
                                        + $"\u2022 Visual indicators" + Environment.NewLine
-                                       + $"\u2022 Floor markers" + Environment.NewLine
+                                       + $"\u2022 Floor markers with alerts" + Environment.NewLine
                                        + $"\u2022 FOV measuring tool" + Environment.NewLine
                                        + $"\u2022 Expandable user interface" + Environment.NewLine
                                        + $"\u2022 More audio clips" + Environment.NewLine);
@@ -473,6 +473,7 @@ namespace CableGuardian
             FormClosing += FormMain_FormClosing;
             FormClosed += FormMain_FormClosed;
             notifyIcon1.MouseClick += NotifyIcon1_MouseClick;
+            notifyIcon1.DoubleClick += NotifyIcon1_DoubleClick;
 
             pictureBoxMinimize.MouseClick += PictureBoxMinimize_MouseClick;
             pictureBoxClose.MouseClick += PictureBoxClose_MouseClick;            
@@ -539,6 +540,8 @@ namespace CableGuardian
 
             AlarmTimer.Tick += AlarmTimer_Tick;
         }
+
+       
 
         private void PictureBoxGetPro_Click(object sender, EventArgs e)
         {
@@ -1425,6 +1428,14 @@ namespace CableGuardian
                 else
                     RestoreFromTray();
             }
+        }
+
+        private void NotifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            if (Visible)
+                MinimizeToTray();
+            else
+                RestoreFromTray();
         }
 
         private void PictureBoxMinimize_MouseClick(object sender, MouseEventArgs e)

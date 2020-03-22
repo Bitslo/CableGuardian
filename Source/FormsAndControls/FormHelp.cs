@@ -21,17 +21,14 @@ namespace CableGuardian
             InitializeComponent();
 
             buttonClose.Click += ButtonClose_Click;
-            buttonPage.Click += ButtonPage_Click;
-
-            labelAddWaves.Text = $"You can add your own sound files (*.wav) by copying them into: \"{WaveFilePool.WaveFolder}\"";            
+            buttonPage.Click += ButtonPage_Click;                        
             
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
                                 " \u00A9 Bitslo";
 
             if (!RunFromDesigner)
-            {
-                labelAddWaves.ForeColor = Config.CGColor;
+            {                
                 labelTray.ForeColor = Config.CGColor;
                 labelSaves.ForeColor = Config.CGColor;             
                 labelRestart.ForeColor = Config.CGErrorColor;

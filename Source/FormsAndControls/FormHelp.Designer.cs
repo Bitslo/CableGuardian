@@ -38,7 +38,6 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.labelAddWaves = new System.Windows.Forms.Label();
             this.labelRestart = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.buttonPage = new System.Windows.Forms.Button();
@@ -167,19 +166,6 @@
             this.textBox4.TabIndex = 9;
             this.textBox4.Text = "https://sonniss.com/gameaudiogdc18";
             // 
-            // labelAddWaves
-            // 
-            this.labelAddWaves.BackColor = System.Drawing.Color.Transparent;
-            this.labelAddWaves.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelAddWaves.ForeColor = System.Drawing.Color.Yellow;
-            this.labelAddWaves.Location = new System.Drawing.Point(15, 213);
-            this.labelAddWaves.Name = "labelAddWaves";
-            this.labelAddWaves.Size = new System.Drawing.Size(1002, 23);
-            this.labelAddWaves.TabIndex = 10;
-            this.labelAddWaves.Text = "You can add your own wave files (*.wav) by copying them into the Cable Guardian e" +
-    "xecutable folder.";
-            this.labelAddWaves.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // labelRestart
             // 
             this.labelRestart.BackColor = System.Drawing.Color.Transparent;
@@ -286,7 +272,6 @@
             this.Controls.Add(this.buttonPage);
             this.Controls.Add(this.labelRestart);
             this.Controls.Add(this.labelVersion);
-            this.Controls.Add(this.labelAddWaves);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormHelp";
@@ -312,7 +297,6 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Label labelAddWaves;
         private System.Windows.Forms.Label labelRestart;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button buttonPage;
