@@ -289,7 +289,12 @@ namespace CableGuardian
                 DeleteAction(selAction);
                 if (listBoxActions.Items.Count > 0)
                 {
-                    listBoxActions.SelectedIndex = (listBoxActions.Items.Count > index) ? index : index-1;
+                    bool skipStatus = SkipFlaggedEventHandlers;
+                    SkipFlaggedEventHandlers = true;
+                    listBoxActions.SelectedIndex = (listBoxActions.Items.Count > index) ? index : index - 1;
+                    SkipFlaggedEventHandlers = skipStatus;
+                    // Force selected index change eventhandler (instead of letting it run automatically above - it did not always run):
+                    ListBoxActions_SelectedIndexChanged(listBoxActions, new EventArgs());
                 }
                 SetControlVisibility();
                 InvokeChangeMade(new ChangeEventArgs(pictureBoxMinus));
