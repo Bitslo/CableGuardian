@@ -235,8 +235,8 @@ namespace CableGuardian
             if (SkipFlaggedEventHandlers)
                 return;
 
-            if (e.OriginalSender is TrackBar == false)            
-                RefreshActionsListbox();
+            if (e.OriginalSender is TrackBar == false)
+                listBoxActions.Invalidate();
 
             InvokeChangeMade(e);
         }
