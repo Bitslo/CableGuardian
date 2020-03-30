@@ -418,18 +418,32 @@ namespace CableGuardian
             if (autoStart)
             {
                 OpenVR.Applications.AddApplicationManifest(Config.ManifestPath, false);
-                OpenVR.Applications.SetApplicationAutoLaunch(Config.ManifestAppKey, true);
+                Thread.Sleep(100);
+                OpenVR.Applications.SetApplicationAutoLaunch(Config.GetManifestAppKey(), true);
+                Thread.Sleep(100);
             }
             else
             {
-                OpenVR.Applications.SetApplicationAutoLaunch(Config.ManifestAppKey, false);
-                OpenVR.Applications.RemoveApplicationManifest(Config.ManifestPath);                
+                OpenVR.Applications.SetApplicationAutoLaunch(Config.GetManifestAppKey(), false);
+                Thread.Sleep(100);
+                OpenVR.Applications.RemoveApplicationManifest(Config.ManifestPath);
+                Thread.Sleep(100);
             }
         }
 
         public bool IsSteamAutoStartEnabled()
         {
-            return OpenVR.Applications.GetApplicationAutoLaunch(Config.ManifestAppKey);
+            return OpenVR.Applications.GetApplicationAutoLaunch(Config.GetManifestAppKey());
+        }
+
+        public bool IsSteamAutoStartEnabled_Legacy()
+        {
+            return OpenVR.Applications.GetApplicationAutoLaunch("cableguardian");
+        }
+        public void SetLegacyAutoStartOff()
+        {
+            OpenVR.Applications.SetApplicationAutoLaunch("cableguardian", false);
+            Thread.Sleep(100);
         }
 
         HmdQuaternion_t GetOrientation(HmdMatrix34_t matrix)
