@@ -1235,7 +1235,7 @@ namespace CableGuardian
             bool check = false;
             try
             {
-                check = OpenVRConn.IsSteamAutoStartEnabled();
+                check = OpenVRConn.IsSteamAutoStartEnabled() && System.IO.File.Exists(Config.ManifestPath);
                 if (!check)
                 {
                     // check old style auto-start and replace with the modern style                    
