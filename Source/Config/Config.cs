@@ -15,7 +15,8 @@ namespace CableGuardian
         public const string ProfilesName = "CGProfiles";
         public const string RegistryPathForStartup = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
         public const string ProgramTitle = "Cable Guardian";
-        public const string ManifestAppKey = "cableguardian";
+        const string ManifestAppKeyBase = "cableguardian";
+        static string ManifestAppKey = null; // will be generated
         public static string ManifestPath { get { return Program.ExeFolder + "\\CableGuardian.vrmanifest"; } }
         public static string ManifestContents { get; private set; }
         public static readonly Color CGColor = Color.FromArgb(86, 184, 254);
@@ -61,9 +62,55 @@ namespace CableGuardian
             ProfilesFile = Program.ExeFolder + $@"\{ProfilesName}.xml";
 
             ManifestContents = Properties.Resources.CableGuardianVrManifest;
-            ManifestContents = ManifestContents.Replace("$APPKEY$", ManifestAppKey);
+            ManifestContents = ManifestContents.Replace("$APPKEY$", GetManifestAppKey());
             ManifestContents = ManifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
             ManifestContents = ManifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
+        }
+
+        /// <summary>
+        /// returns an appkey that is _likely_ unique between CG installations
+        /// </summary>
+        /// <returns></returns>
+        public static string GetManifestAppKey()
+        {
+            if (ManifestAppKey != null)
+                return ManifestAppKey;
+
+            // backwards compatibility with pre-hotfix version:
+            string prev = GetPreviousManifestAppKey();
+            if (prev != null && prev.Length > "cableguardian".Length)
+                return ManifestAppKey = prev;
+
+            string ext = Program.ExeFolder.Length.ToString();
+                        
+            uint code = 0;
+            foreach (char c in Program.ExeFolder)
+            {                
+                code += c;
+            }
+
+            ext += ((int)code).ToString();
+
+            return ManifestAppKey = ManifestAppKeyBase + ext;
+        }
+
+        static string GetPreviousManifestAppKey()
+        {
+            try
+            {
+                if (File.Exists(ManifestPath))
+                {
+                    string[] lines = File.ReadAllLines(ManifestPath);
+                    string appkey = lines.Where(l => l.Contains("app_key")).FirstOrDefault();
+                    appkey = appkey.Substring(appkey.IndexOf("cableguardian"));
+                    return appkey.Substring(0, appkey.IndexOf("\""));                    
+                }
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+            return null;
         }
 
         static string GetLatestProfilesBackupFile()

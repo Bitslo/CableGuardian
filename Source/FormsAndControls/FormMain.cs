@@ -419,8 +419,9 @@ namespace CableGuardian
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
             TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
-                                                + $"\u2022 NOTE 1: Steam will not show \"Now playing\" when {Config.ProgramTitle} is auto-started. This is intentional to prevent {Config.ProgramTitle} showing up in \"most played\"." + Environment.NewLine
-                                                + $"\u2022 NOTE 2: {Config.ProgramTitle} will exit automatically only if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
+                                                + $"\u2022 IMPORTANT: If the installation location changes (for example moving Steam to another drive), this setting needs to be re-activated." + Environment.NewLine + Environment.NewLine
+                                                + $"\u2022 NOTE 1: Steam will not show \"Now playing {Config.ProgramTitle}\" when the app is auto-started. This is intentional to prevent {Config.ProgramTitle} showing up in \"most played\"." + Environment.NewLine
+                                                + $"\u2022 NOTE 2: {Config.ProgramTitle} will exit automatically ONLY if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
                                                 + $"\u2022 NOTE 3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location." + Environment.NewLine);
             TTip.SetToolTip(checkBoxStartMinAuto, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
             TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
@@ -1182,18 +1183,23 @@ namespace CableGuardian
             checkBoxWindowsStart.Checked = check;
             SkipFlaggedEventHandlers = false;
         }
-        
+
         private void CheckBoxSteamVRStart_CheckedChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
                 return;
-          
+
+            SetSteamVRAutoStart(checkBoxSteamVRStart.Checked);
+        }
+
+        void SetSteamVRAutoStart(bool startupStatus)
+        {
             try
             {
                 if (OpenVRConn.Status != VRConnectionStatus.AllOK)
                     throw new Exception("OpenVR connection not established.");
 
-                if (checkBoxSteamVRStart.Checked)
+                if (startupStatus)
                 {
                     Config.WriteManifestFile();
                     OpenVRConn.SetSteamVRAutoStart(true);
@@ -1203,20 +1209,21 @@ namespace CableGuardian
                     OpenVRConn.SetSteamVRAutoStart(false);
                 }
                 pictureBoxSteamVRStartUp.Visible = false;
-                CheckSteamVRStartUpStatus(checkBoxSteamVRStart.Checked);
+                CheckSteamVRStartUpStatus(startupStatus);
             }
             catch (Exception ex)
             {
                 string msg = $"Unable to configure SteamVR startup.{Environment.NewLine}{ex.Message}";
-                TTip.SetToolTip(pictureBoxSteamVRStartUp, msg);                    
+                TTip.SetToolTip(pictureBoxSteamVRStartUp, msg);
                 pictureBoxSteamVRStartUp.Visible = true;
 
                 SkipFlaggedEventHandlers = true;
-                checkBoxSteamVRStart.Checked = !checkBoxSteamVRStart.Checked;
+                checkBoxSteamVRStart.Checked = !startupStatus;
                 SkipFlaggedEventHandlers = false;
-            }                   
+            }
         }
 
+        bool TriedToFixSteamVRStartup = false;
         void CheckSteamVRStartUpStatus(bool? expectedStatus = null)
         {
             if (OpenVRConn.Status != VRConnectionStatus.AllOK)
@@ -1229,6 +1236,17 @@ namespace CableGuardian
             try
             {
                 check = OpenVRConn.IsSteamAutoStartEnabled();
+                if (!check)
+                {
+                    // check old style auto-start and replace with the modern style                    
+                    if (!TriedToFixSteamVRStartup && OpenVRConn.IsSteamAutoStartEnabled_Legacy())
+                    {
+                        TriedToFixSteamVRStartup = true;
+                        OpenVRConn.SetLegacyAutoStartOff();
+                        SetSteamVRAutoStart(true);
+                        return;
+                    }
+                }
             }
             catch (Exception)
             {
