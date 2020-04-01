@@ -9,7 +9,7 @@ namespace CableGuardian
 {
     class Trigger
     {
-        public EventHandler<RotationEventArgs> Fire;
+        public event EventHandler<RotationEventArgs> Fire;
 
         protected YawTracker TriggeringTracker { get; private set; }
         //List<RotationCondition> Conditions { get; } = new List<RotationCondition>();
@@ -124,10 +124,7 @@ namespace CableGuardian
 
         void InvokeFire(RotationEventArgs e)
         {
-            if (Fire != null)
-            {
-                Fire(this, e);
-            }
+            Fire?.Invoke(this, e);
         }
 
 

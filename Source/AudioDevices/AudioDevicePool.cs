@@ -15,7 +15,7 @@ namespace CableGuardian
     /// </summary>
     class AudioDevicePool
     {
-        public EventHandler<EventArgs> WaveOutDeviceChanged;
+        public event EventHandler<EventArgs> WaveOutDeviceChanged;
 
         static List<WaveOutDevice> _WaveOutDevices = new List<WaveOutDevice>();        
 
@@ -147,10 +147,7 @@ namespace CableGuardian
 
         void InvokeWaveOutDeviceChanged(EventArgs e)
         {
-            if (WaveOutDeviceChanged != null)
-            {
-                WaveOutDeviceChanged(this, e);
-            }
+            WaveOutDeviceChanged?.Invoke(this, e);
         }
 
         public void LoadFromXml(XElement xAudioDevicePool)

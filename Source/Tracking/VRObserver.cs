@@ -23,7 +23,7 @@ namespace CableGuardian
 
     class VRObserver
     {
-        public EventHandler<VRObserverEventArgs> StateRefreshed;
+        public event EventHandler<VRObserverEventArgs> StateRefreshed;
                 
         VRConnection VR;
         double HmdYaw;        
@@ -94,10 +94,7 @@ namespace CableGuardian
 
         void InvokeStateRefreshed()
         {
-            if (StateRefreshed != null)
-            {
-                StateRefreshed(this, new VRObserverEventArgs(HmdYaw));
-            }
+            StateRefreshed?.Invoke(this, new VRObserverEventArgs(HmdYaw));
         }
     }
 }

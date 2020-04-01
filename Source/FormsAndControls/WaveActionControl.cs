@@ -12,7 +12,7 @@ namespace CableGuardian
 {
     partial class WaveActionControl : TriggeredActionControl
     {
-        public EventHandler<ChangeEventArgs> ChangeMade;
+        public event EventHandler<ChangeEventArgs> ChangeMade;
         public TriggeredAction TheWaveAction { get; private set; }
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
 
@@ -52,10 +52,7 @@ namespace CableGuardian
 
         void InvokeChangeMade(ChangeEventArgs e)
         {
-            if (ChangeMade != null)
-            {
-                ChangeMade(this, e);
-            }
+            ChangeMade?.Invoke(this, e);
         }
     }
 }

@@ -12,8 +12,8 @@ namespace CableGuardian
 {
     partial class TriggerEditor : UserControl
     {
-        public EventHandler<ChangeEventArgs> ChangeMade;
-        public EventHandler<EventArgs> TriggeringEventChanged;
+        public event EventHandler<ChangeEventArgs> ChangeMade;
+        public event EventHandler<EventArgs> TriggeringEventChanged;
         
         Trigger TheTrigger;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
@@ -103,18 +103,12 @@ namespace CableGuardian
 
         void InvokeTriggeringEventChanged(EventArgs e)
         {
-            if (TriggeringEventChanged != null)
-            {
-                TriggeringEventChanged(this, e);
-            }
+            TriggeringEventChanged?.Invoke(this, e);
         }
 
         void InvokeChangeMade(ChangeEventArgs e)
         {
-            if (ChangeMade != null)
-            {
-                ChangeMade(this, e);
-            }
+            ChangeMade?.Invoke(this, e);
         }
     }
 }

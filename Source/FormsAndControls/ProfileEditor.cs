@@ -12,9 +12,9 @@ namespace CableGuardian
 {
     partial class ProfileEditor : UserControl
     {
-        public EventHandler<ChangeEventArgs> ChangeMade;
-        public EventHandler<EventArgs> ProfileNameChanged;
-        public EventHandler<EventArgs> VRConnectionParameterChanged;
+        public event EventHandler<ChangeEventArgs> ChangeMade;
+        public event EventHandler<EventArgs> ProfileNameChanged;
+        public event EventHandler<EventArgs> VRConnectionParameterChanged;
         
         Profile TheProfile;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
@@ -495,26 +495,17 @@ namespace CableGuardian
 
         void InvokeProfileNameChanged(EventArgs e)
         {
-            if (ProfileNameChanged != null)
-            {
-                ProfileNameChanged(this, e);
-            }
+            ProfileNameChanged?.Invoke(this, e);
         }
 
         void InvokeVRConnectionParameterChanged(EventArgs e)
         {
-            if (VRConnectionParameterChanged != null)
-            {
-                VRConnectionParameterChanged(this, e);
-            }
+            VRConnectionParameterChanged?.Invoke(this, e);
         }
 
         void InvokeChangeMade(ChangeEventArgs e)
         {
-            if (ChangeMade != null)
-            {
-                ChangeMade(this, e);
-            }
+            ChangeMade?.Invoke(this, e);
         }
 
     }

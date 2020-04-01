@@ -70,15 +70,15 @@ namespace CableGuardian
         /// <summary>
         /// Occurs when Yaw axis value 0 is crossed in neutral orientation (= zero rotation)
         /// </summary>
-        public EventHandler<RotationEventArgs> ResetPosition;
+        public event EventHandler<RotationEventArgs> ResetPosition;
         /// <summary>
         /// Occurs when Yaw axis value 0 is crossed (front facing).
         /// </summary>
-        public EventHandler<RotationEventArgs> Yaw0;
+        public event EventHandler<RotationEventArgs> Yaw0;
         /// <summary>
         /// Occurs when Yaw axis value 180 degrees is crossed (half turn, facing away from 0).
         /// </summary>
-        public EventHandler<RotationEventArgs> Yaw180;                     
+        public event EventHandler<RotationEventArgs> Yaw180;                     
 
         VRObserver HmdObserver { get; }
         public double YawValue { get { return (_YawValue == null) ? 0.0 : (double)_YawValue ; } } 
@@ -269,26 +269,17 @@ namespace CableGuardian
 
         void InvokeResetPosition(RotationEventArgs e)
         {
-            if (ResetPosition != null)
-            {
-                ResetPosition(this, e);
-            }
+            ResetPosition?.Invoke(this, e);
         }
 
         void InvokeYaw0(RotationEventArgs e)
         {
-            if (Yaw0 != null)
-            {
-                Yaw0(this, e);
-            }
+            Yaw0?.Invoke(this, e);
         }
 
         void InvokeYaw180(RotationEventArgs e)
         {
-            if (Yaw180 != null)
-            {
-                Yaw180(this, e);
-            }
+            Yaw180?.Invoke(this, e);
         }              
     }
 }

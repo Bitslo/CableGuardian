@@ -10,11 +10,11 @@ namespace CableGuardian
         
     abstract class VRConnection : IDisposable
     {
-        public EventHandler<EventArgs> StatusChanged;
-        public EventHandler<EventArgs> StatusChangedToAllOK;
-        public EventHandler<EventArgs> StatusChangedToNotOK;
-        public EventHandler<EventArgs> HMDUserInteractionStarted;
-        public EventHandler<EventArgs> HMDUserInteractionStopped;
+        public event EventHandler<EventArgs> StatusChanged;
+        public event EventHandler<EventArgs> StatusChangedToAllOK;
+        public event EventHandler<EventArgs> StatusChangedToNotOK;
+        public event EventHandler<EventArgs> HMDUserInteractionStarted;
+        public event EventHandler<EventArgs> HMDUserInteractionStopped;
         public abstract VRConnectionStatus Status { get; protected set; }
         private VRConnectionStatus PreviousStatus { get; set; } = VRConnectionStatus.Closed;
         public string StatusMessage { get; protected set; } = "";
@@ -64,10 +64,7 @@ namespace CableGuardian
 
         protected void InvokeStatusChanged()
         {
-            if (StatusChanged != null)
-            {
-                StatusChanged(this, new EventArgs());
-            }
+            StatusChanged?.Invoke(this, new EventArgs());
 
             if (Status == VRConnectionStatus.AllOK && StatusChangedToAllOK != null)
             {
@@ -84,18 +81,12 @@ namespace CableGuardian
 
         protected void InvokeHMDUserInteractionStarted()
         {
-            if (HMDUserInteractionStarted != null)
-            {
-                HMDUserInteractionStarted(this, new EventArgs());
-            }
+            HMDUserInteractionStarted?.Invoke(this, new EventArgs());
         }
 
         protected void InvokeHMDUserInteractionStopped()
         {
-            if (HMDUserInteractionStopped != null)
-            {
-                HMDUserInteractionStopped(this, new EventArgs());
-            }
+            HMDUserInteractionStopped?.Invoke(this, new EventArgs());
         }
 
     }

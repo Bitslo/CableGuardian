@@ -12,7 +12,7 @@ namespace CableGuardian
 {
     partial class ConditionEditor : UserControl
     {
-        public EventHandler<ChangeEventArgs> ChangeMade;
+        public event EventHandler<ChangeEventArgs> ChangeMade;
         public RotationCondition Condition { get; private set; }
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
 
@@ -200,10 +200,7 @@ namespace CableGuardian
 
         void InvokeChangeMade(ChangeEventArgs e)
         {
-            if (ChangeMade != null)
-            {
-                ChangeMade(this, e);
-            }
+            ChangeMade?.Invoke(this, e);
         }
 
     }

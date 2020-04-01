@@ -12,7 +12,7 @@ namespace CableGuardian
 {
     partial class WaveEditor : UserControl
     {
-        public EventHandler<ChangeEventArgs> ChangeMade;
+        public event EventHandler<ChangeEventArgs> ChangeMade;
                 
         CGActionWave TheWave;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
@@ -273,10 +273,7 @@ namespace CableGuardian
 
         void InvokeChangeMade(ChangeEventArgs e)
         {
-            if (ChangeMade != null)
-            {
-                ChangeMade(this, e);
-            }
+            ChangeMade?.Invoke(this, e);
         }
 
     }
