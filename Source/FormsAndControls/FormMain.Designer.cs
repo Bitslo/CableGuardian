@@ -65,8 +65,8 @@
             this.checkBoxRememberRotation = new System.Windows.Forms.CheckBox();
             this.numericUpDownRotMemory = new System.Windows.Forms.NumericUpDown();
             this.labelRotMemMinutes = new System.Windows.Forms.Label();
-            this.profileEditor = new CableGuardian.ProfileEditor();
             this.pictureBoxGetPro = new System.Windows.Forms.PictureBox();
+            this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -86,7 +86,7 @@
             this.buttonReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
-            this.buttonReset.Location = new System.Drawing.Point(177, 260);
+            this.buttonReset.Location = new System.Drawing.Point(177, 363);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(142, 23);
             this.buttonReset.TabIndex = 20;
@@ -97,7 +97,7 @@
             // 
             this.labelYaw.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelYaw.ForeColor = System.Drawing.Color.White;
-            this.labelYaw.Location = new System.Drawing.Point(6, 366);
+            this.labelYaw.Location = new System.Drawing.Point(179, 344);
             this.labelYaw.Name = "labelYaw";
             this.labelYaw.Size = new System.Drawing.Size(128, 20);
             this.labelYaw.TabIndex = 0;
@@ -316,24 +316,22 @@
             this.labelHalfTurnTitle.AutoSize = true;
             this.labelHalfTurnTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelHalfTurnTitle.ForeColor = System.Drawing.Color.White;
-            this.labelHalfTurnTitle.Location = new System.Drawing.Point(143, 366);
+            this.labelHalfTurnTitle.Location = new System.Drawing.Point(6, 365);
             this.labelHalfTurnTitle.Name = "labelHalfTurnTitle";
             this.labelHalfTurnTitle.Size = new System.Drawing.Size(70, 16);
             this.labelHalfTurnTitle.TabIndex = 59;
             this.labelHalfTurnTitle.Text = "Half-turns: ";
-            this.labelHalfTurnTitle.Visible = false;
             // 
             // labelHalfTurns
             // 
             this.labelHalfTurns.AutoSize = true;
-            this.labelHalfTurns.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHalfTurns.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelHalfTurns.ForeColor = System.Drawing.Color.White;
-            this.labelHalfTurns.Location = new System.Drawing.Point(237, 366);
+            this.labelHalfTurns.Location = new System.Drawing.Point(76, 363);
             this.labelHalfTurns.Name = "labelHalfTurns";
-            this.labelHalfTurns.Size = new System.Drawing.Size(15, 16);
+            this.labelHalfTurns.Size = new System.Drawing.Size(19, 20);
             this.labelHalfTurns.TabIndex = 60;
             this.labelHalfTurns.Text = "0";
-            this.labelHalfTurns.Visible = false;
             // 
             // checkBoxPlaySoundOnHMDInteraction
             // 
@@ -474,16 +472,6 @@
             this.labelRotMemMinutes.TabIndex = 73;
             this.labelRotMemMinutes.Text = "minutes";
             // 
-            // profileEditor
-            // 
-            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.profileEditor.Location = new System.Drawing.Point(328, 38);
-            this.profileEditor.Name = "profileEditor";
-            this.profileEditor.Size = new System.Drawing.Size(695, 445);
-            this.profileEditor.TabIndex = 48;
-            // 
             // pictureBoxGetPro
             // 
             this.pictureBoxGetPro.Image = global::CableGuardian.Properties.Resources.GetPro;
@@ -493,6 +481,16 @@
             this.pictureBoxGetPro.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxGetPro.TabIndex = 74;
             this.pictureBoxGetPro.TabStop = false;
+            // 
+            // profileEditor
+            // 
+            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.profileEditor.Location = new System.Drawing.Point(328, 38);
+            this.profileEditor.Name = "profileEditor";
+            this.profileEditor.Size = new System.Drawing.Size(695, 445);
+            this.profileEditor.TabIndex = 48;
             // 
             // FormMain
             // 

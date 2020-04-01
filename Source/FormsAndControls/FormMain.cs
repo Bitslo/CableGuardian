@@ -90,6 +90,8 @@ namespace CableGuardian
 
             ReadConfigFromFileAndCheckDefaultSounds();
             Tracker = new YawTracker(Observer, GetInitialHalfTurn(), Config.LastYawValue); // after reading config but before reading profiles
+            Tracker.Yaw0 += Tracker_ThresholdCrossed;
+            Tracker.Yaw180 += Tracker_ThresholdCrossed;
 
             ReadProfilesFromFile();
             LoadConfigToGui();
@@ -542,7 +544,18 @@ namespace CableGuardian
             AlarmTimer.Tick += AlarmTimer_Tick;
         }
 
-       
+        private void Tracker_ThresholdCrossed(object sender, RotationEventArgs e)
+        {
+            if (Visible)
+            {
+                RefreshHalfTurnLabel();
+            }
+        }
+
+        void RefreshHalfTurnLabel()
+        {
+            labelHalfTurns.Text = Tracker.CompletedHalfTurns.ToString() + ((Tracker.CompletedHalfTurns > 0) ? " " + Tracker.RotationSide.ToString(): "");
+        }
 
         private void PictureBoxGetPro_Click(object sender, EventArgs e)
         {
@@ -1271,17 +1284,14 @@ namespace CableGuardian
         private void CheckBoxShowYaw_CheckedChanged(object sender, EventArgs e)
         {
             UpdateYawToForm = checkBoxShowYaw.Checked;
-            labelYaw.Visible = checkBoxShowYaw.Checked;                        
-            labelHalfTurnTitle.Visible = checkBoxShowYaw.Checked;
-            labelHalfTurns.Visible = checkBoxShowYaw.Checked;
+            labelYaw.Visible = checkBoxShowYaw.Checked;                                    
         }
 
         void Observer_StateRefreshed(object sender, VRObserverEventArgs e)
         {
             if (UpdateYawToForm)
             {
-                labelYaw.Text = YawTracker.RadToDeg(Tracker.YawValue).ToString();
-                labelHalfTurns.Text = Tracker.CompletedHalfTurns.ToString() + ((Tracker.CompletedHalfTurns > 0) ? " (" + Tracker.RotationSide.ToString() + ")" : "");
+                labelYaw.Text = YawTracker.RadToDeg(Tracker.YawValue).ToString();                
             }
         }
 
@@ -1434,6 +1444,7 @@ namespace CableGuardian
             ForceHide = false;
             Show();
             Activate();
+            RefreshHalfTurnLabel();
         }
 
         private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
