@@ -220,6 +220,8 @@
     <None Include="Art\GetPro_hover.png" />
     <None Include="Art\Explorer.png" />
     <None Include="Art\Explorer_hover.png" />
+    <None Include="Art\Action.png" />
+    <None Include="Art\Action_hover.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -33,7 +33,6 @@
             this.labelAudio = new System.Windows.Forms.Label();
             this.comboBoxManual = new System.Windows.Forms.ComboBox();
             this.pictureBoxPlus = new System.Windows.Forms.PictureBox();
-            this.labelAddHint = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.comboBoxDeviceSource = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -46,9 +45,12 @@
             this.WaveActionCtl = new CableGuardian.WaveActionControl();
             this.pictureBoxClone = new System.Windows.Forms.PictureBox();
             this.checkBoxResetOnMount = new System.Windows.Forms.CheckBox();
+            this.checkBoxMountingSound = new System.Windows.Forms.CheckBox();
+            this.pictureBoxMounting = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMounting)).BeginInit();
             this.SuspendLayout();
             // 
             // checkBoxStartup
@@ -66,7 +68,7 @@
             // 
             this.checkBoxFreeze.AutoSize = true;
             this.checkBoxFreeze.ForeColor = System.Drawing.Color.White;
-            this.checkBoxFreeze.Location = new System.Drawing.Point(101, 38);
+            this.checkBoxFreeze.Location = new System.Drawing.Point(106, 38);
             this.checkBoxFreeze.Name = "checkBoxFreeze";
             this.checkBoxFreeze.Size = new System.Drawing.Size(89, 17);
             this.checkBoxFreeze.TabIndex = 16;
@@ -102,17 +104,6 @@
             this.pictureBoxPlus.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxPlus.TabIndex = 1;
             this.pictureBoxPlus.TabStop = false;
-            // 
-            // labelAddHint
-            // 
-            this.labelAddHint.AutoSize = true;
-            this.labelAddHint.ForeColor = System.Drawing.Color.White;
-            this.labelAddHint.Location = new System.Drawing.Point(539, 40);
-            this.labelAddHint.Name = "labelAddHint";
-            this.labelAddHint.Size = new System.Drawing.Size(76, 13);
-            this.labelAddHint.TabIndex = 52;
-            this.labelAddHint.Tag = "MANUAL";
-            this.labelAddHint.Text = "Add a rule  --->";
             // 
             // textBoxName
             // 
@@ -193,12 +184,13 @@
             // 
             // checkBoxHome
             // 
+            this.checkBoxHome.AutoSize = true;
             this.checkBoxHome.ForeColor = System.Drawing.Color.White;
-            this.checkBoxHome.Location = new System.Drawing.Point(346, 38);
+            this.checkBoxHome.Location = new System.Drawing.Point(507, 38);
             this.checkBoxHome.Name = "checkBoxHome";
-            this.checkBoxHome.Size = new System.Drawing.Size(131, 17);
+            this.checkBoxHome.Size = new System.Drawing.Size(94, 17);
             this.checkBoxHome.TabIndex = 63;
-            this.checkBoxHome.Text = "Require Oculus Home";
+            this.checkBoxHome.Text = "Require Home";
             this.checkBoxHome.UseVisualStyleBackColor = true;
             // 
             // WaveActionCtl
@@ -226,12 +218,34 @@
             // 
             this.checkBoxResetOnMount.AutoSize = true;
             this.checkBoxResetOnMount.ForeColor = System.Drawing.Color.White;
-            this.checkBoxResetOnMount.Location = new System.Drawing.Point(191, 38);
+            this.checkBoxResetOnMount.Location = new System.Drawing.Point(349, 38);
             this.checkBoxResetOnMount.Name = "checkBoxResetOnMount";
             this.checkBoxResetOnMount.Size = new System.Drawing.Size(152, 17);
             this.checkBoxResetOnMount.TabIndex = 65;
             this.checkBoxResetOnMount.Text = "Reset turn count on mount";
             this.checkBoxResetOnMount.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxMountingSound
+            // 
+            this.checkBoxMountingSound.AutoSize = true;
+            this.checkBoxMountingSound.ForeColor = System.Drawing.Color.White;
+            this.checkBoxMountingSound.Location = new System.Drawing.Point(201, 38);
+            this.checkBoxMountingSound.Name = "checkBoxMountingSound";
+            this.checkBoxMountingSound.Size = new System.Drawing.Size(102, 17);
+            this.checkBoxMountingSound.TabIndex = 66;
+            this.checkBoxMountingSound.Text = "Mounting sound";
+            this.checkBoxMountingSound.UseVisualStyleBackColor = true;
+            // 
+            // pictureBoxMounting
+            // 
+            this.pictureBoxMounting.Cursor = System.Windows.Forms.Cursors.Default;
+            this.pictureBoxMounting.Image = global::CableGuardian.Properties.Resources.Action;
+            this.pictureBoxMounting.Location = new System.Drawing.Point(316, 35);
+            this.pictureBoxMounting.Name = "pictureBoxMounting";
+            this.pictureBoxMounting.Size = new System.Drawing.Size(21, 21);
+            this.pictureBoxMounting.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxMounting.TabIndex = 121;
+            this.pictureBoxMounting.TabStop = false;
             // 
             // ProfileEditor
             // 
@@ -239,6 +253,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.Controls.Add(this.pictureBoxMounting);
+            this.Controls.Add(this.checkBoxMountingSound);
             this.Controls.Add(this.checkBoxResetOnMount);
             this.Controls.Add(this.pictureBoxClone);
             this.Controls.Add(this.textBoxName);
@@ -254,7 +270,6 @@
             this.Controls.Add(this.listBoxActions);
             this.Controls.Add(this.comboBoxDeviceSource);
             this.Controls.Add(this.pictureBoxPlus);
-            this.Controls.Add(this.labelAddHint);
             this.Controls.Add(this.comboBoxManual);
             this.Controls.Add(this.labelAudio);
             this.Name = "ProfileEditor";
@@ -262,6 +277,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMounting)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -273,7 +289,6 @@
         private System.Windows.Forms.Label labelAudio;
         private System.Windows.Forms.ComboBox comboBoxManual;
         private System.Windows.Forms.PictureBox pictureBoxPlus;
-        private System.Windows.Forms.Label labelAddHint;
         private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.ComboBox comboBoxDeviceSource;
         private System.Windows.Forms.Label label1;
@@ -286,5 +301,7 @@
         private System.Windows.Forms.CheckBox checkBoxHome;
         private System.Windows.Forms.PictureBox pictureBoxClone;
         private System.Windows.Forms.CheckBox checkBoxResetOnMount;
+        private System.Windows.Forms.CheckBox checkBoxMountingSound;
+        private System.Windows.Forms.PictureBox pictureBoxMounting;
     }
 }

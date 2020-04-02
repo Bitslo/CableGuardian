@@ -20,10 +20,20 @@ namespace CableGuardian
         public string Name { get; set; }
         public bool Frozen { get; set; }
         public bool ResetOnMount { get; set; } = false;
+        public bool PlayMountingSound { get; set; } = false;
+        public CGActionWave MountingSound { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
 
-        public Profile()
+        public Profile(VRAPI api = VRAPI.OculusVR)
         {
-            Name = "New Profile";            
+            Name = "New Profile";
+            API = api;
+            WaveOutDeviceSource = (api == VRAPI.OculusVR) ? AudioDeviceSource.OculusHome : AudioDeviceSource.Windows;
+
+            // default jingle:
+            MountingSound.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_Jingle" + WaveFilePool.CgAudioExtension));
+            MountingSound.Pan = 0;
+            MountingSound.Volume = 50;
+            MountingSound.LoopCount = 1;
         }        
 
         public void AddAction(TriggeredAction action)
@@ -53,6 +63,8 @@ namespace CableGuardian
             {
                 item.Dispose();
             }
+            
+            MountingSound.Dispose();
         }
 
         public void Activate()
@@ -61,6 +73,8 @@ namespace CableGuardian
             {
                 item.Enabled = true;
             }
+
+            MountingSound.Enabled = true;
         }
 
         public void DeActivate()
@@ -69,6 +83,8 @@ namespace CableGuardian
             {
                 item.Enabled = false;
             }
+            
+            MountingSound.Enabled = false;
         }
 
         public void LoadFromXml(XElement xUserProfile)
@@ -79,6 +95,20 @@ namespace CableGuardian
                 Frozen = xUserProfile.GetElementValueBool("Frozen");                
                 RequireHome = xUserProfile.GetElementValueBool("RequireHome");
                 ResetOnMount = xUserProfile.GetElementValueBool("ResetOnMount");
+
+                XElement xMountingSound = null;
+                if (xUserProfile.GetElementValueOrNull("PlayMountingSound") == null)
+                {
+                    PlayMountingSound = Config.PlayMountingSound_Legacy; // backwards compatibility
+                    xMountingSound = Config.JingleXML_Legacy;
+                    Config.SaveProfilesAtStartup = true;
+                }
+                else
+                {
+                    PlayMountingSound = xUserProfile.GetElementValueBool("PlayMountingSound");
+                    xMountingSound = xUserProfile.Element("MountingSound");
+                }
+                MountingSound.LoadFromXml(xMountingSound?.Element("CGActionWaveFile"));
 
                 if (xUserProfile.GetElementValueOrNull("API") == null) 
                 {
@@ -132,6 +162,8 @@ namespace CableGuardian
                                    new XElement("Frozen", Frozen),                                   
                                    new XElement("RequireHome", RequireHome),
                                    new XElement("ResetOnMount", ResetOnMount),
+                                   new XElement("PlayMountingSound", PlayMountingSound),
+                                   new XElement("MountingSound", MountingSound.GetXml()),
                                    new XElement("API", API),
                                    new XElement("WaveOutDeviceSource", WaveOutDeviceSource),
                                    new XElement("WaveOutDeviceName", TheWaveOutDevice?.Name),

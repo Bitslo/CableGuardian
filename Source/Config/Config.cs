@@ -33,9 +33,9 @@ namespace CableGuardian
         public static bool TrayMenuNotifications { get; set; } = true;
         public static bool ShowResetMessageBox { get; set; } = true;
         public static CGActionWave Alarm { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
-        public static CGActionWave Jingle { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
+        public static XElement JingleXML_Legacy { get; private set; }
         public static CGActionWave ConnLost { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
-        public static bool PlaySoundOnHMDinteractionStart { get; set; } = false;
+        public static bool PlayMountingSound_Legacy { get; set; } = false;
         public static List<Profile> Profiles { get; private set; } = new List<Profile>();
         public static Profile StartUpProfile { get; set; }
         public static Profile ActiveProfile { get; private set; }
@@ -55,6 +55,7 @@ namespace CableGuardian
         /// </summary>
         public static VRAPI LegacyAPI { get; private set; } = VRAPI.OculusVR;
         public static bool IsLegacyConfig { get; private set; } = false;
+        public static bool SaveProfilesAtStartup { get; set; } = false;
 
 
         static Config()
@@ -230,15 +231,6 @@ namespace CableGuardian
                 Alarm.Volume = 100;
                 Alarm.LoopCount = 2;
             }
-            
-            if (Jingle.Wave == null)
-            {
-                // default jingle:
-                Jingle.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_Jingle" + WaveFilePool.CgAudioExtension));
-                Jingle.Pan = 0;
-                Jingle.Volume = 50;
-                Jingle.LoopCount = 1;
-            }
 
             // Connection lost sound:
             ConnLost.SetWave(new WaveFileInfo(WaveFilePool.DefaultAudioFolder_Rel + "\\CG_ConnLost" + WaveFilePool.CgAudioExtension)); 
@@ -367,6 +359,7 @@ namespace CableGuardian
                 if (xConfig.GetElementValueOrNull("API") != null) // backwards compatibility
                 {
                     IsLegacyConfig = true;
+                    SaveProfilesAtStartup = true;
                     if (Enum.TryParse(xConfig.GetElementValueTrimmed("API"), out VRAPI a))
                         LegacyAPI = a;                    
                 }
@@ -394,7 +387,7 @@ namespace CableGuardian
                 ConnLostNotificationIsSticky = xConfig.GetElementValueBool("ConnLostNotificationIsSticky", true);
                 NotifyOnAPIQuit = xConfig.GetElementValueBool("NotifyOnAPIQuit");
                 TrayMenuNotifications = xConfig.GetElementValueBool("TrayMenuNotifications", true);
-                PlaySoundOnHMDinteractionStart = xConfig.GetElementValueBool("PlaySoundOnHMDinteractionStart");
+                PlayMountingSound_Legacy = xConfig.GetElementValueBool("PlaySoundOnHMDinteractionStart");
                 ShowResetMessageBox = xConfig.GetElementValueBool("ShowResetMessageBox", true);
                 LastSessionProfileName = xConfig.GetElementValueTrimmed("LastSessionProfileName");
                 LastExitSeconds = xConfig.GetElementValueUInt("LastExitSeconds");                
@@ -409,8 +402,7 @@ namespace CableGuardian
                 XElement xAlarm = xConfig.Element("Alarm");               
                 Alarm.LoadFromXml(xAlarm?.Element("CGActionWaveFile"));
 
-                XElement xJingle = xConfig.Element("Jingle");
-                Jingle.LoadFromXml(xJingle?.Element("CGActionWaveFile"));
+                JingleXML_Legacy = xConfig.Element("Jingle");
 
                 XElement cons = xConfig.Element("CONSTANTS");
                 if (cons != null)
@@ -449,16 +441,14 @@ namespace CableGuardian
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
                                 new XElement("ConnLostNotificationIsSticky", ConnLostNotificationIsSticky),
                                 new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
-                                new XElement("TrayMenuNotifications", TrayMenuNotifications),
-                                new XElement("PlaySoundOnHMDinteractionStart", PlaySoundOnHMDinteractionStart),
+                                new XElement("TrayMenuNotifications", TrayMenuNotifications),                                
                                 new XElement("ShowResetMessageBox", ShowResetMessageBox),
                                 new XElement("LastSessionProfileName", ActiveProfile?.Name),
                                 new XElement("LastExitSeconds", (isExit) ? GetCurrentSeconds() : 0), 
                                 new XElement("LastHalfTurn", FormMain.Tracker.CurrentHalfTurn.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("LastYawValue", FormMain.Tracker.YawValue.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                                new XElement("Alarm", Alarm.GetXml()),
-                                new XElement("Jingle", Jingle.GetXml()),
+                                new XElement("Alarm", Alarm.GetXml()),                                
                                 new XElement("CONSTANTS",
                                 new XComment("Wait time when starting with Windows. The purpose is to ensure that all audio devices have been initialized before using them."),
                                 new XElement("WindowsStartupWaitInSeconds", Program.WindowsStartupWaitInSeconds),

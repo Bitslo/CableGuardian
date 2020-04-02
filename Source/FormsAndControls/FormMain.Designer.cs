@@ -53,8 +53,6 @@
             this.pictureBoxClone = new System.Windows.Forms.PictureBox();
             this.labelHalfTurnTitle = new System.Windows.Forms.Label();
             this.labelHalfTurns = new System.Windows.Forms.Label();
-            this.checkBoxPlaySoundOnHMDInteraction = new System.Windows.Forms.CheckBox();
-            this.buttonJingle = new System.Windows.Forms.Button();
             this.checkBoxOnAPIQuit = new System.Windows.Forms.CheckBox();
             this.checkBoxStartMinAuto = new System.Windows.Forms.CheckBox();
             this.checkBoxSticky = new System.Windows.Forms.CheckBox();
@@ -333,30 +331,6 @@
             this.labelHalfTurns.TabIndex = 60;
             this.labelHalfTurns.Text = "0";
             // 
-            // checkBoxPlaySoundOnHMDInteraction
-            // 
-            this.checkBoxPlaySoundOnHMDInteraction.AutoSize = true;
-            this.checkBoxPlaySoundOnHMDInteraction.ForeColor = System.Drawing.Color.White;
-            this.checkBoxPlaySoundOnHMDInteraction.Location = new System.Drawing.Point(9, 323);
-            this.checkBoxPlaySoundOnHMDInteraction.Name = "checkBoxPlaySoundOnHMDInteraction";
-            this.checkBoxPlaySoundOnHMDInteraction.Size = new System.Drawing.Size(102, 17);
-            this.checkBoxPlaySoundOnHMDInteraction.TabIndex = 61;
-            this.checkBoxPlaySoundOnHMDInteraction.Text = "Mounting sound";
-            this.checkBoxPlaySoundOnHMDInteraction.UseVisualStyleBackColor = true;
-            // 
-            // buttonJingle
-            // 
-            this.buttonJingle.Cursor = System.Windows.Forms.Cursors.Default;
-            this.buttonJingle.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.buttonJingle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonJingle.ForeColor = System.Drawing.Color.White;
-            this.buttonJingle.Location = new System.Drawing.Point(177, 318);
-            this.buttonJingle.Name = "buttonJingle";
-            this.buttonJingle.Size = new System.Drawing.Size(142, 23);
-            this.buttonJingle.TabIndex = 62;
-            this.buttonJingle.Text = "Mounting sound...";
-            this.buttonJingle.UseVisualStyleBackColor = true;
-            // 
             // checkBoxOnAPIQuit
             // 
             this.checkBoxOnAPIQuit.AutoSize = true;
@@ -504,8 +478,6 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.checkBoxSticky);
             this.Controls.Add(this.checkBoxOnAPIQuit);
-            this.Controls.Add(this.buttonJingle);
-            this.Controls.Add(this.checkBoxPlaySoundOnHMDInteraction);
             this.Controls.Add(this.labelHalfTurns);
             this.Controls.Add(this.labelHalfTurnTitle);
             this.Controls.Add(this.pictureBoxClone);
@@ -577,8 +549,6 @@
         private System.Windows.Forms.PictureBox pictureBoxClone;
         private System.Windows.Forms.Label labelHalfTurnTitle;
         private System.Windows.Forms.Label labelHalfTurns;
-        private System.Windows.Forms.CheckBox checkBoxPlaySoundOnHMDInteraction;
-        private System.Windows.Forms.Button buttonJingle;
         private System.Windows.Forms.CheckBox checkBoxOnAPIQuit;
         private System.Windows.Forms.CheckBox checkBoxStartMinAuto;
         private System.Windows.Forms.CheckBox checkBoxSticky;

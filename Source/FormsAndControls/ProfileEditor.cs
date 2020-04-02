@@ -15,7 +15,8 @@ namespace CableGuardian
         public event EventHandler<ChangeEventArgs> ChangeMade;
         public event EventHandler<EventArgs> ProfileNameChanged;
         public event EventHandler<EventArgs> VRConnectionParameterChanged;
-        
+        public event EventHandler<EventArgs> PictureBoxMountingClicked;
+
         Profile TheProfile;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
         /// <summary>
@@ -49,6 +50,9 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxHome, $"When checked, the headset orientation is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +
                                          $"The presence of Home is polled once in two seconds.");
             TTip.SetToolTip(checkBoxResetOnMount, ResetOnMountWarning);
+            TTip.SetToolTip(pictureBoxMounting, $"Adjust the sound that plays when you put on the headset.");
+            TTip.SetToolTip(checkBoxMountingSound, $"Play a sound when putting on the VR headset. Check this if you want to be sure that {Config.ProgramTitle} is up and running when starting a VR session." + Environment.NewLine
+                + "NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
 
             if (!FormMain.RunFromDesigner)
             {   
@@ -59,8 +63,7 @@ namespace CableGuardian
         }
 
         void InitializeAppearance()
-        {            
-            labelAddHint.ForeColor = Config.CGColor;
+        {   
             listBoxActions.BackColor = Config.CGBackColor;
             listBoxActions.ForeColor = Config.CGColor;
         }
@@ -69,6 +72,7 @@ namespace CableGuardian
         {
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxHome.CheckedChanged += CheckBoxHome_CheckedChanged;
+            checkBoxMountingSound.CheckedChanged += CheckBoxMountingSound_CheckedChanged;
             checkBoxResetOnMount.CheckedChanged += CheckBoxResetOnMount_CheckedChanged;
             checkBoxFreeze.CheckedChanged += CheckBoxFreeze_CheckedChanged;
             comboBoxDeviceSource.SelectedIndexChanged += ComboBoxDeviceSource_SelectedIndexChanged;
@@ -89,7 +93,9 @@ namespace CableGuardian
             pictureBoxClone.MouseLeave += (s, e) => { pictureBoxClone.Image = Properties.Resources.CloneSmall; };
             pictureBoxMinus.MouseEnter += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall_hover; };
             pictureBoxMinus.MouseLeave += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall; };
-
+            pictureBoxMounting.MouseEnter += (s, e) => { pictureBoxMounting.Image = Properties.Resources.Action_hover; };
+            pictureBoxMounting.MouseLeave += (s, e) => { pictureBoxMounting.Image = Properties.Resources.Action; };
+            pictureBoxMounting.Click += (s, e) => { PictureBoxMountingClicked?.Invoke(this, new EventArgs()); };
 
             KeyUp += AnyControl_KeyUp;
             foreach (Control ctl in Controls)
@@ -98,6 +104,17 @@ namespace CableGuardian
                     ctl.KeyUp += AnyControl_KeyUp;
             }
 
+        }
+
+        private void CheckBoxMountingSound_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            SetControlVisibility();
+            TheProfile.PlayMountingSound = (checkBoxMountingSound.Checked);
+
+            InvokeChangeMade(new ChangeEventArgs(sender as Control));
         }
 
         private void CheckBoxResetOnMount_CheckedChanged(object sender, EventArgs e)
@@ -407,6 +424,7 @@ namespace CableGuardian
 
             SkipFlaggedEventHandlers = true;
 
+            checkBoxMountingSound.Checked = TheProfile.PlayMountingSound;
             checkBoxResetOnMount.Checked = TheProfile.ResetOnMount;
             checkBoxFreeze.Checked = TheProfile.Frozen;
             checkBoxStartup.Checked = (Config.StartUpProfile == TheProfile);
@@ -470,10 +488,20 @@ namespace CableGuardian
 
         void SetControlVisibility()
         {
+            if (checkBoxMountingSound.Checked)
+            {
+                pictureBoxMounting.Visible = true;
+                checkBoxMountingSound.Text = "Mounting sound \u2192 ";
+            }
+            else
+            {
+                pictureBoxMounting.Visible = false;
+                checkBoxMountingSound.Text = "Mounting sound";
+            }
+
             checkBoxHome.Visible = (TheProfile.API == VRAPI.OculusVR);
             labelOcuChanges.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.OculusHome);
-            comboBoxManual.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Manual);
-            labelAddHint.Visible = (listBoxActions.Items.Count == 0);
+            comboBoxManual.Visible = (TheProfile.WaveOutDeviceSource == AudioDeviceSource.Manual);            
             WaveActionCtl.Visible = !(listBoxActions.Items.Count == 0);
         }
 

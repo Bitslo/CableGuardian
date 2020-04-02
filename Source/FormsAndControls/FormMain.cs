@@ -102,7 +102,7 @@ namespace CableGuardian
 
             SaveConfigurationToFile(); // always save config at startup to reset last exit
 
-            if (Config.ProfilesFileMissingAtStartup || Config.IsLegacyConfig)
+            if (Config.ProfilesFileMissingAtStartup || Config.SaveProfilesAtStartup)
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
@@ -261,8 +261,7 @@ namespace CableGuardian
             checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
             checkBoxSticky.Checked = Config.ConnLostNotificationIsSticky;
             checkBoxOnAPIQuit.Checked = Config.NotifyOnAPIQuit;
-            checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;
-            checkBoxPlaySoundOnHMDInteraction.Checked = Config.PlaySoundOnHMDinteractionStart;
+            checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;            
             checkBoxRememberRotation.Checked = Config.TurnCountMemoryMinutes > -1;
             numericUpDownRotMemory.Value = (Config.TurnCountMemoryMinutes > -1) ? Config.TurnCountMemoryMinutes : 0 ;
             SkipFlaggedEventHandlers = false;
@@ -286,17 +285,6 @@ namespace CableGuardian
 
         void SetControlVisibility()
         {
-            if (checkBoxPlaySoundOnHMDInteraction.Checked)
-            {
-                checkBoxPlaySoundOnHMDInteraction.Text = "Play mounting sound      --->";
-                buttonJingle.Visible = true;
-            }
-            else
-            {
-                checkBoxPlaySoundOnHMDInteraction.Text = "Play mounting sound";
-                buttonJingle.Visible = false;
-            }
-
             if (checkBoxRememberRotation.Checked)
             {
                 checkBoxRememberRotation.Text = "Remember turn count for   ---> ";
@@ -410,10 +398,7 @@ namespace CableGuardian
             TTip.SetToolTip(buttonAlarm, $"Adjust the alarm clock sound. Use the {Config.ProgramTitle} tray icon to set the alarm.");
             TTip.SetToolTip(checkBoxTrayNotifications, $"When checked, a Windows notification is displayed when you make selections in the {Config.ProgramTitle} tray menu. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
-                                            + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");
-            TTip.SetToolTip(checkBoxPlaySoundOnHMDInteraction, $"Play a sound when putting on the VR headset. Check this if you want to be sure that {Config.ProgramTitle} is up and running when starting a VR session." + Environment.NewLine
-                + "NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
-            TTip.SetToolTip(buttonJingle, $"Adjust the sound that plays when you put on the headset.");
+                                            + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
             TTip.SetToolTip(labelAutoStart, $"After dialing in your settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
                                             + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API.");
@@ -504,8 +489,7 @@ namespace CableGuardian
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
             buttonRetry.Click += ButtonRetry_Click;
-            buttonAlarm.Click += ButtonAlarm_Click;
-            buttonJingle.Click += (s, e) => { OpenJingleSettings(); };
+            buttonAlarm.Click += ButtonAlarm_Click;            
 
             comboBoxProfile.SelectedIndexChanged += ComboBoxProfile_SelectedIndexChanged;
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
@@ -516,8 +500,7 @@ namespace CableGuardian
             checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
             checkBoxSticky.CheckedChanged += CheckBoxSticky_CheckedChanged;
             checkBoxOnAPIQuit.CheckedChanged += CheckBoxOnAPIQuit_CheckedChanged;
-            checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;
-            checkBoxPlaySoundOnHMDInteraction.CheckedChanged += CheckBoxPlayJingle_CheckedChanged;
+            checkBoxTrayNotifications.CheckedChanged += CheckBoxTrayNotifications_CheckedChanged;            
             checkBoxRememberRotation.CheckedChanged += CheckBoxRememberRotation_CheckedChanged;
             numericUpDownRotMemory.ValueChanged += NumericUpDownRotMemory_ValueChanged;
 
@@ -525,6 +508,7 @@ namespace CableGuardian
             profileEditor.ProfileNameChanged += (s, e) => { RefreshProfileCombo(); };
             profileEditor.ChangeMade += OnProfileChangeMade;
             profileEditor.VRConnectionParameterChanged += (s, e) => { RefreshVRConnectionForActiveProfile(); };
+            profileEditor.PictureBoxMountingClicked += (s, e) => { OpenMountingSoundSettings(); };
             OculusConn.StatusChanged += OnVRConnectionStatusChanged;
             OpenVRConn.StatusChanged += OnVRConnectionStatusChanged;
             OculusConn.StatusChangedToAllOK += (s,e) => { WaveOutPool.SendDeviceRefreshRequest(); };
@@ -832,15 +816,6 @@ namespace CableGuardian
             SaveConfigurationToFile();
         }
 
-        private void CheckBoxPlayJingle_CheckedChanged(object sender, EventArgs e)
-        {
-            if (SkipFlaggedEventHandlers)
-                return;
-
-            SetControlVisibility();
-            Config.PlaySoundOnHMDinteractionStart = (checkBoxPlaySoundOnHMDInteraction.Checked);
-            SaveConfigurationToFile();
-        }
 
         private void CheckBoxRememberRotation_CheckedChanged(object sender, EventArgs e)
         {
@@ -887,8 +862,8 @@ namespace CableGuardian
         }
 
         void AddProfile()
-        {
-            Profile prof = new Profile();
+        {   
+            Profile prof = new Profile((Config.ActiveProfile == null) ? VRAPI.OculusVR : Config.ActiveProfile.API);
             Config.AddProfile(prof);
             
             RefreshProfileCombo();
@@ -938,15 +913,21 @@ namespace CableGuardian
                                                     $"Audio device is taken from the active profile.{Environment.NewLine}Use the tray icon to set the alarm.");
         }
 
-        private void OpenJingleSettings()
+        private void OpenMountingSoundSettings()
         {
-            ShowSoundFormAndSaveConfig(PointToScreen(new Point(buttonJingle.Location.X - 2, buttonJingle.Location.Y - 2)), Config.Jingle,
-                                                    "Audio device is taken from the active profile.");         
+            if (Config.ActiveProfile == null)
+                return;
+
+            Point pos = new Point(Cursor.Position.X - 90, Cursor.Position.Y - 15);
+            ShowSoundFormAndSaveConfig(pos, Config.ActiveProfile.MountingSound,
+                                                    "Audio device is taken from the active profile.", true);
         }
 
-        void ShowSoundFormAndSaveConfig(Point location, CGActionWave waveAction, string infoText = "")
+
+        void ShowSoundFormAndSaveConfig(Point location, CGActionWave waveAction, string infoText = "", bool isProfileSound = false)
         {
-            FormSound frm = new FormSound(waveAction, infoText);
+            FormSound frm = new FormSound(waveAction, infoText, isProfileSound);
+            frm.ProfileChangeMade += (s, e) => { SetProfilesSaveStatus(false); };
             frm.StartPosition = FormStartPosition.Manual;
             frm.Location = location;
             SkipFlaggedEventHandlers = true;
@@ -954,7 +935,9 @@ namespace CableGuardian
             frm.ShowDialog(this);
             TrayMenu.Enabled = true;
             SkipFlaggedEventHandlers = false;
-            SaveConfigurationToFile();
+
+            if (!isProfileSound)
+                SaveConfigurationToFile();
         }
 
         private void RefreshVRConnectionForActiveProfile()
@@ -1314,11 +1297,16 @@ namespace CableGuardian
 
         void OnHMDUserInteractionStarted(object sender, EventArgs e)
         {
-            if (Config.PlaySoundOnHMDinteractionStart)
+            Profile p = Config.ActiveProfile;
+            if (p == null)
+                return;
+
+            if (p.PlayMountingSound)
             {
-                Config.Jingle.Play();
+                p.MountingSound.Play();                
             }
-            if (Config.ActiveProfile != null && Config.ActiveProfile.ResetOnMount)
+
+            if (p.ResetOnMount)
             {
                 ResetRotations(true);
             }
