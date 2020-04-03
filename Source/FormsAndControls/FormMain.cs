@@ -64,7 +64,8 @@ namespace CableGuardian
         /// </summary>
         bool ForceHide = true;
         bool IsRestart = false;
-        string RestartArgs = "";        
+        string RestartArgs = "";
+        bool IsExiting = false;
 
 
         public FormMain()
@@ -628,6 +629,8 @@ namespace CableGuardian
 
         void ExitRoutines()
         {
+            IsExiting = true;
+
             Config.WriteConfigToFile(true); // to save last used profile etc.
 
             OculusConn.StatusChanged -= OnVRConnectionStatusChanged; // to prevent running eventhandler after form close
@@ -1446,7 +1449,7 @@ namespace CableGuardian
 
         void OnVRConnectionLost(object sender, EventArgs e)
         {
-            if (!IntentionalAPIChange)
+            if (!IntentionalAPIChange && !IsExiting)
             {
                 bool controlledAPIQuit = false;
                 // a bit hacky and lazy way to check if API requested a controlled quit
