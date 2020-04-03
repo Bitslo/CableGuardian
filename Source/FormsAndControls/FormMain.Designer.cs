@@ -48,7 +48,6 @@
             this.pictureBoxHelp = new System.Windows.Forms.PictureBox();
             this.buttonRetry = new System.Windows.Forms.Button();
             this.checkBoxConnLost = new System.Windows.Forms.CheckBox();
-            this.buttonAlarm = new System.Windows.Forms.Button();
             this.checkBoxTrayNotifications = new System.Windows.Forms.CheckBox();
             this.pictureBoxClone = new System.Windows.Forms.PictureBox();
             this.labelHalfTurnTitle = new System.Windows.Forms.Label();
@@ -64,6 +63,8 @@
             this.numericUpDownRotMemory = new System.Windows.Forms.NumericUpDown();
             this.labelRotMemMinutes = new System.Windows.Forms.Label();
             this.pictureBoxGetPro = new System.Windows.Forms.PictureBox();
+            this.labelAlarmAt = new System.Windows.Forms.Label();
+            this.pictureBoxAlarmClock = new System.Windows.Forms.PictureBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -76,6 +77,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonReset
@@ -162,6 +164,7 @@
             this.checkBoxShowYaw.TabIndex = 8;
             this.checkBoxShowYaw.Text = "Show live rotation data";
             this.checkBoxShowYaw.UseVisualStyleBackColor = true;
+            this.checkBoxShowYaw.Visible = false;
             // 
             // labelStatus
             // 
@@ -273,19 +276,6 @@
             this.checkBoxConnLost.TabIndex = 36;
             this.checkBoxConnLost.Text = "Connection lost notification";
             this.checkBoxConnLost.UseVisualStyleBackColor = true;
-            // 
-            // buttonAlarm
-            // 
-            this.buttonAlarm.Cursor = System.Windows.Forms.Cursors.Default;
-            this.buttonAlarm.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.buttonAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonAlarm.ForeColor = System.Drawing.Color.White;
-            this.buttonAlarm.Location = new System.Drawing.Point(177, 289);
-            this.buttonAlarm.Name = "buttonAlarm";
-            this.buttonAlarm.Size = new System.Drawing.Size(142, 23);
-            this.buttonAlarm.TabIndex = 24;
-            this.buttonAlarm.Text = "Alarm clock sound...";
-            this.buttonAlarm.UseVisualStyleBackColor = true;
             // 
             // checkBoxTrayNotifications
             // 
@@ -449,12 +439,34 @@
             // pictureBoxGetPro
             // 
             this.pictureBoxGetPro.Image = global::CableGuardian.Properties.Resources.GetPro;
-            this.pictureBoxGetPro.Location = new System.Drawing.Point(234, 166);
+            this.pictureBoxGetPro.Location = new System.Drawing.Point(207, 275);
             this.pictureBoxGetPro.Name = "pictureBoxGetPro";
             this.pictureBoxGetPro.Size = new System.Drawing.Size(85, 32);
             this.pictureBoxGetPro.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBoxGetPro.TabIndex = 74;
             this.pictureBoxGetPro.TabStop = false;
+            // 
+            // labelAlarmAt
+            // 
+            this.labelAlarmAt.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAlarmAt.ForeColor = System.Drawing.Color.White;
+            this.labelAlarmAt.Location = new System.Drawing.Point(127, 184);
+            this.labelAlarmAt.Name = "labelAlarmAt";
+            this.labelAlarmAt.Size = new System.Drawing.Size(125, 16);
+            this.labelAlarmAt.TabIndex = 78;
+            this.labelAlarmAt.Text = "AlarmAt";
+            this.labelAlarmAt.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelAlarmAt.Visible = false;
+            // 
+            // pictureBoxAlarmClock
+            // 
+            this.pictureBoxAlarmClock.Image = global::CableGuardian.Properties.Resources.AlarmClockBW_small;
+            this.pictureBoxAlarmClock.Location = new System.Drawing.Point(253, 125);
+            this.pictureBoxAlarmClock.Name = "pictureBoxAlarmClock";
+            this.pictureBoxAlarmClock.Size = new System.Drawing.Size(54, 77);
+            this.pictureBoxAlarmClock.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxAlarmClock.TabIndex = 77;
+            this.pictureBoxAlarmClock.TabStop = false;
             // 
             // profileEditor
             // 
@@ -473,6 +485,8 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.labelAlarmAt);
+            this.Controls.Add(this.pictureBoxAlarmClock);
             this.Controls.Add(this.pictureBoxGetPro);
             this.Controls.Add(this.labelRotMemMinutes);
             this.Controls.Add(this.panel1);
@@ -482,7 +496,6 @@
             this.Controls.Add(this.labelHalfTurnTitle);
             this.Controls.Add(this.pictureBoxClone);
             this.Controls.Add(this.checkBoxTrayNotifications);
-            this.Controls.Add(this.buttonAlarm);
             this.Controls.Add(this.checkBoxConnLost);
             this.Controls.Add(this.buttonRetry);
             this.Controls.Add(this.pictureBoxHelp);
@@ -519,6 +532,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -544,7 +558,6 @@
         private System.Windows.Forms.PictureBox pictureBoxHelp;
         private System.Windows.Forms.Button buttonRetry;
         private System.Windows.Forms.CheckBox checkBoxConnLost;
-        private System.Windows.Forms.Button buttonAlarm;
         private System.Windows.Forms.CheckBox checkBoxTrayNotifications;
         private System.Windows.Forms.PictureBox pictureBoxClone;
         private System.Windows.Forms.Label labelHalfTurnTitle;
@@ -560,6 +573,8 @@
         private System.Windows.Forms.NumericUpDown numericUpDownRotMemory;
         private System.Windows.Forms.Label labelRotMemMinutes;
         private System.Windows.Forms.PictureBox pictureBoxGetPro;
+        private System.Windows.Forms.Label labelAlarmAt;
+        private System.Windows.Forms.PictureBox pictureBoxAlarmClock;
     }
 }
 

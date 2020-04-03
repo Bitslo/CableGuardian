@@ -222,6 +222,10 @@
     <None Include="Art\Explorer_hover.png" />
     <None Include="Art\Action.png" />
     <None Include="Art\Action_hover.png" />
+    <None Include="Art\AlarmClock_small.png" />
+    <None Include="Art\AlarmClock_small_hover.png" />
+    <None Include="Art\AlarmClockBW_small.png" />
+    <None Include="Art\AlarmClockBW_small_hover.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

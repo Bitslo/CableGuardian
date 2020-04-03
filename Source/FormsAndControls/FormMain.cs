@@ -20,14 +20,17 @@ namespace CableGuardian
     public partial class FormMain : Form
     {
         ToolTip TTip = new ToolTip() { AutoPopDelay = 30000 };
+
+        const string AlarmTag = "ALARM";
         ContextMenuStrip TrayMenu = new ContextMenuStrip();
         ToolStripLabel TrayMenuTitle = new ToolStripLabel(Config.ProgramTitle);
         ToolStripLabel TrayMenuRotations = new ToolStripLabel("Half turns: 00000000");
         ToolStripMenuItem TrayMenuReset = new ToolStripMenuItem("Reset turn counter");
         ToolStripSeparator TrayMenuSeparator1 = new ToolStripSeparator();
-        ToolStripMenuItem TrayMenuAlarmIn = new ToolStripMenuItem("Alarm me in");
-        ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at");
-        ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm");
+        ToolStripMenuItem TrayMenuAlarmIn = new ToolStripMenuItem("Alarm me in") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmSettings = new ToolStripMenuItem("Alarm clock sound...") { Tag = AlarmTag };
         ToolStripSeparator TrayMenuSeparator2 = new ToolStripSeparator();
         ToolStripMenuItem TrayMenuGUI = new ToolStripMenuItem("Restore from tray");
         ToolStripMenuItem TrayMenuExit = new ToolStripMenuItem("Quit");
@@ -45,6 +48,10 @@ namespace CableGuardian
         int TimerHours = 0;
         int TimerMinutes = 0;
         int TimerSeconds = 0;
+        bool TrayMenuOpenedFromAlarmCLock = false;
+        
+        const int ReferenceResHeight = 1050; // height of the reference resolution ( = my dev environment)
+        const float TrayMenuFontSizeAtReferenceRes = 28; // good font size for the reference resolution        
 
         Point MouseDragPosOnForm = new Point(0, 0);        
         bool UpdateYawToForm = false;
@@ -337,7 +344,8 @@ namespace CableGuardian
             TrayMenu.Items.Add(TrayMenuSeparator1);
             TrayMenu.Items.Add(TrayMenuAlarmIn);
             TrayMenu.Items.Add(TrayMenuAlarmAt);
-            TrayMenu.Items.Add(TrayMenuAlarmClear);            
+            TrayMenu.Items.Add(TrayMenuAlarmClear);
+            TrayMenu.Items.Add(TrayMenuAlarmSettings);
             TrayMenu.Items.Add(TrayMenuSeparator2);
             TrayMenu.Items.Add(TrayMenuExit);
             TrayMenu.Items.Add(TrayMenuGUI);            
@@ -387,15 +395,15 @@ namespace CableGuardian
             TTip.SetToolTip(pictureBoxMinimize, "Minimize to tray");
             TTip.SetToolTip(pictureBoxPlus, "Add a new empty profile");
             TTip.SetToolTip(pictureBoxClone, "Clone the current profile");
-            TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");            
+            TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");
+            TTip.SetToolTip(pictureBoxAlarmClock, "Alarm Clock");
             TTip.SetToolTip(checkBoxConnLost, $"Show a Windows notification and play a sound when connection to the VR headset unexpectedly changes from OK to NOT OK.");
             TTip.SetToolTip(checkBoxOnAPIQuit, $"Show connection lost notification when the VR API requests {Config.ProgramTitle} to quit.{Environment.NewLine}" +
                                                 $"Most common examples are when closing SteamVR or restarting Oculus.");
             TTip.SetToolTip(checkBoxSticky, $"If checked, the connection lost notification stays in the Windows notification list until cleared.{Environment.NewLine}" +
                                             "Otherwise the notification disappears automatically after a few seconds.");
             TTip.SetToolTip(buttonReset, $"Reset turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be straight when counter = 0." + Environment.NewLine
-                                        + $"NOTE that the reset can also be done from the {Config.ProgramTitle} tray icon.");
-            TTip.SetToolTip(buttonAlarm, $"Adjust the alarm clock sound. Use the {Config.ProgramTitle} tray icon to set the alarm.");
+                                        + $"NOTE that the reset can also be done from the {Config.ProgramTitle} tray icon.");            
             TTip.SetToolTip(checkBoxTrayNotifications, $"When checked, a Windows notification is displayed when you make selections in the {Config.ProgramTitle} tray menu. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
@@ -469,6 +477,7 @@ namespace CableGuardian
             pictureBoxPlus.Click += (s, e) => { AddProfile(); SetProfilesSaveStatus(false); };
             pictureBoxClone.MouseClick += (s, e) => { CloneProfile(); SetProfilesSaveStatus(false); };
             pictureBoxHelp.Click += PictureBoxHelp_Click;
+            pictureBoxAlarmClock.Click += PictureBoxAlarmClock_Click;
 
             pictureBoxPlus.MouseEnter += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall_hover; };
             pictureBoxPlus.MouseLeave += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall; };
@@ -485,11 +494,12 @@ namespace CableGuardian
             pictureBoxGetPro.MouseEnter += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro_hover; };
             pictureBoxGetPro.MouseLeave += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro; };
             pictureBoxGetPro.Click += PictureBoxGetPro_Click;
+            pictureBoxAlarmClock.MouseEnter += PictureBoxAlarmClock_MouseEnter;
+            pictureBoxAlarmClock.MouseLeave += PictureBoxAlarmClock_MouseLeave;
 
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
-            buttonRetry.Click += ButtonRetry_Click;
-            buttonAlarm.Click += ButtonAlarm_Click;            
+            buttonRetry.Click += ButtonRetry_Click;                     
 
             comboBoxProfile.SelectedIndexChanged += ComboBoxProfile_SelectedIndexChanged;
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
@@ -524,8 +534,38 @@ namespace CableGuardian
             TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
             TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
+            TrayMenuAlarmSettings.Click += TrayMenuAlarmSettings_Click;
 
             AlarmTimer.Tick += AlarmTimer_Tick;
+        }
+
+        private void TrayMenuAlarmSettings_Click(object sender, EventArgs e)
+        {
+            OpenAlarmSettings();
+        }
+
+        private void PictureBoxAlarmClock_Click(object sender, EventArgs e)
+        {
+            TrayMenuOpenedFromAlarmCLock = true;
+            RefreshTrayMenu();
+            TrayMenu.Show(new Point(Cursor.Position.X - TrayMenu.Width, Cursor.Position.Y - TrayMenu.Height));
+        }
+
+        private void PictureBoxAlarmClock_MouseLeave(object sender, EventArgs e)
+        {
+            if (AlarmTimer.Enabled)
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClock_small;
+            else
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
+
+        }
+
+        private void PictureBoxAlarmClock_MouseEnter(object sender, EventArgs e)
+        {
+            if (AlarmTimer.Enabled)
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClock_small_hover;
+            else
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small_hover;
         }
 
         private void Tracker_ThresholdCrossed(object sender, RotationEventArgs e)
@@ -614,16 +654,16 @@ namespace CableGuardian
             }
         }
 
-        private void TrayMenu_Opening(object sender, CancelEventArgs e)
+        void RefreshTrayMenu()
         {
             uint halfTurns = Tracker.CompletedHalfTurns;
             Direction rotSide = Tracker.RotationSide;
-            TrayMenuRotations.Text = "Half turns: " + halfTurns.ToString() + ((halfTurns > 0) ? " (" + rotSide.ToString() + ")" : "");           
-            TrayMenuGUI.Text = (Visible) ? "Hide main window" : "Show main window";           
+            TrayMenuRotations.Text = "Half turns: " + halfTurns.ToString() + ((halfTurns > 0) ? " (" + rotSide.ToString() + ")" : "");
+            TrayMenuGUI.Text = (Visible) ? "Hide main window" : "Show main window";
 
             if (TimerHours == 0 && TimerMinutes == 0 && TimerSeconds == 0)
             {
-                TrayMenuAlarmIn.Text = $"Alarm me in";                
+                TrayMenuAlarmIn.Text = $"Alarm me in";
                 TrayMenuAlarmIn.ForeColor = Color.Empty;
                 TrayMenuAlarmAt.Text = $"Alarm me @";
                 TrayMenuAlarmAt.ForeColor = Color.Empty;
@@ -631,9 +671,9 @@ namespace CableGuardian
                 TrayMenuAlarmClear.Enabled = false;
             }
             else
-            {   
+            {
                 TimeSpan remain = AlarmTime.Subtract(DateTime.Now);
-                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min {remain.Seconds}s";                
+                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min {remain.Seconds}s";
                 TrayMenuAlarmIn.ForeColor = Config.CGColor;
                 TrayMenuAlarmAt.Text = $"Alarm me @ {AlarmTime.ToShortTimeString()}";
                 TrayMenuAlarmAt.ForeColor = Config.CGColor;
@@ -673,9 +713,38 @@ namespace CableGuardian
                             amPM = (isPM) ? "PM" : "AM";
                         }
                     }
-                    int menuH12 = (menuHour0_11 == 0) ? 12 : menuHour0_11;                    
+                    int menuH12 = (menuHour0_11 == 0) ? 12 : menuHour0_11;
                     itemMin.Text = menuH12.ToString() + ":" + ((menuMin < 10) ? "0" : "") + menuMin.ToString() + " " + amPM;
                 }
+            }
+
+            foreach (ToolStripItem item in TrayMenu.Items)
+            {
+                if (item.Tag?.ToString() != AlarmTag)
+                {
+                    item.Visible = !TrayMenuOpenedFromAlarmCLock;
+                }
+            }
+            TrayMenuAlarmSettings.Visible = TrayMenuOpenedFromAlarmCLock;
+        }
+
+        private void TrayMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (!TrayMenuOpenedFromAlarmCLock)
+                RefreshTrayMenu();
+
+            // set tray menu size based on resolution of the current screen
+            float fontSize = (Screen.FromPoint(Cursor.Position).Bounds.Height / (float)ReferenceResHeight) * TrayMenuFontSizeAtReferenceRes;
+            SetTrayMenuFontSize(fontSize);
+
+            TrayMenuOpenedFromAlarmCLock = false;
+        }
+
+        void SetTrayMenuFontSize(float fontSize)
+        {
+            foreach (ToolStripItem item in TrayMenu.Items)
+            {
+                item.Font = new Font(item.Font.Name, fontSize, item.Font.Style);
             }
         }
 
@@ -751,6 +820,11 @@ namespace CableGuardian
                 {
                     ShowTemporaryTrayNotification(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min {TimerSeconds}s (@ {AlarmTime.ToShortTimeString()}).");
                 }
+
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClock_small;
+
+                labelAlarmAt.Text = $"AL @ {AlarmTime.ToShortTimeString()}";
+                labelAlarmAt.Visible = true;
             }
             else
             {
@@ -762,9 +836,11 @@ namespace CableGuardian
         {
             AlarmTimer.Stop();
             TimerHours = TimerMinutes = TimerSeconds = 0;
-            if (Config.TrayMenuNotifications)            
-                ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Alarm cancelled.");                
-                        
+            pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
+            labelAlarmAt.Visible = false;
+            if (Config.TrayMenuNotifications)
+                ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Alarm cancelled.");
+
         }
         
         private void AlarmTimer_Tick(object sender, EventArgs e)
@@ -776,7 +852,9 @@ namespace CableGuardian
         {
             AlarmTimer.Stop();
             TimerHours = TimerMinutes = TimerSeconds = 0;
-            Config.Alarm.Play();
+            Config.Alarm.Play();            
+            pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
+            labelAlarmAt.Visible = false;
         }
 
         
@@ -909,8 +987,8 @@ namespace CableGuardian
 
         private void OpenAlarmSettings()
         {
-            ShowSoundFormAndSaveConfig(PointToScreen(new Point(buttonAlarm.Location.X - 2, buttonAlarm.Location.Y - 2)), Config.Alarm, 
-                                                    $"Audio device is taken from the active profile.{Environment.NewLine}Use the tray icon to set the alarm.");
+            ShowSoundFormAndSaveConfig(new Point(Cursor.Position.X - 70, Cursor.Position.Y - 19), Config.Alarm, 
+                                                    $"ALARM CLOCK SOUND");
         }
 
         private void OpenMountingSoundSettings()
@@ -920,7 +998,7 @@ namespace CableGuardian
 
             Point pos = new Point(Cursor.Position.X - 90, Cursor.Position.Y - 15);
             ShowSoundFormAndSaveConfig(pos, Config.ActiveProfile.MountingSound,
-                                                    "Audio device is taken from the active profile.", true);
+                                                    "MOUNTING SOUND", true);
         }
 
 
