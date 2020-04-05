@@ -140,6 +140,11 @@ namespace CableGuardian
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
+
+            if (Config.MinimizeAtUserStartup && !Program.IsAutoStartup)
+            {
+                ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Started minimized. ");
+            }
         }
 
         protected override void SetVisibleCore(bool value)
@@ -403,9 +408,9 @@ namespace CableGuardian
                                                 $"Most common examples are when closing SteamVR or restarting Oculus.");
             TTip.SetToolTip(checkBoxSticky, $"If checked, the connection lost notification stays in the Windows notification list until cleared.{Environment.NewLine}" +
                                             "Otherwise the notification disappears automatically after a few seconds.");
-            TTip.SetToolTip(buttonReset, $"Reset turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be straight when counter = 0." + Environment.NewLine
-                                        + $"NOTE that the reset can also be done from the {Config.ProgramTitle} tray icon.");            
-            TTip.SetToolTip(checkBoxTrayNotifications, $"When checked, a Windows notification is displayed when you make selections in the {Config.ProgramTitle} tray menu. (for feedback)");
+            TTip.SetToolTip(buttonReset, $"Reset the turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be untwisted when counter = 0." + Environment.NewLine
+                                        + $"The reset can also be done from the {Config.ProgramTitle} tray icon and with the \"Reset turn count on mount\" -feature.");
+            TTip.SetToolTip(checkBoxTrayNotifications, $"Display a temporary Windows notification for certain interactions such as setting up alarms and resetting the turn counter. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
@@ -433,12 +438,15 @@ namespace CableGuardian
                                        + $"\u2022 FOV measuring tool" + Environment.NewLine
                                        + $"\u2022 Expandable user interface" + Environment.NewLine
                                        + $"\u2022 More audio clips" + Environment.NewLine);
+            TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
+            TTip.SetToolTip(pictureBoxDefaults, "Restore the default CG profiles. Custom profiles will not be touched.");
 
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
             labelYaw.ForeColor = Config.CGErrorColor;                        
             labelHalfTurns.ForeColor = Config.CGErrorColor;
             labelHalfTurnTitle.ForeColor = Config.CGErrorColor;
+            labelAlarmAt.ForeColor = Config.CGColor;
         }
 
         void InitializeAppearanceCommon(Control ctl)
@@ -479,6 +487,10 @@ namespace CableGuardian
             pictureBoxClone.MouseClick += (s, e) => { CloneProfile(); SetProfilesSaveStatus(false); };
             pictureBoxHelp.Click += PictureBoxHelp_Click;
             pictureBoxAlarmClock.Click += PictureBoxAlarmClock_Click;
+            pictureBoxGetPro.Click += PictureBoxGetPro_Click;
+            pictureBoxAlarmClock.MouseEnter += PictureBoxAlarmClock_MouseEnter;
+            pictureBoxAlarmClock.MouseLeave += PictureBoxAlarmClock_MouseLeave;
+            pictureBoxDefaults.Click += PictureBoxDefaults_Click;
 
             pictureBoxPlus.MouseEnter += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall_hover; };
             pictureBoxPlus.MouseLeave += (s, e) => { pictureBoxPlus.Image = Properties.Resources.PlusSmall; };
@@ -494,9 +506,8 @@ namespace CableGuardian
             pictureBoxClose.MouseLeave += (s, e) => { pictureBoxClose.Image = Properties.Resources.Close; };
             pictureBoxGetPro.MouseEnter += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro_hover; };
             pictureBoxGetPro.MouseLeave += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro; };
-            pictureBoxGetPro.Click += PictureBoxGetPro_Click;
-            pictureBoxAlarmClock.MouseEnter += PictureBoxAlarmClock_MouseEnter;
-            pictureBoxAlarmClock.MouseLeave += PictureBoxAlarmClock_MouseLeave;
+            pictureBoxDefaults.MouseEnter += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults_hover; };
+            pictureBoxDefaults.MouseLeave += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults; };            
 
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
@@ -516,7 +527,7 @@ namespace CableGuardian
             numericUpDownRotMemory.ValueChanged += NumericUpDownRotMemory_ValueChanged;
 
             Observer.StateRefreshed += Observer_StateRefreshed;            
-            profileEditor.ProfileNameChanged += (s, e) => { RefreshProfileCombo(); };
+            profileEditor.ProfileNameChanged += (s, e) => { Config.SortProfilesByName(); RefreshProfileCombo(); };
             profileEditor.ChangeMade += OnProfileChangeMade;
             profileEditor.VRConnectionParameterChanged += (s, e) => { RefreshVRConnectionForActiveProfile(); };
             profileEditor.PictureBoxMountingClicked += (s, e) => { OpenMountingSoundSettings(); };
@@ -539,6 +550,63 @@ namespace CableGuardian
 
             AlarmTimer.Tick += AlarmTimer_Tick;
         }
+
+        private void PictureBoxDefaults_Click(object sender, EventArgs e)
+        {
+            string msg = $"Restore the default CG profiles to their original state?{Environment.NewLine}Any changes in them will be lost."
+                            + Environment.NewLine + "Your custom profiles will not be touched.";
+            if(MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)            
+            {
+                Enabled = false;
+
+                VRAPI api = VRAPI.OculusVR;
+                if (Config.ActiveProfile != null)                
+                    api = Config.ActiveProfile.API;                
+                else                
+                    api = (OculusConn.OculusHMDConnected() ? VRAPI.OculusVR : VRAPI.OpenVR);
+
+                RestoreDefaultProfiles_Standard(api);                
+                SaveProfilesToFile();
+                Enabled = true;
+            }
+        }
+
+        void RestoreDefaultProfiles_Standard(VRAPI api)
+        {
+            string curProfName = (Config.ActiveProfile == null ? "" : Config.ActiveProfile.Name);
+
+            Profile p = Config.GetProfileByName("CG_Beep");
+            if (p != null)
+            {
+                Config.RemoveProfile(p);
+                p.Dispose();
+            }                
+
+            p = Config.GetProfileByName("CG_Speech");
+            if (p != null)
+            {
+                Config.RemoveProfile(p);
+                p.Dispose();
+            }
+
+            XDocument xmlP = XDocument.Parse((api == VRAPI.OculusVR) ? Properties.Resources.Profile_CG_Beep_Oculus : Properties.Resources.Profile_CG_Beep_OpenVR, LoadOptions.PreserveWhitespace);
+            p = new Profile();
+            p.LoadFromXml(xmlP.Element("Profile"));
+            Config.AddProfile(p);
+            p.Deactivate(); // important 
+
+            xmlP = XDocument.Parse((api == VRAPI.OculusVR) ? Properties.Resources.Profile_CG_Speech_Oculus : Properties.Resources.Profile_CG_Speech_OpenVR, LoadOptions.PreserveWhitespace);
+            p = new Profile();
+            p.LoadFromXml(xmlP.Element("Profile"));
+            Config.AddProfile(p);
+            p.Deactivate(); // important 
+
+            RefreshProfileCombo();
+            p = Config.GetProfileByName(curProfName);
+            if (p != null)
+                comboBoxProfile.SelectedItem = p;
+        }
+
 
         private void TrayMenuAlarmSettings_Click(object sender, EventArgs e)
         {
@@ -1660,8 +1728,8 @@ namespace CableGuardian
                                             "It is assumed that the headset cable is currently completely untwisted.{0}{0}" +
                                             "Note that the neutral orientation (no twist) is always set to 0 degrees (facing forward) " +
                                             "regardless of the headset orientation when applying this reset operation. Also note that by default " +
-                                            "the turn counter is reset when {1} is started. You can change this behaviour with the \"Remember turn count\" -feature. " +
-                                            "You can perform the reset from the tray icon as well. {0}{0}" +
+                                            "the turn counter is reset when {1} is started. You can change this behaviour with the \"Remember turn count\" -feature." +
+                                            "{0}{0}" +
                                             "Hide this message in the future?", Environment.NewLine, Config.ProgramTitle);
                 if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {

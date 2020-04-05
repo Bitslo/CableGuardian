@@ -300,6 +300,26 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Defaults {
+            get {
+                object obj = ResourceManager.GetObject("Defaults", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Defaults_hover {
+            get {
+                object obj = ResourceManager.GetObject("Defaults_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Explorer {
             get {
                 object obj = ResourceManager.GetObject("Explorer", resourceCulture);
@@ -474,6 +494,105 @@ namespace CableGuardian.Properties {
             get {
                 object obj = ResourceManager.GetObject("PlusSmall_hover", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;Profile&gt;
+        ///  &lt;Name&gt;CG_Beep&lt;/Name&gt;
+        ///  &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///  &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///  &lt;API&gt;OculusVR&lt;/API&gt;
+        ///  &lt;WaveOutDeviceSource&gt;OculusHome&lt;/WaveOutDeviceSource&gt;
+        ///  &lt;WaveOutDeviceName /&gt;
+        ///  &lt;Actions&gt;
+        ///	&lt;TriggeredAction&gt;
+        ///	  &lt;Trigger&gt;
+        ///		&lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///		&lt;RotationCondition&gt;
+        ///		  &lt;TargetRotationSide&gt;Either&lt;/TargetRotationSide&gt;
+        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Profile_CG_Beep_Oculus {
+            get {
+                return ResourceManager.GetString("Profile_CG_Beep_Oculus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;Profile&gt;
+        ///  &lt;Name&gt;CG_Beep&lt;/Name&gt;
+        ///  &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///  &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///  &lt;API&gt;OpenVR&lt;/API&gt;
+        ///  &lt;WaveOutDeviceSource&gt;Windows&lt;/WaveOutDeviceSource&gt;
+        ///  &lt;WaveOutDeviceName /&gt;
+        ///  &lt;Actions&gt;
+        ///	&lt;TriggeredAction&gt;
+        ///	  &lt;Trigger&gt;
+        ///		&lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///		&lt;RotationCondition&gt;
+        ///		  &lt;TargetRotationSide&gt;Either&lt;/TargetRotationSide&gt;
+        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt;
+        ///		   [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Profile_CG_Beep_OpenVR {
+            get {
+                return ResourceManager.GetString("Profile_CG_Beep_OpenVR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;Profile&gt;
+        ///  &lt;Name&gt;CG_Speech&lt;/Name&gt;
+        ///  &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///  &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///  &lt;API&gt;OculusVR&lt;/API&gt;
+        ///  &lt;WaveOutDeviceSource&gt;OculusHome&lt;/WaveOutDeviceSource&gt;
+        ///  &lt;WaveOutDeviceName /&gt;
+        ///  &lt;Actions&gt;
+        ///	&lt;TriggeredAction&gt;
+        ///	  &lt;Trigger&gt;
+        ///		&lt;TriggeringEvent&gt;Yaw0Yaw180&lt;/TriggeringEvent&gt;
+        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///		&lt;RotationCondition&gt;
+        ///		  &lt;TargetRotationSide&gt;Left&lt;/TargetRotationSide&gt;
+        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt;
+        ///		 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Profile_CG_Speech_Oculus {
+            get {
+                return ResourceManager.GetString("Profile_CG_Speech_Oculus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;Profile&gt;
+        ///  &lt;Name&gt;CG_Speech&lt;/Name&gt;
+        ///  &lt;Frozen&gt;false&lt;/Frozen&gt;
+        ///  &lt;RequireHome&gt;false&lt;/RequireHome&gt;
+        ///  &lt;API&gt;OpenVR&lt;/API&gt;
+        ///  &lt;WaveOutDeviceSource&gt;Windows&lt;/WaveOutDeviceSource&gt;
+        ///  &lt;WaveOutDeviceName /&gt;
+        ///  &lt;Actions&gt;
+        ///	&lt;TriggeredAction&gt;
+        ///	  &lt;Trigger&gt;
+        ///		&lt;TriggeringEvent&gt;Yaw0Yaw180&lt;/TriggeringEvent&gt;
+        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///		&lt;RotationCondition&gt;
+        ///		  &lt;TargetRotationSide&gt;Left&lt;/TargetRotationSide&gt;
+        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt;
+        ///		  &lt;Ta [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Profile_CG_Speech_OpenVR {
+            get {
+                return ResourceManager.GetString("Profile_CG_Speech_OpenVR", resourceCulture);
             }
         }
         

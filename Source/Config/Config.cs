@@ -114,6 +114,17 @@ namespace CableGuardian
             return null;
         }
 
+        public static Profile GetProfileByName(string name)
+        {
+            return Profiles.Where(p => p.Name == name).FirstOrDefault();
+        }
+
+        public static void SortProfilesByName()
+        {
+            Profiles.Sort((a, b) => a.Name.CompareTo(b.Name));
+        }
+
+
         static string GetLatestProfilesBackupFile()
         {
             List<string> files = Directory.GetFiles(Program.ExeFolder, ProfilesName + ".*", SearchOption.TopDirectoryOnly).ToList();
@@ -204,7 +215,7 @@ namespace CableGuardian
         {
             if (ActiveProfile != null)
             {
-                ActiveProfile.DeActivate();
+                ActiveProfile.Deactivate();
             }
 
             profile.Activate();
@@ -214,6 +225,7 @@ namespace CableGuardian
         public static void AddProfile(Profile profile)
         {            
             Profiles.Add(profile);
+            SortProfilesByName();
         }
 
         public static void RemoveProfile(Profile profile)
@@ -427,8 +439,9 @@ namespace CableGuardian
                     Profile newProf = new Profile();
                     newProf.LoadFromXml(prof);
                     Profiles.Add(newProf);
-                    newProf.DeActivate(); // important 
+                    newProf.Deactivate(); // important 
                 }
+                SortProfilesByName();
                 StartUpProfile = Profiles.Where(p => p.Name == xProfiles.GetElementValueTrimmed("StartupProfile")).FirstOrDefault();                
             }
         }

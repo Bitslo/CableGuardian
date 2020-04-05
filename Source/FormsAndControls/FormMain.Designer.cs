@@ -66,6 +66,7 @@
             this.labelAlarmAt = new System.Windows.Forms.Label();
             this.pictureBoxAlarmClock = new System.Windows.Forms.PictureBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
+            this.pictureBoxDefaults = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -78,6 +79,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDefaults)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonReset
@@ -191,7 +193,7 @@
             this.buttonSave.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonSave.ForeColor = System.Drawing.Color.White;
-            this.buttonSave.Location = new System.Drawing.Point(783, 10);
+            this.buttonSave.Location = new System.Drawing.Point(618, 10);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(150, 23);
             this.buttonSave.TabIndex = 44;
@@ -304,7 +306,7 @@
             this.labelHalfTurnTitle.AutoSize = true;
             this.labelHalfTurnTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelHalfTurnTitle.ForeColor = System.Drawing.Color.White;
-            this.labelHalfTurnTitle.Location = new System.Drawing.Point(6, 365);
+            this.labelHalfTurnTitle.Location = new System.Drawing.Point(7, 366);
             this.labelHalfTurnTitle.Name = "labelHalfTurnTitle";
             this.labelHalfTurnTitle.Size = new System.Drawing.Size(70, 16);
             this.labelHalfTurnTitle.TabIndex = 59;
@@ -312,14 +314,14 @@
             // 
             // labelHalfTurns
             // 
-            this.labelHalfTurns.AutoSize = true;
-            this.labelHalfTurns.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelHalfTurns.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelHalfTurns.ForeColor = System.Drawing.Color.White;
-            this.labelHalfTurns.Location = new System.Drawing.Point(76, 363);
+            this.labelHalfTurns.Location = new System.Drawing.Point(71, 360);
             this.labelHalfTurns.Name = "labelHalfTurns";
-            this.labelHalfTurns.Size = new System.Drawing.Size(19, 20);
+            this.labelHalfTurns.Size = new System.Drawing.Size(104, 27);
             this.labelHalfTurns.TabIndex = 60;
             this.labelHalfTurns.Text = "0";
+            this.labelHalfTurns.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // checkBoxOnAPIQuit
             // 
@@ -439,7 +441,7 @@
             // pictureBoxGetPro
             // 
             this.pictureBoxGetPro.Image = global::CableGuardian.Properties.Resources.GetPro;
-            this.pictureBoxGetPro.Location = new System.Drawing.Point(207, 275);
+            this.pictureBoxGetPro.Location = new System.Drawing.Point(810, 4);
             this.pictureBoxGetPro.Name = "pictureBoxGetPro";
             this.pictureBoxGetPro.Size = new System.Drawing.Size(85, 32);
             this.pictureBoxGetPro.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -478,6 +480,17 @@
             this.profileEditor.Size = new System.Drawing.Size(695, 445);
             this.profileEditor.TabIndex = 48;
             // 
+            // pictureBoxDefaults
+            // 
+            this.pictureBoxDefaults.Cursor = System.Windows.Forms.Cursors.Default;
+            this.pictureBoxDefaults.Image = global::CableGuardian.Properties.Resources.Defaults;
+            this.pictureBoxDefaults.Location = new System.Drawing.Point(588, 9);
+            this.pictureBoxDefaults.Name = "pictureBoxDefaults";
+            this.pictureBoxDefaults.Size = new System.Drawing.Size(24, 24);
+            this.pictureBoxDefaults.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxDefaults.TabIndex = 79;
+            this.pictureBoxDefaults.TabStop = false;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -485,6 +498,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.pictureBoxDefaults);
             this.Controls.Add(this.labelAlarmAt);
             this.Controls.Add(this.pictureBoxAlarmClock);
             this.Controls.Add(this.pictureBoxGetPro);
@@ -533,6 +547,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxDefaults)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -575,6 +590,7 @@
         private System.Windows.Forms.PictureBox pictureBoxGetPro;
         private System.Windows.Forms.Label labelAlarmAt;
         private System.Windows.Forms.PictureBox pictureBoxAlarmClock;
+        private System.Windows.Forms.PictureBox pictureBoxDefaults;
     }
 }
 

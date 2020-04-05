@@ -77,7 +77,7 @@ namespace CableGuardian
             MountingSound.Enabled = true;
         }
 
-        public void DeActivate()
+        public void Deactivate()
         {
             foreach (var item in Actions)
             {

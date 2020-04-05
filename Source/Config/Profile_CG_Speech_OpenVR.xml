@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Profile>
+  <Name>CG_Speech</Name>
+  <Frozen>false</Frozen>
+  <RequireHome>false</RequireHome>
+  <API>OpenVR</API>
+  <WaveOutDeviceSource>Windows</WaveOutDeviceSource>
+  <WaveOutDeviceName />
+  <Actions>
+	<TriggeredAction>
+	  <Trigger>
+		<TriggeringEvent>Yaw0Yaw180</TriggeringEvent>
+		<FireLimitPerZero>0</FireLimitPerZero>
+		<RotationCondition>
+		  <TargetRotationSide>Left</TargetRotationSide>
+		  <CompOperator>EqualOrGreaterThan</CompOperator>
+		  <TargetHalfTurns>3</TargetHalfTurns>
+		  <TargetHalfTurnsMax>99</TargetHalfTurnsMax>
+		  <TargetAccumulation>Increasing</TargetAccumulation>
+		  <TargetPeakHalfTurns>0</TargetPeakHalfTurns>
+		</RotationCondition>
+	  </Trigger>
+	  <CGActionWaveFile>
+		<Wave>\default\sounds\CG_TurnRight.cga</Wave>
+		<Pan>50</Pan>
+		<Volume>75</Volume>
+		<LoopCount>1</LoopCount>
+	  </CGActionWaveFile>
+	</TriggeredAction>
+	<TriggeredAction>
+	  <Trigger>
+		<TriggeringEvent>Yaw0Yaw180</TriggeringEvent>
+		<FireLimitPerZero>0</FireLimitPerZero>
+		<RotationCondition>
+		  <TargetRotationSide>Right</TargetRotationSide>
+		  <CompOperator>EqualOrGreaterThan</CompOperator>
+		  <TargetHalfTurns>3</TargetHalfTurns>
+		  <TargetHalfTurnsMax>99</TargetHalfTurnsMax>
+		  <TargetAccumulation>Increasing</TargetAccumulation>
+		  <TargetPeakHalfTurns>0</TargetPeakHalfTurns>
+		</RotationCondition>
+	  </Trigger>
+	  <CGActionWaveFile>
+		<Wave>\default\sounds\CG_TurnLeft.cga</Wave>
+		<Pan>-50</Pan>
+		<Volume>75</Volume>
+		<LoopCount>1</LoopCount>
+	  </CGActionWaveFile>
+	</TriggeredAction>
+  </Actions>
+</Profile>   

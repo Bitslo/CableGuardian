@@ -169,6 +169,10 @@
     <Compile Include="Actions\Trigger.cs" />
     <Compile Include="AudioDevices\WaveOutDevice.cs" />
     <Compile Include="Actions\TriggeredAction.cs" />
+    <None Include="Config\Profile_CG_Speech_OpenVR.xml" />
+    <None Include="Config\Profile_CG_Speech_Oculus.xml" />
+    <None Include="Config\Profile_CG_Beep_OpenVR.xml" />
+    <None Include="Config\Profile_CG_Beep_Oculus.xml" />
     <EmbeddedResource Include="FormsAndControls\FormHelp.resx">
       <DependentUpon>FormHelp.cs</DependentUpon>
     </EmbeddedResource>
@@ -226,6 +230,8 @@
     <None Include="Art\AlarmClock_small_hover.png" />
     <None Include="Art\AlarmClockBW_small.png" />
     <None Include="Art\AlarmClockBW_small_hover.png" />
+    <None Include="Art\Defaults.png" />
+    <None Include="Art\Defaults_hover.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
