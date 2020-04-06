@@ -67,6 +67,7 @@ namespace CableGuardian
         string RestartArgs = "";
         bool IsExiting = false;
 
+        bool RestoreFromTrayAtStartup = false;
 
         public FormMain()
         {   
@@ -114,6 +115,9 @@ namespace CableGuardian
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
+
+            if (RestoreFromTrayAtStartup)
+                RestoreFromTray();
 
             if (Config.ProfilesLoadedFromBackup)
             {
@@ -281,15 +285,15 @@ namespace CableGuardian
 
             if (Program.CmdArgsLCase.Contains(Program.Arg_Maximized))
             {
-                RestoreFromTray();
+                RestoreFromTrayAtStartup = true;
             }
             else if (Program.CmdArgsLCase.Contains(Program.Arg_Minimized) == false)
             {
                 if (!Config.MinimizeAtUserStartup && !Program.IsAutoStartup)
-                    RestoreFromTray();
+                    RestoreFromTrayAtStartup = true;
 
                 if (!Config.MinimizeAtAutoStartup && Program.IsAutoStartup)
-                    RestoreFromTray();
+                    RestoreFromTrayAtStartup = true;
             }
 
             CheckWindowsStartUpStatus();
@@ -604,7 +608,15 @@ namespace CableGuardian
             RefreshProfileCombo();
             p = Config.GetProfileByName(curProfName);
             if (p != null)
+            {
+                bool skipStatus = SkipFlaggedEventHandlers;
+                SkipFlaggedEventHandlers = true;
                 comboBoxProfile.SelectedItem = p;
+                SkipFlaggedEventHandlers = false;
+                // force event handler
+                ComboBoxProfile_SelectedIndexChanged(comboBoxProfile, null);
+                SkipFlaggedEventHandlers = skipStatus;
+            }
         }
 
 
