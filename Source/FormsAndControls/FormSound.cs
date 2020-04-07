@@ -15,6 +15,9 @@ namespace CableGuardian
         public event EventHandler<EventArgs> ProfileChangeMade;
         bool InvokesProfileChanged = false;
 
+        Point MouseDragPosOnForm = new Point(0, 0);
+        bool MouseDownOnComboBox = false;
+
         internal FormSound()
         {
             InitializeComponent();
@@ -30,6 +33,8 @@ namespace CableGuardian
 
             buttonClose.Click += (s,e) => { Close(); };
             BackColor = Config.CGBackColor;
+
+            AddDragEventHandlers(this);
         }
 
         private void OnChangeMade(object sender, ChangeEventArgs e)
@@ -37,6 +42,43 @@ namespace CableGuardian
             if (InvokesProfileChanged)
             {
                 ProfileChangeMade?.Invoke(this, new EventArgs());
+            }
+        }
+
+        void AddDragEventHandlers(Control c)
+        {
+            if (c is Form || c is Panel || c is Label)
+            {
+                c.MouseMove += DragPoint_MouseMove;
+                c.MouseDown += DragPoint_MouseDown;
+            }
+            if (c is ComboBox)
+            {
+                c.MouseDown += (s, e) => { MouseDownOnComboBox = true; };
+            }
+            foreach (Control ctl in c.Controls)
+            {
+                if (ctl is TrackBar == false)
+                    AddDragEventHandlers(ctl);
+            }
+        }
+        private void DragPoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            MouseDragPosOnForm = PointToClient(Cursor.Position);
+            MouseDownOnComboBox = false;
+        }
+
+        private void DragPoint_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (MouseDownOnComboBox) // comboboxes were causing some erratic form movement
+            {
+                return;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Location = new Point(Cursor.Position.X - MouseDragPosOnForm.X, Cursor.Position.Y - MouseDragPosOnForm.Y);
+
             }
         }
     }
