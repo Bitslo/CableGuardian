@@ -46,6 +46,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.labelSaves = new System.Windows.Forms.Label();
             this.labelSimple = new System.Windows.Forms.Label();
+            this.buttonEmail = new System.Windows.Forms.Button();
             this.panelAck.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -69,7 +70,7 @@
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(130, 4);
+            this.label1.Location = new System.Drawing.Point(7, 1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 13);
             this.label1.TabIndex = 1;
@@ -172,7 +173,7 @@
             this.labelRestart.BackColor = System.Drawing.Color.Transparent;
             this.labelRestart.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelRestart.ForeColor = System.Drawing.Color.Salmon;
-            this.labelRestart.Location = new System.Drawing.Point(12, 366);
+            this.labelRestart.Location = new System.Drawing.Point(12, 270);
             this.labelRestart.Name = "labelRestart";
             this.labelRestart.Size = new System.Drawing.Size(1005, 26);
             this.labelRestart.TabIndex = 13;
@@ -219,9 +220,9 @@
             this.panelAck.Controls.Add(this.textBox3);
             this.panelAck.Controls.Add(this.textBox4);
             this.panelAck.Controls.Add(this.label5);
-            this.panelAck.Location = new System.Drawing.Point(319, 72);
+            this.panelAck.Location = new System.Drawing.Point(13, 360);
             this.panelAck.Name = "panelAck";
-            this.panelAck.Size = new System.Drawing.Size(383, 103);
+            this.panelAck.Size = new System.Drawing.Size(1004, 117);
             this.panelAck.TabIndex = 16;
             // 
             // labelTray
@@ -229,7 +230,7 @@
             this.labelTray.BackColor = System.Drawing.Color.Transparent;
             this.labelTray.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelTray.ForeColor = System.Drawing.Color.Yellow;
-            this.labelTray.Location = new System.Drawing.Point(15, 265);
+            this.labelTray.Location = new System.Drawing.Point(15, 169);
             this.labelTray.Name = "labelTray";
             this.labelTray.Size = new System.Drawing.Size(1002, 23);
             this.labelTray.TabIndex = 17;
@@ -240,7 +241,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::CableGuardian.Properties.Resources.CG_icon_pic;
-            this.pictureBox1.Location = new System.Drawing.Point(481, 250);
+            this.pictureBox1.Location = new System.Drawing.Point(481, 154);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(48, 48);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -252,7 +253,7 @@
             this.labelSaves.BackColor = System.Drawing.Color.Transparent;
             this.labelSaves.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelSaves.ForeColor = System.Drawing.Color.Yellow;
-            this.labelSaves.Location = new System.Drawing.Point(15, 315);
+            this.labelSaves.Location = new System.Drawing.Point(15, 219);
             this.labelSaves.Name = "labelSaves";
             this.labelSaves.Size = new System.Drawing.Size(1002, 23);
             this.labelSaves.TabIndex = 19;
@@ -271,6 +272,20 @@
             this.labelSimple.TabIndex = 82;
             this.labelSimple.Text = "Back to simplified mode?";
             // 
+            // buttonEmail
+            // 
+            this.buttonEmail.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonEmail.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonEmail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonEmail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonEmail.ForeColor = System.Drawing.Color.White;
+            this.buttonEmail.Location = new System.Drawing.Point(389, 54);
+            this.buttonEmail.Name = "buttonEmail";
+            this.buttonEmail.Size = new System.Drawing.Size(236, 24);
+            this.buttonEmail.TabIndex = 84;
+            this.buttonEmail.Text = "Have issues or ideas? Click HERE.";
+            this.buttonEmail.UseVisualStyleBackColor = false;
+            // 
             // FormHelp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,6 +293,7 @@
             this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.buttonEmail);
             this.Controls.Add(this.labelSimple);
             this.Controls.Add(this.labelSaves);
             this.Controls.Add(this.pictureBox1);
@@ -319,5 +335,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelSaves;
         private System.Windows.Forms.Label labelSimple;
+        private System.Windows.Forms.Button buttonEmail;
     }
 }

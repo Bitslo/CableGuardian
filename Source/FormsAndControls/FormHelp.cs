@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace CableGuardian
 {
@@ -24,7 +26,8 @@ namespace CableGuardian
             buttonPage.Click += ButtonPage_Click;
             labelSimple.MouseEnter += (s, e) => { labelSimple.ForeColor = Color.Yellow; };
             labelSimple.MouseLeave += (s, e) => { labelSimple.ForeColor = Color.White; };
-            labelSimple.Click += LabelSimple_Click; 
+            labelSimple.Click += LabelSimple_Click;            
+            buttonEmail.Click += ButtonEmail_Click;                        
 
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
@@ -38,6 +41,85 @@ namespace CableGuardian
             }
 
             SetLayoutForCurrentPage();
+        }
+
+
+        private void ButtonEmail_Click(object sender, EventArgs e)
+        {
+            string separator = "____________________________________________________________________________________";
+
+            string addr = "bitslo" + "." + "cableguardian";
+            addr += "@g";
+            addr += "ma" + "il.";
+            addr += "com";
+
+            string txt = addr;
+            txt += Environment.NewLine;
+            txt += "*******************************";
+            txt += Environment.NewLine;
+            txt += "^ Send to the address above.";
+            txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+            txt += "TYPE YOUR MESSAGE HERE. ATTACH SCREENSHOTS WHEN NEEDED.";
+            txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
+            txt += "IF YOU ARE REPORTING AN ISSUE, PLEASE INCLUDE EVERYTHING BELOW THIS LINE.";
+            txt += Environment.NewLine;
+            txt += separator;
+            txt += Environment.NewLine;
+            txt += (Environment.Is64BitOperatingSystem) ? "64 bit OS" : "32 bit OS";            
+            txt += (Environment.Is64BitProcess) ? ", 64 bit process" : ", 32 bit process";
+            txt += Environment.NewLine;
+
+            string dotNET = "";
+            try
+            {
+                string key = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full";                
+                using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(key, false))
+                {
+                    dotNET = reg.GetValue("Release").ToString();
+                }            
+            }
+            catch (Exception)
+            {       
+                // intentionally ignore
+            }
+
+            txt += (String.IsNullOrWhiteSpace(dotNET)) ? "" : ".NET Framework = "  + dotNET + Environment.NewLine;
+            txt += "OpenVR: " + FormMain.OpenVRConn.Status.ToString() + " - " + FormMain.OpenVRConn.StatusMessage;
+            txt += Environment.NewLine;
+            txt += "Oculus: " + FormMain.OculusConn.Status.ToString() + " - " + FormMain.OculusConn.StatusMessage;
+            txt += Environment.NewLine;
+            txt += "Active profile = " + Config.ActiveProfile?.Name ?? "";            
+            txt += Environment.NewLine + Environment.NewLine + Environment.NewLine;
+
+            try
+            {
+                txt += Config.GetProfilesXml().ToString();
+                txt += Environment.NewLine + Environment.NewLine;
+                
+                txt += Config.GetConfigXml().ToString();
+                txt += Environment.NewLine + Environment.NewLine;
+                
+                if (File.Exists(Program.LogFile))
+                    txt += File.ReadAllText(Program.LogFile);
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+
+            string msg = $"Email body copied to clipboard. Start writing a new email and paste the clipboard contents into the empty message. {Environment.NewLine}{Environment.NewLine}"
+              + $"Copy the receiver address from the first line. Don't forget to include your description of the issue / idea." + Environment.NewLine+ Environment.NewLine
+              +"Thanks!";
+            try
+            {
+                Clipboard.SetText(txt);                
+            }
+            catch (Exception ex)
+            {
+                msg = "Sorry, copying the email body to clipboard failed*. Please send your message to " + addr + Environment.NewLine + Environment.NewLine + "* " + ex.Message;
+            }
+            
+            MessageBox.Show(this, msg, "SUPPORT EMAIL", MessageBoxButtons.OK, MessageBoxIcon.Information);            
         }
 
         private void LabelSimple_Click(object sender, EventArgs e)
