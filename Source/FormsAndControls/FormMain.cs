@@ -31,6 +31,7 @@ namespace CableGuardian
         ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmSettings = new ToolStripMenuItem("Alarm clock sound...") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmTest = new ToolStripMenuItem("Test alarm") { Tag = AlarmTag };
         ToolStripSeparator TrayMenuSeparator2 = new ToolStripSeparator();
         ToolStripMenuItem TrayMenuGUI = new ToolStripMenuItem("Restore from tray");
         ToolStripMenuItem TrayMenuExit = new ToolStripMenuItem("Quit");
@@ -67,6 +68,7 @@ namespace CableGuardian
         string RestartArgs = "";
         bool IsExiting = false;
 
+        int OriginalWidth;
         bool RestoreFromTrayAtStartup = false;
 
         public FormMain()
@@ -94,7 +96,9 @@ namespace CableGuardian
                 InitializeTrayMenu();
                 InitializeAppearance();
             }
-            
+
+            OriginalWidth = Width;
+
             AddEventHandlers();
 
             ReadConfigFromFileAndCheckDefaultSounds();
@@ -115,32 +119,38 @@ namespace CableGuardian
                 SaveProfilesToFile();
 
             SetProfilesSaveStatus(true);
-
-            if (RestoreFromTrayAtStartup)
-                RestoreFromTray();
-
-            if (Config.ProfilesLoadedFromBackup)
+            
+            if (Config.UseSimpleMode)
             {
-                RestoreFromTray();
-                SetProfilesSaveStatus(false);
-                string msg = $"Failed to read profiles from the last save file.{Environment.NewLine}Profiles were loaded from the previous backup file but not saved to disk.";
-                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                SimpleModeTurnOn();
             }
-            else if (Config.ProfilesFileLoadFailed)
+            else
             {
-                RestoreFromTray();
-                SetProfilesSaveStatus(false);
-                string msg = $"Failed to read profiles from disk.{Environment.NewLine}Defaults were loaded but not saved to disk.";
-                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (RestoreFromTrayAtStartup)
+                    RestoreFromTray();
+
+                if (Config.ProfilesLoadedFromBackup)
+                {
+                    RestoreFromTray();
+                    SetProfilesSaveStatus(false);
+                    string msg = $"Failed to read profiles from the last save file.{Environment.NewLine}Profiles were loaded from the previous backup file but not saved to disk.";
+                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (Config.ProfilesFileLoadFailed)
+                {
+                    RestoreFromTray();
+                    SetProfilesSaveStatus(false);
+                    string msg = $"Failed to read profiles from disk.{Environment.NewLine}Defaults were loaded but not saved to disk.";
+                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
             if (Config.ConfigFileMissingAtStartup) // Most likely a first time launch
-            {                
+            {
                 string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
                         $"1. The intended control method is mouse + keyboard.   {Environment.NewLine}{Environment.NewLine}" +
-                        $"2. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +
-                        $"3. For an overview, click the \"?\" in the top right corner.{Environment.NewLine}{Environment.NewLine}" +
-                        $"4. For a quick menu, click the CG icon in the system tray.";
+                        $"2. For help on a setting, hover the mouse over it.   {Environment.NewLine}{Environment.NewLine}" +                        
+                        $"3. For a quick menu, click the CG icon in the system tray.";
                 MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
@@ -282,7 +292,7 @@ namespace CableGuardian
             checkBoxRememberRotation.Checked = Config.TurnCountMemoryMinutes > -1;
             numericUpDownRotMemory.Value = (Config.TurnCountMemoryMinutes > -1) ? Config.TurnCountMemoryMinutes : 0 ;
             SkipFlaggedEventHandlers = false;
-
+            
             if (Program.CmdArgsLCase.Contains(Program.Arg_Maximized))
             {
                 RestoreFromTrayAtStartup = true;
@@ -294,11 +304,12 @@ namespace CableGuardian
 
                 if (!Config.MinimizeAtAutoStartup && Program.IsAutoStartup)
                     RestoreFromTrayAtStartup = true;
-            }
+            }            
 
             CheckWindowsStartUpStatus();
             SetControlVisibility();
         }
+
 
         void SetControlVisibility()
         {
@@ -355,6 +366,7 @@ namespace CableGuardian
             TrayMenu.Items.Add(TrayMenuAlarmIn);
             TrayMenu.Items.Add(TrayMenuAlarmAt);
             TrayMenu.Items.Add(TrayMenuAlarmClear);
+            TrayMenu.Items.Add(TrayMenuAlarmTest);
             TrayMenu.Items.Add(TrayMenuAlarmSettings);
             TrayMenu.Items.Add(TrayMenuSeparator2);
             TrayMenu.Items.Add(TrayMenuExit);
@@ -402,7 +414,9 @@ namespace CableGuardian
             notifyIcon1.Text = Config.ProgramTitle;
             notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;            
             Icon = CableGuardian.Properties.Resources.CG_error;
+            TTip.SetToolTip(pictureBoxHelp, "Help and about");
             TTip.SetToolTip(pictureBoxMinimize, "Minimize to tray");
+            TTip.SetToolTip(pictureBoxClose, "Quit");
             TTip.SetToolTip(pictureBoxPlus, "Add a new empty profile");
             TTip.SetToolTip(pictureBoxClone, "Clone the current profile");
             TTip.SetToolTip(pictureBoxMinus, "Delete the current profile");
@@ -413,14 +427,14 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxSticky, $"If checked, the connection lost notification stays in the Windows notification list until cleared.{Environment.NewLine}" +
                                             "Otherwise the notification disappears automatically after a few seconds.");
             TTip.SetToolTip(buttonReset, $"Reset the turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be untwisted when counter = 0." + Environment.NewLine
-                                        + $"The reset can also be done from the {Config.ProgramTitle} tray icon and with the \"Reset turn count on mount\" -feature.");
+                                        + $"The reset can also be done from the {Config.ProgramTitle} tray icon and with the \"Reset on mount\" -feature.");
             TTip.SetToolTip(checkBoxTrayNotifications, $"Display a temporary Windows notification for certain interactions such as setting up alarms and resetting the turn counter. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
             TTip.SetToolTip(labelAutoStart, $"After dialing in your settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
                                             + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API.");
-            TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine  
+            TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine + Environment.NewLine
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
             TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
@@ -444,13 +458,15 @@ namespace CableGuardian
                                        + $"\u2022 More audio clips" + Environment.NewLine);
             TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
             TTip.SetToolTip(pictureBoxDefaults, "Restore the default CG profiles. Custom profiles will not be touched.");
-
+           
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
             labelYaw.ForeColor = Config.CGErrorColor;                        
             labelHalfTurns.ForeColor = Config.CGErrorColor;
             labelHalfTurnTitle.ForeColor = Config.CGErrorColor;
             labelAlarmAt.ForeColor = Config.CGColor;
+                      
+            SimpleModeInitializeAppearance();
         }
 
         void InitializeAppearanceCommon(Control ctl)
@@ -489,7 +505,7 @@ namespace CableGuardian
             pictureBoxMinus.Click += PictureBoxMinus_Click;
             pictureBoxPlus.Click += (s, e) => { AddProfile(); SetProfilesSaveStatus(false); };
             pictureBoxClone.MouseClick += (s, e) => { CloneProfile(); SetProfilesSaveStatus(false); };
-            pictureBoxHelp.Click += PictureBoxHelp_Click;
+            pictureBoxHelp.Click += PictureBoxHelp_Click;            
             pictureBoxAlarmClock.Click += PictureBoxAlarmClock_Click;
             pictureBoxGetPro.Click += PictureBoxGetPro_Click;
             pictureBoxAlarmClock.MouseEnter += PictureBoxAlarmClock_MouseEnter;
@@ -511,7 +527,8 @@ namespace CableGuardian
             pictureBoxGetPro.MouseEnter += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro_hover; };
             pictureBoxGetPro.MouseLeave += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro; };
             pictureBoxDefaults.MouseEnter += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults_hover; };
-            pictureBoxDefaults.MouseLeave += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults; };            
+            pictureBoxDefaults.MouseLeave += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults; };
+          
 
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
@@ -544,16 +561,20 @@ namespace CableGuardian
             OpenVRConn.HMDUserInteractionStarted += OnHMDUserInteractionStarted;
             OculusConn.HMDUserInteractionStopped += OnHMDUserInteractionStopped;
             OpenVRConn.HMDUserInteractionStopped += OnHMDUserInteractionStopped;
-
+            
             TrayMenuReset.Click += TrayMenutReset_Click;
             TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
             TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
             TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
             TrayMenuAlarmSettings.Click += TrayMenuAlarmSettings_Click;
+            TrayMenuAlarmTest.Click += (s, e) => { Config.Alarm.Play(); };
 
             AlarmTimer.Tick += AlarmTimer_Tick;
+
+            SimpleModeAddEventHandlers();
         }
+
 
         private void PictureBoxDefaults_Click(object sender, EventArgs e)
         {
@@ -808,7 +829,8 @@ namespace CableGuardian
                     item.Visible = !TrayMenuOpenedFromAlarmCLock;
                 }
             }
-            TrayMenuAlarmSettings.Visible = TrayMenuOpenedFromAlarmCLock;
+            TrayMenuAlarmSettings.Visible = TrayMenuOpenedFromAlarmCLock && !IsSimpleModeOn;
+            TrayMenuAlarmTest.Visible = TrayMenuOpenedFromAlarmCLock && IsSimpleModeOn;
         }
 
         private void TrayMenu_Opening(object sender, CancelEventArgs e)
@@ -1011,9 +1033,12 @@ namespace CableGuardian
             help.StartPosition = FormStartPosition.CenterParent;
             SkipFlaggedEventHandlers = true;
             //TrayMenu.Enabled = false;
-            help.ShowDialog(this);
+            DialogResult res = help.ShowDialog(this);
             //TrayMenu.Enabled = true;
             SkipFlaggedEventHandlers = false;
+
+            if (res == DialogResult.Abort)
+                SimpleModeTurnOn();
         }
 
         void SetProfilesSaveStatus(bool saved)
@@ -1732,15 +1757,16 @@ namespace CableGuardian
 
         private void ButtonReset_Click(object sender, EventArgs e)
         {
-            ResetRotations();
+            ResetRotations(true);
 
             if (Config.ShowResetMessageBox)
             {
                 string msg = String.Format("Turn counter has been reset to zero. " +
                                             "It is assumed that the headset cable is currently completely untwisted.{0}{0}" +
                                             "Note that the neutral orientation (no twist) is always set to 0 degrees (facing forward) " +
-                                            "regardless of the headset orientation when applying this reset operation. Also note that by default " +
-                                            "the turn counter is reset when {1} is started. You can change this behaviour with the \"Remember turn count\" -feature." +
+                                            "regardless of the headset orientation when applying this reset operation."                                            
+                                            + (IsSimpleModeOn ? "" : " Also note that by default the turn counter is reset when {1} is started." 
+                                            + " You can change this behaviour with the \"Remember turn count\" -feature.") +
                                             "{0}{0}" +
                                             "Hide this message in the future?", Environment.NewLine, Config.ProgramTitle);
                 if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
@@ -1749,6 +1775,6 @@ namespace CableGuardian
                     SaveConfigurationToFile();
                 }
             }
-        }        
+        }
     }
 }

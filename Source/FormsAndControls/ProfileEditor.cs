@@ -24,9 +24,9 @@ namespace CableGuardian
         /// </summary>
         bool SkipFlaggedEventHandlers = false;
 
-        readonly string ResetOnMountWarning = $"CAUTION!!! Enabling this will reset the turn counter each time you put on the headset.{Environment.NewLine}" +
-                                         $"Usually better disabled, this setting might be useful if your headset only tracks rotation when wearing it.{Environment.NewLine}" +
-                                            $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.";
+        readonly string ResetOnMountWarning = $"CAUTION!!! Enabling this will reset the turn counter each time you put on the headset.{Environment.NewLine}"
+                                                + $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.{Environment.NewLine}{Environment.NewLine}"
+                                                 + $"TIP: Enable \"Mounting sound\" to be notified when you put on the headset.{Environment.NewLine}";                                                    
 
         public ProfileEditor()
         {

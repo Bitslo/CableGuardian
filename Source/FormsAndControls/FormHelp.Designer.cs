@@ -45,6 +45,7 @@
             this.labelTray = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.labelSaves = new System.Windows.Forms.Label();
+            this.labelSimple = new System.Windows.Forms.Label();
             this.panelAck.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -232,7 +233,8 @@
             this.labelTray.Name = "labelTray";
             this.labelTray.Size = new System.Drawing.Size(1002, 23);
             this.labelTray.TabIndex = 17;
-            this.labelTray.Text = "Use the tray icon                        for setting up alarms.";
+            this.labelTray.Text = "You can use the tray icon                        for setting up alarms.          " +
+    "      ";
             this.labelTray.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // pictureBox1
@@ -258,6 +260,17 @@
     ".";
             this.labelSaves.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // labelSimple
+            // 
+            this.labelSimple.AutoSize = true;
+            this.labelSimple.BackColor = System.Drawing.Color.Transparent;
+            this.labelSimple.ForeColor = System.Drawing.Color.White;
+            this.labelSimple.Location = new System.Drawing.Point(890, 42);
+            this.labelSimple.Name = "labelSimple";
+            this.labelSimple.Size = new System.Drawing.Size(124, 13);
+            this.labelSimple.TabIndex = 82;
+            this.labelSimple.Text = "Back to simplified mode?";
+            // 
             // FormHelp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -265,6 +278,7 @@
             this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.labelSimple);
             this.Controls.Add(this.labelSaves);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.labelTray);
@@ -304,5 +318,6 @@
         private System.Windows.Forms.Label labelTray;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label labelSaves;
+        private System.Windows.Forms.Label labelSimple;
     }
 }

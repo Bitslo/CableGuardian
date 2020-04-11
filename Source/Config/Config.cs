@@ -57,6 +57,12 @@ namespace CableGuardian
         public static bool IsLegacyConfig { get; private set; } = false;
         public static bool SaveProfilesAtStartup { get; set; } = false;
 
+        public static bool UseSimpleMode { get; set; } = false;
+        public static uint SimpleModeThreshold { get; set; } = 3;
+        public static SimpleNotifType SimpleModeNotifType { get; set; } = SimpleNotifType.Beep;
+        public static int SimpleModeVolume { get; set; } = 75;
+        public static bool SimpleModeResetOnMount { get; set; } = false;
+        
 
         static Config()
         {   
@@ -299,6 +305,7 @@ namespace CableGuardian
             else
             {
                 ConfigFileMissingAtStartup = true;
+                UseSimpleMode = true;
             }
         }
 
@@ -416,6 +423,16 @@ namespace CableGuardian
 
                 JingleXML_Legacy = xConfig.Element("Jingle");
 
+
+                UseSimpleMode = xConfig.GetElementValueBool("UseSimpleMode", false);
+                SimpleModeThreshold = xConfig.GetElementValueUInt("SimpleModeThreshold", 3);
+                if (Enum.TryParse(xConfig.GetElementValueTrimmed("SimpleModeNotifType"), out SimpleNotifType nType) == false)
+                    nType = SimpleNotifType.Beep;
+
+                SimpleModeNotifType = nType;
+                SimpleModeVolume = xConfig.GetElementValueInt("SimpleModeVolume", 75);
+                SimpleModeResetOnMount = xConfig.GetElementValueBool("SimpleModeResetOnMount", false);
+
                 XElement cons = xConfig.Element("CONSTANTS");
                 if (cons != null)
                 {
@@ -461,7 +478,12 @@ namespace CableGuardian
                                 new XElement("LastHalfTurn", FormMain.Tracker.CurrentHalfTurn.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("LastYawValue", FormMain.Tracker.YawValue.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                                new XElement("Alarm", Alarm.GetXml()),                                
+                                new XElement("Alarm", Alarm.GetXml()),
+                                new XElement("UseSimpleMode", UseSimpleMode),
+                                new XElement("SimpleModeThreshold", SimpleModeThreshold),
+                                new XElement("SimpleModeNotifType", SimpleModeNotifType),
+                                new XElement("SimpleModeVolume", SimpleModeVolume),
+                                new XElement("SimpleModeResetOnMount", SimpleModeResetOnMount),
                                 new XElement("CONSTANTS",
                                 new XComment("Wait time when starting with Windows. The purpose is to ensure that all audio devices have been initialized before using them."),
                                 new XElement("WindowsStartupWaitInSeconds", Program.WindowsStartupWaitInSeconds),

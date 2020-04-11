@@ -21,8 +21,11 @@ namespace CableGuardian
             InitializeComponent();
 
             buttonClose.Click += ButtonClose_Click;
-            buttonPage.Click += ButtonPage_Click;                        
-            
+            buttonPage.Click += ButtonPage_Click;
+            labelSimple.MouseEnter += (s, e) => { labelSimple.ForeColor = Color.Yellow; };
+            labelSimple.MouseLeave += (s, e) => { labelSimple.ForeColor = Color.White; };
+            labelSimple.Click += LabelSimple_Click; 
+
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
                                 " \u00A9 Bitslo";
@@ -35,6 +38,17 @@ namespace CableGuardian
             }
 
             SetLayoutForCurrentPage();
+        }
+
+        private void LabelSimple_Click(object sender, EventArgs e)
+        {
+            string msg = $"Too much hassle? Click Yes to go back to simplified mode (with default settings).{Environment.NewLine}{Environment.NewLine}"
+               + $"Click No to stay in full mode.";
+            if (MessageBox.Show(this, msg, "Switch to simplified mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                DialogResult = DialogResult.Abort;
+                Close();
+            }
         }
 
         private void ButtonPage_Click(object sender, EventArgs e)
@@ -55,7 +69,7 @@ namespace CableGuardian
                 this.BackgroundImage = global::CableGuardian.Properties.Resources.Help1;
                 foreach (Control item in Controls)
                 {
-                    if (item != buttonPage && item != buttonClose)
+                    if (item != buttonPage && item != buttonClose && item != labelSimple)
                     {
                         item.Visible = false;
                     }
@@ -66,7 +80,7 @@ namespace CableGuardian
                 this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
                 foreach (Control item in Controls)
                 {
-                    if (item != buttonPage && item != buttonClose)
+                    if (item != buttonPage && item != buttonClose && item != labelSimple)
                     {
                         item.Visible = true;
                     }
@@ -77,6 +91,7 @@ namespace CableGuardian
 
         private void ButtonClose_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.Cancel;
             Close();
         }
     }
