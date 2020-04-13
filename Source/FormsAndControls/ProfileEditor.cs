@@ -36,9 +36,9 @@ namespace CableGuardian
             comboBoxDeviceSource.DataSource = Enum.GetValues(typeof(AudioDeviceSource));
             comboBoxManual.DataSource = AudioDevicePool.GetWaveOutDevices();
 
-            TTip.SetToolTip(comboBoxAPI, $"Choose {VRAPI.OculusVR} for Oculus headsets, {VRAPI.OpenVR} for others.{Environment.NewLine}"
-                                            + $"If you switch between different headsets (with different API / Audio device), it is recommended to make a separate profile for each.{Environment.NewLine}" 
-                                            + "You can use the \"Clone profile\" -button to quickly copy the rotation settings to another profile.");
+            TTip.SetToolTip(comboBoxAPI, $"API for reading the headset data. (Application Programming Interface){Environment.NewLine + Environment.NewLine}"
+                                    + $"\u2022 {VRAPI.OculusVR} = Native Oculus connection. Recommended for Oculus headsets. Works with both platforms (Oculus Home + SteamVR).{Environment.NewLine}"
+                                    + $"\u2022 {VRAPI.OpenVR}  = SteamVR connection. For all SteamVR compatible headsets.");
             TTip.SetToolTip(checkBoxStartup,$"Load this profile when program starts.{Environment.NewLine}" 
                                             + "If a startup profile has not been defined, the previously used profile will be loaded.");
             TTip.SetToolTip(checkBoxFreeze, "Freeze profile to prevent accidental changes.");

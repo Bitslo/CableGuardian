@@ -400,6 +400,16 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HelpSimple {
+            get {
+                object obj = ResourceManager.GetObject("HelpSimple", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Minimize {
             get {
                 object obj = ResourceManager.GetObject("Minimize", resourceCulture);
@@ -556,14 +566,13 @@ namespace CableGuardian.Properties {
         ///  &lt;WaveOutDeviceSource&gt;OculusHome&lt;/WaveOutDeviceSource&gt;
         ///  &lt;WaveOutDeviceName /&gt;
         ///  &lt;Actions&gt;
-        ///	&lt;TriggeredAction&gt;
-        ///	  &lt;Trigger&gt;
-        ///		&lt;TriggeringEvent&gt;Yaw0Yaw180&lt;/TriggeringEvent&gt;
-        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
-        ///		&lt;RotationCondition&gt;
-        ///		  &lt;TargetRotationSide&gt;Left&lt;/TargetRotationSide&gt;
-        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt;
-        ///		 [rest of string was truncated]&quot;;.
+        ///  &lt;TriggeredAction&gt;
+        ///    &lt;Trigger&gt;
+        ///      &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///      &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///      &lt;RotationCondition&gt;
+        ///        &lt;TargetRotationSide&gt;Either&lt;/TargetRotationSide&gt;
+        ///        &lt;CompOperator&gt;EqualOrGr [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Profile_CG_Speech_Oculus {
             get {
@@ -581,14 +590,13 @@ namespace CableGuardian.Properties {
         ///  &lt;WaveOutDeviceSource&gt;Windows&lt;/WaveOutDeviceSource&gt;
         ///  &lt;WaveOutDeviceName /&gt;
         ///  &lt;Actions&gt;
-        ///	&lt;TriggeredAction&gt;
-        ///	  &lt;Trigger&gt;
-        ///		&lt;TriggeringEvent&gt;Yaw0Yaw180&lt;/TriggeringEvent&gt;
-        ///		&lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
-        ///		&lt;RotationCondition&gt;
-        ///		  &lt;TargetRotationSide&gt;Left&lt;/TargetRotationSide&gt;
-        ///		  &lt;CompOperator&gt;EqualOrGreaterThan&lt;/CompOperator&gt;
-        ///		  &lt;Ta [rest of string was truncated]&quot;;.
+        ///  &lt;TriggeredAction&gt;
+        ///    &lt;Trigger&gt;
+        ///      &lt;TriggeringEvent&gt;ResetPosition&lt;/TriggeringEvent&gt;
+        ///      &lt;FireLimitPerZero&gt;0&lt;/FireLimitPerZero&gt;
+        ///      &lt;RotationCondition&gt;
+        ///        &lt;TargetRotationSide&gt;Either&lt;/TargetRotationSide&gt;
+        ///        &lt;CompOperator&gt;EqualOrGreater [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Profile_CG_Speech_OpenVR {
             get {

@@ -433,7 +433,7 @@ namespace CableGuardian
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
             TTip.SetToolTip(labelAutoStart, $"After dialing in your settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
-                                            + "Note that SteamVR autostart toggle is available only after you have established a headset connection via OpenVR API.");
+                                            + $"Note that SteamVR autostart toggle is available only when SteamVR is running and {Config.ProgramTitle} is connected via OpenVR API (default for non-Oculus headsets).");
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine + Environment.NewLine
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
@@ -1029,7 +1029,12 @@ namespace CableGuardian
 
         private void PictureBoxHelp_Click(object sender, EventArgs e)
         {
-            FormHelp help = new FormHelp();
+            Form help = null;
+            if (IsSimpleModeOn)            
+                help = new FormHelpSimple();
+            else
+                help = new FormHelp();
+
             help.StartPosition = FormStartPosition.CenterParent;
             SkipFlaggedEventHandlers = true;
             //TrayMenu.Enabled = false;

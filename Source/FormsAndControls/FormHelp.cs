@@ -46,7 +46,7 @@ namespace CableGuardian
 
         private void ButtonEmail_Click(object sender, EventArgs e)
         {
-            string separator = "____________________________________________________________________________________";
+            string separator = "__________________________________________________________________________________";
 
             string addr = "bitslo" + "." + "cableguardian";
             addr += "@g";
@@ -61,29 +61,17 @@ namespace CableGuardian
             txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
             txt += "TYPE YOUR MESSAGE HERE. ATTACH SCREENSHOTS WHEN NEEDED.";
             txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
-            txt += "IF YOU ARE REPORTING AN ISSUE, PLEASE INCLUDE EVERYTHING BELOW THIS LINE.";
+            txt += "IF YOU ARE REPORTING AN ISSUE, PLEASE INCLUDE EVERYTHING BELOW THIS LINE UNEDITED.";
             txt += Environment.NewLine;
             txt += separator;
+            txt += Environment.NewLine;
+            txt += Config.ProgramTitle + " v." + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
             txt += Environment.NewLine;
             txt += (Environment.Is64BitOperatingSystem) ? "64 bit OS" : "32 bit OS";            
             txt += (Environment.Is64BitProcess) ? ", 64 bit process" : ", 32 bit process";
             txt += Environment.NewLine;
-
-            string dotNET = "";
-            try
-            {
-                string key = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full";                
-                using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(key, false))
-                {
-                    dotNET = reg.GetValue("Release").ToString();
-                }            
-            }
-            catch (Exception)
-            {       
-                // intentionally ignore
-            }
-
-            txt += (String.IsNullOrWhiteSpace(dotNET)) ? "" : ".NET Framework = "  + dotNET + Environment.NewLine;
+            txt += GetOSDescription() + Environment.NewLine;
+            txt += GetDotNetDescription() + Environment.NewLine;            
             txt += "OpenVR: " + FormMain.OpenVRConn.Status.ToString() + " - " + FormMain.OpenVRConn.StatusMessage;
             txt += Environment.NewLine;
             txt += "Oculus: " + FormMain.OculusConn.Status.ToString() + " - " + FormMain.OculusConn.StatusMessage;
@@ -107,7 +95,7 @@ namespace CableGuardian
                 // intentionally ignore
             }
 
-            string msg = $"Email body copied to clipboard. Start writing a new email and paste the clipboard contents into the empty message. {Environment.NewLine}{Environment.NewLine}"
+            string msg = $"Email body copied to clipboard. Create a new email and paste the clipboard contents into the empty message. {Environment.NewLine}{Environment.NewLine}"
               + $"Copy the receiver address from the first line. Don't forget to include your description of the issue / idea." + Environment.NewLine+ Environment.NewLine
               +"Thanks!";
             try
@@ -131,6 +119,46 @@ namespace CableGuardian
                 DialogResult = DialogResult.Abort;
                 Close();
             }
+        }
+
+        string GetDotNetDescription()
+        {
+            try
+            {
+                string key = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full";
+                using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(key, false))
+                {
+                    return ".NET Framework = " + reg.GetValue("Release").ToString();
+                }
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+            return "";
+        }
+
+        string GetOSDescription()
+        {            
+            try
+            {
+                string key = @"SOFTWARE\Microsoft\Windows NT\CurrentVersion";
+                using (RegistryKey reg = Registry.LocalMachine.OpenSubKey(key, false))
+                {
+                    string ver = reg.GetValue("ProductName")?.ToString() ?? "";
+                    ver +=  ", Version = " + (reg.GetValue("ReleaseId")?.ToString() ?? "");
+                    ver += ", Build = " + (reg.GetValue("CurrentBuild")?.ToString() ?? "");
+                    ver += "." + (reg.GetValue("UBR")?.ToString() ?? "");
+                    ver += " (" + (reg.GetValue("BuildLabEx")?.ToString() ?? "") + ")";
+
+                    return ver;
+                }
+            }
+            catch (Exception)
+            {
+                // intentionally ignore
+            }
+            return "";
         }
 
         private void ButtonPage_Click(object sender, EventArgs e)

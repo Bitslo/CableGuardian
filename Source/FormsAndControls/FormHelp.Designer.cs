@@ -57,7 +57,7 @@
             this.buttonClose.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonClose.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonClose.ForeColor = System.Drawing.Color.White;
             this.buttonClose.Location = new System.Drawing.Point(929, 6);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(88, 30);
@@ -199,7 +199,7 @@
             this.buttonPage.Cursor = System.Windows.Forms.Cursors.Default;
             this.buttonPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonPage.ForeColor = System.Drawing.Color.Yellow;
+            this.buttonPage.ForeColor = System.Drawing.Color.White;
             this.buttonPage.Location = new System.Drawing.Point(887, 6);
             this.buttonPage.Name = "buttonPage";
             this.buttonPage.Size = new System.Drawing.Size(36, 30);

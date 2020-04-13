@@ -21,8 +21,7 @@ namespace CableGuardian
         void SimpleModeTurnOn()
         {
             Enabled = false;
-            Width = 328;
-            pictureBoxHelp.Visible = false;
+            Width = 328;            
             checkBoxConnLost.Visible = false;
             checkBoxOnAPIQuit.Visible = false;
             checkBoxSticky.Visible = false;
@@ -37,9 +36,9 @@ namespace CableGuardian
             SimpleModeLoadProfile(Config.SimpleModeNotifType);
             SimpleModeSaveConfigAndUpdateProfile();
 
-            if ((SimpleModeProfile.API == VRAPI.OculusVR && !OculusConn.OculusHMDConnected())
-                ||
-                (SimpleModeProfile.API == VRAPI.OpenVR && OculusConn.OculusHMDConnected()))
+            //if ((SimpleModeProfile.API == VRAPI.OculusVR && !OculusConn.OculusHMDConnected())
+            //    ||
+            //    (SimpleModeProfile.API == VRAPI.OpenVR && OculusConn.OculusHMDConnected()))
                 comboBoxAPI.Visible = true;
 
             Config.UseSimpleMode = true;
@@ -65,8 +64,7 @@ namespace CableGuardian
 
         void SimpleModeTurnOff()
         {
-            Width = OriginalWidth;
-            pictureBoxHelp.Visible = true;
+            Width = OriginalWidth;            
             checkBoxConnLost.Visible = true;
             checkBoxOnAPIQuit.Visible = true;
             checkBoxSticky.Visible = true;
@@ -109,7 +107,9 @@ namespace CableGuardian
                                     + $"\u2022 Mouse left button --> Play the sound that you will hear when you turn too much to the LEFT." + Environment.NewLine
                                     + $"\u2022 Mouse middle button --> Play the sound that you will hear when you return back to NEUTRAL orientation." + Environment.NewLine
                                     + $"\u2022 Mouse right button --> Play the sound that you will hear when you turn too much to the RIGHT.");
-            TTip.SetToolTip(comboBoxAPI, $"Select the VR interface to use. {VRAPI.OculusVR} for Oculus headsets, {VRAPI.OpenVR} for others.");
+            TTip.SetToolTip(comboBoxAPI, $"API for reading the headset data. (Application Programming Interface){Environment.NewLine+Environment.NewLine}"
+                                    +$"\u2022 {VRAPI.OculusVR} = Native Oculus connection. Recommended for Oculus headsets. Works with both platforms (Oculus Home + SteamVR).{Environment.NewLine}"
+                                    +$"\u2022 {VRAPI.OpenVR}  = SteamVR connection. For all SteamVR compatible headsets.");
 
             panelSimple.Location = new Point(6, 229);
             labelMore.Location = new Point(210, 465);
