@@ -112,7 +112,7 @@ namespace CableGuardian
 
         private void LabelSimple_Click(object sender, EventArgs e)
         {
-            string msg = $"Too much hassle? Click Yes to go back to simplified mode (with default settings).{Environment.NewLine}{Environment.NewLine}"
+            string msg = $"Too much hassle? Click Yes to go back to simplified mode. You will lose the changes you made in full mode.{Environment.NewLine}{Environment.NewLine}"
                + $"Click No to stay in full mode.";
             if (MessageBox.Show(this, msg, "Switch to simplified mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {

@@ -442,8 +442,8 @@ namespace CableGuardian
                                                 + $"\u2022 NOTE 1: Steam will not show \"Now playing {Config.ProgramTitle}\" when the app is auto-started. This is intentional to prevent {Config.ProgramTitle} showing up in \"most played\"." + Environment.NewLine
                                                 + $"\u2022 NOTE 2: {Config.ProgramTitle} will exit automatically ONLY if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
                                                 + $"\u2022 NOTE 3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location." + Environment.NewLine);
-            TTip.SetToolTip(checkBoxStartMinAuto, $"Hide GUI ( = tray icon only) when the program starts automatically with Windows. Recommended for normal usage after you have dialed in your settings.");
-            TTip.SetToolTip(checkBoxStartMinUser, $"Hide GUI ( = tray icon only) when the user starts the program manually.");
+            TTip.SetToolTip(checkBoxStartMinAuto, $"Hide the main window when the program starts automatically with Windows or SteamVR. Recommended for normal usage after you have dialed in your settings.");
+            TTip.SetToolTip(checkBoxStartMinUser, $"Hide the main window when the user starts the program manually.");
             TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
                                                     + "You may find this convenient when using the SteamVR auto start & exit feature (OpenVR only).");
             TTip.SetToolTip(numericUpDownRotMemory, $"Time limit (minutes) for the turn count memory (when {Config.ProgramTitle} is closed). The last turn count will be used at startup if the elapsed time since the last exit is less or equal to this value." + Environment.NewLine
