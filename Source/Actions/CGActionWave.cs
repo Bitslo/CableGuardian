@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.IO;
 using System.Threading;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace CableGuardian
 {
@@ -45,10 +46,15 @@ namespace CableGuardian
         BackgroundWorker Worker = new BackgroundWorker();
 
         bool WaveInitializationInProgress = false;
-        const int WaveMonitorLoopLength_ms = 10;
+        const int WaveMonitorLoopLength_ms = 10; // 18.4.2020 TIL: Thread.Sleep() is very inaccurate. 
+                                                 // Also, intervals below 15ms are never going to happen.
+                                                 // https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep#remarks
+                                                 // But let's just leave it like this and use a Stopwatch to check the time.
         int WaveMonitorLoopCount = 0;
         const int MaxPlayDuration_ms = 5000;
 
+        Stopwatch StopWatch = new Stopwatch();
+        int PlayDurationMs = 0;
         int WaveDurationMs = 0;
         public int LoopCount { get; set; } = 1;
 
@@ -133,8 +139,8 @@ namespace CableGuardian
                 WaveOut.Init(MixedWave);
 
                 // limit play duration in case wave length is reported incorrectly or a long sound is loaded   
-                int playDuration = (WaveDurationMs < MaxPlayDuration_ms && WaveDurationMs > WaveMonitorLoopLength_ms) ? WaveDurationMs : MaxPlayDuration_ms;                
-                WaveMonitorLoopCount = Convert.ToInt32(Math.Ceiling(playDuration / (float)WaveMonitorLoopLength_ms));
+                PlayDurationMs = (WaveDurationMs < MaxPlayDuration_ms && WaveDurationMs > WaveMonitorLoopLength_ms) ? WaveDurationMs : MaxPlayDuration_ms;                
+                WaveMonitorLoopCount = Convert.ToInt32(Math.Ceiling(PlayDurationMs / (float)WaveMonitorLoopLength_ms));
 
                 Error = false;                
             }
@@ -160,29 +166,35 @@ namespace CableGuardian
                 WaveStream = new MemoryStream(Convert.FromBase64String(b64));                                    
             }
         }
-        
 
         void DoWork(object sender, DoWorkEventArgs e)
         {
             try
-            {                
+            {
                 for (int i = 0; i < LoopCount; i++)
                 {
                     MixedWave.Position = 0;
+                    StopWatch.Reset();
                     WaveOut?.Play();
+                    StopWatch.Start();
 
                     for (int j = 0; j < WaveMonitorLoopCount; j++)
                     {
                         if (WaveInitializationInProgress)   // wave was changed mid play
-                            return;
+                            break;
 
                         Thread.Sleep(WaveMonitorLoopLength_ms);
+
+                        // Thread.Sleep() is very inaccurate. Let's check the elapsed time to avoid excess drifting.
+                        if (StopWatch.ElapsedMilliseconds > PlayDurationMs)
+                            break;
                     }
 
+                    StopWatch.Stop();
                     if (WaveInitializationInProgress)
                         return;
 
-                    WaveOut?.Stop();                    
+                    WaveOut?.Stop();
                 }
             }
             catch (Exception)
@@ -190,7 +202,7 @@ namespace CableGuardian
                 // intentionally ignore
             }
         }
-               
+
         public void Dispose()
         {
             DisposeNAudioComponents();
