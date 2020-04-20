@@ -122,7 +122,7 @@ namespace CableGuardian
             
             if (Config.UseSimpleMode)
             {
-                SimpleModeTurnOn();
+                SimpleMode_TurnOn();
             }
             else
             {
@@ -466,7 +466,7 @@ namespace CableGuardian
             labelHalfTurnTitle.ForeColor = Config.CGErrorColor;
             labelAlarmAt.ForeColor = Config.CGColor;
                       
-            SimpleModeInitializeAppearance();
+            SimpleMode_InitializeAppearance();
         }
 
         void InitializeAppearanceCommon(Control ctl)
@@ -572,7 +572,7 @@ namespace CableGuardian
 
             AlarmTimer.Tick += AlarmTimer_Tick;
 
-            SimpleModeAddEventHandlers();
+            SimpleMode_AddEventHandlers();
         }
 
 
@@ -1043,7 +1043,7 @@ namespace CableGuardian
             SkipFlaggedEventHandlers = false;
 
             if (res == DialogResult.Abort)
-                SimpleModeTurnOn();
+                SimpleMode_TurnOn();
         }
 
         void SetProfilesSaveStatus(bool saved)

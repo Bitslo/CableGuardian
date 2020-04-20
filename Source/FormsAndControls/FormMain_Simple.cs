@@ -18,7 +18,7 @@ namespace CableGuardian
                                                    $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.";
 
         bool IsSimpleModeOn = false;
-        void SimpleModeTurnOn()
+        void SimpleMode_TurnOn()
         {
             Enabled = false;
             Width = 328;            
@@ -33,8 +33,8 @@ namespace CableGuardian
             CenterToScreen();            
 
             RestoreDefaultProfiles_Standard(Config.ActiveProfile.API);
-            SimpleModeLoadProfile(Config.SimpleModeNotifType);
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_LoadProfile(Config.SimpleModeNotifType);
+            SimpleMode_SaveConfigAndUpdateProfile();
 
             //if ((SimpleModeProfile.API == VRAPI.OculusVR && !OculusConn.OculusHMDConnected())
             //    ||
@@ -47,11 +47,10 @@ namespace CableGuardian
             Config.MinimizeAtUserStartup = false;
             Config.TurnCountMemoryMinutes = -1;
             Config.TrayMenuNotifications = true;
-            Config.NotifyWhenVRConnectionLost = true;
-            Config.NotifyOnAPIQuit = (SimpleModeProfile.API == VRAPI.OculusVR) ? true : false ;
+            Config.NotifyWhenVRConnectionLost = true;            
             Config.ConnLostNotificationIsSticky = true;
 
-            SimpleModeLoadValuesToGui();
+            SimpleMode_LoadValuesToGui();
                         
             SaveConfigurationToFile();
             SetProfilesSaveStatus(true);
@@ -62,7 +61,7 @@ namespace CableGuardian
             Enabled = true;
         }
 
-        void SimpleModeTurnOff()
+        void SimpleMode_TurnOff()
         {
             Width = OriginalWidth;            
             checkBoxConnLost.Visible = true;
@@ -93,7 +92,7 @@ namespace CableGuardian
             MessageBox.Show(this, msg, "Full mode activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
      
-        void SimpleModeInitializeAppearance()
+        void SimpleMode_InitializeAppearance()
         {
             TTip.SetToolTip(labelMore, $"{Config.ProgramTitle} is currently in simplified mode. Click here to toggle full mode with all available options.");
             TTip.SetToolTip(numericUpDownHalfTurns, $"A sound will play each time you reach this (or a higher) number of HALF-TURNS (180\u00B0).");
@@ -119,7 +118,7 @@ namespace CableGuardian
             comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
         }
 
-        void SimpleModeAddEventHandlers()
+        void SimpleMode_AddEventHandlers()
         {
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxResetOnMount.CheckedChanged += SimpleMode_CheckBoxResetOnMount_CheckedChanged;
@@ -155,8 +154,8 @@ namespace CableGuardian
 
             Enabled = false;
             RestoreDefaultProfiles_Standard((VRAPI)comboBoxAPI.SelectedItem);
-            SimpleModeLoadProfile(Config.SimpleModeNotifType);
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_LoadProfile(Config.SimpleModeNotifType);
+            SimpleMode_SaveConfigAndUpdateProfile();
             SaveProfilesToFile();
             Enabled = true;
         }
@@ -195,13 +194,13 @@ namespace CableGuardian
                 return;
 
             Config.SimpleModeVolume = trackBarVolume.Value;
-            SimpleModeSetVolumeLabelText();            
+            SimpleMode_SetVolumeLabelText();            
         }
 
-        void SimpleModeSetVolumeLabelText()
+        void SimpleMode_SetVolumeLabelText()
         {
             labelVolVal.Text = trackBarVolume.Value.ToString();
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_SaveConfigAndUpdateProfile();
         }
 
         private void SimpleMode_NumericUpDownHalfTurns_ValueChanged(object sender, EventArgs e)
@@ -210,7 +209,7 @@ namespace CableGuardian
                 return;
 
             Config.SimpleModeThreshold = (uint)numericUpDownHalfTurns.Value;
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_SaveConfigAndUpdateProfile();
         }
 
         private void SimpleMode_ComboBoxNotifType_SelectedIndexChanged(object sender, EventArgs e)
@@ -219,8 +218,8 @@ namespace CableGuardian
                 return;
 
             Config.SimpleModeNotifType = (SimpleNotifType)Enum.Parse(typeof(SimpleNotifType),comboBoxNotifType.SelectedItem.ToString());
-            SimpleModeLoadProfile(Config.SimpleModeNotifType);
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_LoadProfile(Config.SimpleModeNotifType);
+            SimpleMode_SaveConfigAndUpdateProfile();
         }
 
         private void SimpleMode_LabelMore_Click(object sender, EventArgs e)
@@ -231,7 +230,7 @@ namespace CableGuardian
             string msg = $"If you want more control over the app, click Yes to enter the full mode with all available options.{Environment.NewLine}{Environment.NewLine}"
                 + $"If you are happy with the current configuration, click No to stay in simplified mode.";
             if (MessageBox.Show(this, msg, "Switch to full mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                SimpleModeTurnOff();
+                SimpleMode_TurnOff();
         }
 
         private void SimpleMode_CheckBoxResetOnMount_CheckedChanged(object sender, EventArgs e)
@@ -248,10 +247,10 @@ namespace CableGuardian
             }
 
             Config.SimpleModeResetOnMount = checkBoxResetOnMount.Checked;
-            SimpleModeSaveConfigAndUpdateProfile();
+            SimpleMode_SaveConfigAndUpdateProfile();
         }
 
-        void SimpleModeLoadValuesToGui()
+        void SimpleMode_LoadValuesToGui()
         {
             bool skipStatus = SkipFlaggedEventHandlers;
             SkipFlaggedEventHandlers = true;
@@ -264,10 +263,10 @@ namespace CableGuardian
 
             SkipFlaggedEventHandlers = skipStatus;
 
-            SimpleModeSetVolumeLabelText();
+            SimpleMode_SetVolumeLabelText();
         }
 
-        void SimpleModeLoadProfile(SimpleNotifType typ)
+        void SimpleMode_LoadProfile(SimpleNotifType typ)
         {
             if (typ == SimpleNotifType.Beep)
                 SimpleModeProfile = Config.GetProfileByName("CG_Beep");
@@ -277,9 +276,11 @@ namespace CableGuardian
             LoadProfile(SimpleModeProfile);
         }
 
-        void SimpleModeSaveConfigAndUpdateProfile()
+        void SimpleMode_SaveConfigAndUpdateProfile()
         {
             Profile p = SimpleModeProfile;
+
+            Config.NotifyOnAPIQuit = (p.API == VRAPI.OculusVR) ? true : false;
 
             p.ResetOnMount = Config.SimpleModeResetOnMount;
             p.PlayMountingSound = Config.SimpleModeResetOnMount;
