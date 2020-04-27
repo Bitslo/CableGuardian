@@ -283,8 +283,8 @@ namespace CableGuardian
                 LoopCount = xCGActionWaveFile.GetElementValueInt("LoopCount");
                 if (LoopCount < 1)
                     LoopCount = 1;
-                if (LoopCount > 9)
-                    LoopCount = 9;
+                if (LoopCount > 99)
+                    LoopCount = 99;
             }
         }
 

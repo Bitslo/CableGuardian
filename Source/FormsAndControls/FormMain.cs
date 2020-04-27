@@ -24,6 +24,8 @@ namespace CableGuardian
         const string AlarmTag = "ALARM";
         ContextMenuStrip TrayMenu = new ContextMenuStrip();
         ToolStripLabel TrayMenuTitle = new ToolStripLabel(Config.ProgramTitle);
+        ToolStripLabel TrayMenuProfile = new ToolStripLabel("Profile");
+        ToolStripSeparator TrayMenuSeparator3 = new ToolStripSeparator();
         ToolStripLabel TrayMenuRotations = new ToolStripLabel("Half turns: 00000000");
         ToolStripMenuItem TrayMenuReset = new ToolStripMenuItem("Reset turn counter");
         ToolStripSeparator TrayMenuSeparator1 = new ToolStripSeparator();
@@ -360,6 +362,8 @@ namespace CableGuardian
 
             notifyIcon1.ContextMenuStrip = TrayMenu;
             TrayMenu.Items.Add(TrayMenuTitle);
+            TrayMenu.Items.Add(TrayMenuProfile);
+            TrayMenu.Items.Add(TrayMenuSeparator3);
             TrayMenu.Items.Add(TrayMenuRotations);            
             TrayMenu.Items.Add(TrayMenuReset);            
             TrayMenu.Items.Add(TrayMenuSeparator1);
@@ -454,6 +458,7 @@ namespace CableGuardian
                                        + $"\u2022 Visual indicators" + Environment.NewLine
                                        + $"\u2022 Floor markers with alerts" + Environment.NewLine
                                        + $"\u2022 FOV measuring tool" + Environment.NewLine
+                                       + $"\u2022 Automatic profile selection per app" + Environment.NewLine
                                        + $"\u2022 Expandable user interface" + Environment.NewLine
                                        + $"\u2022 More audio clips" + Environment.NewLine);
             TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
@@ -762,6 +767,8 @@ namespace CableGuardian
         {
             uint halfTurns = Tracker.CompletedHalfTurns;
             Direction rotSide = Tracker.RotationSide;
+
+            TrayMenuProfile.Text = "[" + ((Config.ActiveProfile == null) ? "N/A" : Config.ActiveProfile.Name) + "]";
             TrayMenuRotations.Text = "Half turns: " + halfTurns.ToString() + ((halfTurns > 0) ? " (" + rotSide.ToString() + ")" : "");
             TrayMenuGUI.Text = (Visible) ? "Hide main window" : "Show main window";
 
@@ -831,6 +838,7 @@ namespace CableGuardian
             }
             TrayMenuAlarmSettings.Visible = TrayMenuOpenedFromAlarmCLock && !IsSimpleModeOn;
             TrayMenuAlarmTest.Visible = TrayMenuOpenedFromAlarmCLock && IsSimpleModeOn;
+            TrayMenuProfile.Visible = !TrayMenuOpenedFromAlarmCLock && !IsSimpleModeOn;
         }
 
         private void TrayMenu_Opening(object sender, CancelEventArgs e)

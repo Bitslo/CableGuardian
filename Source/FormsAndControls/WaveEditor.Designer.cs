@@ -200,7 +200,7 @@
             // 
             this.numericUpDownLoop.Location = new System.Drawing.Point(97, 3);
             this.numericUpDownLoop.Maximum = new decimal(new int[] {
-            9,
+            99,
             0,
             0,
             0});
