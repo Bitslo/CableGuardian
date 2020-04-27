@@ -14,7 +14,7 @@ namespace CableGuardian
     {
         Profile SimpleModeProfile;
 
-        readonly string ResetOnMountWarning = $"CAUTION!!! Enabling this will reset the turn counter (and play a sound) each time you put on the headset.{Environment.NewLine}" +                                            
+        readonly string ResetOnMountWarning = $"CAUTION!!! Enabling this will reset the turn counter each time you put on the headset.{Environment.NewLine}" +                                            
                                                    $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.";
 
         bool IsSimpleModeOn = false;
@@ -108,7 +108,10 @@ namespace CableGuardian
                                     + $"\u2022 Mouse right button --> Play the sound that you will hear when you turn too much to the RIGHT.");
             TTip.SetToolTip(comboBoxAPI, $"API for reading the headset data. (Application Programming Interface){Environment.NewLine+Environment.NewLine}"
                                     +$"\u2022 {VRAPI.OculusVR} = Native Oculus connection. Recommended for Oculus headsets. Works with both platforms (Oculus Home + SteamVR).{Environment.NewLine}"
-                                    +$"\u2022 {VRAPI.OpenVR}  = SteamVR connection. For all SteamVR compatible headsets.");
+                                    +$"\u2022 {VRAPI.OpenVR}  = SteamVR connection. For all SteamVR compatible headsets.");            
+            TTip.SetToolTip(checkBoxMountingSound, $"Play a sound when putting on the headset.{Environment.NewLine}Can be useful together with \"Reset on mount\" or just by itself to ensure that the app is running."
+                                                + Environment.NewLine + "You can preview the sound by checking this box." + Environment.NewLine + Environment.NewLine
+                                                + $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
 
             panelSimple.Location = new Point(6, 229);
             labelMore.Location = new Point(210, 465);
@@ -116,12 +119,16 @@ namespace CableGuardian
 
             comboBoxNotifType.DataSource = Enum.GetValues(typeof(SimpleNotifType));
             comboBoxAPI.DataSource = Enum.GetValues(typeof(VRAPI));
+
+            checkBoxMountingSound.ForeColor = Color.White;
+            checkBoxMountingSound.Text = "\u266C";
         }
 
         void SimpleMode_AddEventHandlers()
         {
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxResetOnMount.CheckedChanged += SimpleMode_CheckBoxResetOnMount_CheckedChanged;
+            checkBoxMountingSound.CheckedChanged += SimpleMode_CheckBoxMountingSound_CheckedChanged;
             labelMore.MouseEnter += (s, e) => { labelMore.ForeColor = Color.Yellow; };
             labelMore.MouseLeave += (s, e) => { labelMore.ForeColor = Color.White; };
             labelMore.Click += SimpleMode_LabelMore_Click;
@@ -240,13 +247,25 @@ namespace CableGuardian
 
             if (checkBoxResetOnMount.Checked)
             {
-                string msg = ResetOnMountWarning.Replace(Environment.NewLine, Environment.NewLine + Environment.NewLine)
-                                + Environment.NewLine + Environment.NewLine + "As an example, you will hear the reset sound when you click OK.";
-                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                SimpleModeProfile.MountingSound.Play();
+                string msg = ResetOnMountWarning.Replace(Environment.NewLine, Environment.NewLine + Environment.NewLine);                                
+                MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);                
             }
 
             Config.SimpleModeResetOnMount = checkBoxResetOnMount.Checked;
+            SimpleMode_SaveConfigAndUpdateProfile();
+        }
+
+        private void SimpleMode_CheckBoxMountingSound_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            if (checkBoxMountingSound.Checked)
+            {
+                SimpleModeProfile.MountingSound.Play();
+            }
+
+            Config.SimpleModePlayMountingSound = checkBoxMountingSound.Checked;
             SimpleMode_SaveConfigAndUpdateProfile();
         }
 
@@ -257,6 +276,7 @@ namespace CableGuardian
 
             trackBarVolume.Value = Config.SimpleModeVolume;
             checkBoxResetOnMount.Checked = Config.SimpleModeResetOnMount;
+            checkBoxMountingSound.Checked = Config.SimpleModePlayMountingSound;
             numericUpDownHalfTurns.Value = Config.SimpleModeThreshold;
             comboBoxNotifType.SelectedItem = Config.SimpleModeNotifType;
             comboBoxAPI.SelectedItem = SimpleModeProfile.API;
@@ -283,7 +303,7 @@ namespace CableGuardian
             Config.NotifyOnAPIQuit = (p.API == VRAPI.OculusVR) ? true : false;
 
             p.ResetOnMount = Config.SimpleModeResetOnMount;
-            p.PlayMountingSound = Config.SimpleModeResetOnMount;
+            p.PlayMountingSound = Config.SimpleModePlayMountingSound;
 
             foreach (var a in p.Actions)
             {

@@ -78,8 +78,9 @@
             this.numericUpDownHalfTurns = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.labelMore = new System.Windows.Forms.Label();
-            this.profileEditor = new CableGuardian.ProfileEditor();
             this.comboBoxAPI = new System.Windows.Forms.ComboBox();
+            this.checkBoxMountingSound = new System.Windows.Forms.CheckBox();
+            this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -500,6 +501,7 @@
             // 
             // panelSimple
             // 
+            this.panelSimple.Controls.Add(this.checkBoxMountingSound);
             this.panelSimple.Controls.Add(this.pictureBoxPlay);
             this.panelSimple.Controls.Add(this.label2);
             this.panelSimple.Controls.Add(this.comboBoxNotifType);
@@ -642,16 +644,6 @@
             this.labelMore.Text = "Need more choices?";
             this.labelMore.Visible = false;
             // 
-            // profileEditor
-            // 
-            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.profileEditor.Location = new System.Drawing.Point(328, 38);
-            this.profileEditor.Name = "profileEditor";
-            this.profileEditor.Size = new System.Drawing.Size(695, 445);
-            this.profileEditor.TabIndex = 48;
-            // 
             // comboBoxAPI
             // 
             this.comboBoxAPI.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -661,6 +653,28 @@
             this.comboBoxAPI.Size = new System.Drawing.Size(81, 21);
             this.comboBoxAPI.TabIndex = 82;
             this.comboBoxAPI.Visible = false;
+            // 
+            // checkBoxMountingSound
+            // 
+            this.checkBoxMountingSound.AutoSize = true;
+            this.checkBoxMountingSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxMountingSound.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.checkBoxMountingSound.Location = new System.Drawing.Point(275, 109);
+            this.checkBoxMountingSound.Name = "checkBoxMountingSound";
+            this.checkBoxMountingSound.Size = new System.Drawing.Size(41, 28);
+            this.checkBoxMountingSound.TabIndex = 88;
+            this.checkBoxMountingSound.Text = "S";
+            this.checkBoxMountingSound.UseVisualStyleBackColor = true;
+            // 
+            // profileEditor
+            // 
+            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.profileEditor.Location = new System.Drawing.Point(328, 38);
+            this.profileEditor.Name = "profileEditor";
+            this.profileEditor.Size = new System.Drawing.Size(695, 445);
+            this.profileEditor.TabIndex = 48;
             // 
             // FormMain
             // 
@@ -783,6 +797,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBoxPlay;
         private System.Windows.Forms.ComboBox comboBoxAPI;
+        private System.Windows.Forms.CheckBox checkBoxMountingSound;
     }
 }
 

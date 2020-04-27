@@ -62,7 +62,8 @@ namespace CableGuardian
         public static SimpleNotifType SimpleModeNotifType { get; set; } = SimpleNotifType.Beep;
         public static int SimpleModeVolume { get; set; } = 75;
         public static bool SimpleModeResetOnMount { get; set; } = false;
-        
+        public static bool SimpleModePlayMountingSound { get; set; } = false;
+
 
         static Config()
         {   
@@ -433,6 +434,11 @@ namespace CableGuardian
                 SimpleModeVolume = xConfig.GetElementValueInt("SimpleModeVolume", 75);
                 SimpleModeResetOnMount = xConfig.GetElementValueBool("SimpleModeResetOnMount", false);
 
+                if (xConfig.GetElementValueOrNull("SimpleModePlayMountingSound") != null) // backwards compatibility                
+                    SimpleModePlayMountingSound = xConfig.GetElementValueBool("SimpleModePlayMountingSound", false);
+                else
+                    SimpleModePlayMountingSound = SimpleModeResetOnMount;
+
                 XElement cons = xConfig.Element("CONSTANTS");
                 if (cons != null)
                 {
@@ -484,6 +490,7 @@ namespace CableGuardian
                                 new XElement("SimpleModeNotifType", SimpleModeNotifType),
                                 new XElement("SimpleModeVolume", SimpleModeVolume),
                                 new XElement("SimpleModeResetOnMount", SimpleModeResetOnMount),
+                                new XElement("SimpleModePlayMountingSound", SimpleModePlayMountingSound),
                                 new XElement("CONSTANTS",
                                 new XComment("Wait time when starting with Windows. The purpose is to ensure that all audio devices have been initialized before using them."),
                                 new XElement("WindowsStartupWaitInSeconds", Program.WindowsStartupWaitInSeconds),
