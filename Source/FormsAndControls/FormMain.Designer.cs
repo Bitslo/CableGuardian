@@ -67,6 +67,7 @@
             this.pictureBoxAlarmClock = new System.Windows.Forms.PictureBox();
             this.pictureBoxDefaults = new System.Windows.Forms.PictureBox();
             this.panelSimple = new System.Windows.Forms.Panel();
+            this.checkBoxMountingSound = new System.Windows.Forms.CheckBox();
             this.pictureBoxPlay = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxNotifType = new System.Windows.Forms.ComboBox();
@@ -79,7 +80,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.labelMore = new System.Windows.Forms.Label();
             this.comboBoxAPI = new System.Windows.Forms.ComboBox();
-            this.checkBoxMountingSound = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -167,7 +167,7 @@
             // checkBoxStartMinUser
             // 
             this.checkBoxStartMinUser.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinUser.Location = new System.Drawing.Point(9, 279);
+            this.checkBoxStartMinUser.Location = new System.Drawing.Point(9, 257);
             this.checkBoxStartMinUser.Name = "checkBoxStartMinUser";
             this.checkBoxStartMinUser.Size = new System.Drawing.Size(162, 17);
             this.checkBoxStartMinUser.TabIndex = 4;
@@ -301,7 +301,7 @@
             // 
             this.checkBoxTrayNotifications.AutoSize = true;
             this.checkBoxTrayNotifications.ForeColor = System.Drawing.Color.White;
-            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 301);
+            this.checkBoxTrayNotifications.Location = new System.Drawing.Point(9, 279);
             this.checkBoxTrayNotifications.Name = "checkBoxTrayNotifications";
             this.checkBoxTrayNotifications.Size = new System.Drawing.Size(135, 17);
             this.checkBoxTrayNotifications.TabIndex = 12;
@@ -355,7 +355,7 @@
             // checkBoxStartMinAuto
             // 
             this.checkBoxStartMinAuto.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinAuto.Location = new System.Drawing.Point(9, 257);
+            this.checkBoxStartMinAuto.Location = new System.Drawing.Point(9, 235);
             this.checkBoxStartMinAuto.Name = "checkBoxStartMinAuto";
             this.checkBoxStartMinAuto.Size = new System.Drawing.Size(173, 17);
             this.checkBoxStartMinAuto.TabIndex = 64;
@@ -421,7 +421,7 @@
             // checkBoxRememberRotation
             // 
             this.checkBoxRememberRotation.ForeColor = System.Drawing.Color.White;
-            this.checkBoxRememberRotation.Location = new System.Drawing.Point(9, 235);
+            this.checkBoxRememberRotation.Location = new System.Drawing.Point(9, 301);
             this.checkBoxRememberRotation.Name = "checkBoxRememberRotation";
             this.checkBoxRememberRotation.Size = new System.Drawing.Size(173, 17);
             this.checkBoxRememberRotation.TabIndex = 71;
@@ -435,7 +435,7 @@
             0,
             0,
             0});
-            this.numericUpDownRotMemory.Location = new System.Drawing.Point(177, 234);
+            this.numericUpDownRotMemory.Location = new System.Drawing.Point(177, 300);
             this.numericUpDownRotMemory.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -450,7 +450,7 @@
             // 
             this.labelRotMemMinutes.AutoSize = true;
             this.labelRotMemMinutes.ForeColor = System.Drawing.Color.White;
-            this.labelRotMemMinutes.Location = new System.Drawing.Point(266, 236);
+            this.labelRotMemMinutes.Location = new System.Drawing.Point(266, 302);
             this.labelRotMemMinutes.Name = "labelRotMemMinutes";
             this.labelRotMemMinutes.Size = new System.Drawing.Size(43, 13);
             this.labelRotMemMinutes.TabIndex = 73;
@@ -517,6 +517,18 @@
             this.panelSimple.Size = new System.Drawing.Size(317, 132);
             this.panelSimple.TabIndex = 80;
             this.panelSimple.Visible = false;
+            // 
+            // checkBoxMountingSound
+            // 
+            this.checkBoxMountingSound.AutoSize = true;
+            this.checkBoxMountingSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxMountingSound.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.checkBoxMountingSound.Location = new System.Drawing.Point(275, 109);
+            this.checkBoxMountingSound.Name = "checkBoxMountingSound";
+            this.checkBoxMountingSound.Size = new System.Drawing.Size(41, 28);
+            this.checkBoxMountingSound.TabIndex = 88;
+            this.checkBoxMountingSound.Text = "S";
+            this.checkBoxMountingSound.UseVisualStyleBackColor = true;
             // 
             // pictureBoxPlay
             // 
@@ -653,18 +665,6 @@
             this.comboBoxAPI.Size = new System.Drawing.Size(81, 21);
             this.comboBoxAPI.TabIndex = 82;
             this.comboBoxAPI.Visible = false;
-            // 
-            // checkBoxMountingSound
-            // 
-            this.checkBoxMountingSound.AutoSize = true;
-            this.checkBoxMountingSound.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxMountingSound.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.checkBoxMountingSound.Location = new System.Drawing.Point(275, 109);
-            this.checkBoxMountingSound.Name = "checkBoxMountingSound";
-            this.checkBoxMountingSound.Size = new System.Drawing.Size(41, 28);
-            this.checkBoxMountingSound.TabIndex = 88;
-            this.checkBoxMountingSound.Text = "S";
-            this.checkBoxMountingSound.UseVisualStyleBackColor = true;
             // 
             // profileEditor
             // 
