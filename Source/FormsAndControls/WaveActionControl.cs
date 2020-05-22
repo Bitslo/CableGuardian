@@ -47,7 +47,7 @@ namespace CableGuardian
 
         void OnTriggeringEventChanged(object sender, EventArgs e)
         {            
-            CondEdit.SetControlVisibilityAndDefaults(); // available conditions are different for different rotation events            
+            CondEdit.SetControlVisibility(); // available conditions are different for different rotation events            
         }
 
         void InvokeChangeMade(ChangeEventArgs e)

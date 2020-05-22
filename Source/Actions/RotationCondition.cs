@@ -13,9 +13,9 @@ namespace CableGuardian
     {
         public Trigger ParentTrigger { get; private set; }
 
-        public uint TargetHalfTurns { get; set; } = 0;
+        public uint TargetHalfTurns { get; set; } = 3;
         public uint TargetHalfTurnsMax { get; set; } = 99;
-        public uint TargetPeakHalfTurns { get; set; } = 0;        
+        public uint TargetPeakHalfTurns { get; set; } = 3;        
        
 
         public CompareOperator CompOperator { get; set; } = CompareOperator.EqualOrGreaterThan;
@@ -37,48 +37,42 @@ namespace CableGuardian
         /// <param name="e"></param>
         /// <returns></returns>
         public bool IsTrue(RotationEventArgs e)
-        {                  
-            if (CompOperator == CompareOperator.Equal)
+        {
+            if (ParentTrigger.TriggeringEvent != YawTrackerOrientationEvent.ResetPosition)
             {
-                if (e.HalfTurns != TargetHalfTurns)
+                if (CompOperator == CompareOperator.Equal)
+                {
+                    if (e.HalfTurns != TargetHalfTurns)
+                        return false;
+                }
+                else if (CompOperator == CompareOperator.EqualOrGreaterThan)
+                {
+                    if (e.HalfTurns < TargetHalfTurns)
+                        return false;
+
+                    if (e.HalfTurns > TargetHalfTurnsMax)                    
+                        return false;                    
+                }
+
+                if (TargetRotationSide != Direction.Either && e.RotationSide != TargetRotationSide)
+                {
+                    return false;
+                }
+
+                if (TargetAccumulation != AccumulationStatus.Either && e.RotationAccumulationStatus != TargetAccumulation)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (e.PeakHalfTurns < TargetPeakHalfTurns)
                     return false;
             }
-            else if (CompOperator == CompareOperator.EqualOrGreaterThan)
-            {
-                if (e.HalfTurns < TargetHalfTurns)
-                    return false;
-            }
-            
-
-            if (e.HalfTurns > TargetHalfTurnsMax)
-            {
-                return false;
-            }
-
-
-            if (TargetRotationSide != Direction.Either && e.RotationSide != TargetRotationSide)
-            {
-                return false;
-            }
-
-            if (TargetAccumulation != AccumulationStatus.Either && e.RotationAccumulationStatus != TargetAccumulation)
-            {
-                return false;
-            }
-
-                            
-            if (e.PeakHalfTurns < TargetPeakHalfTurns)
-                return false;                               
-            
                         
             return true;
         }
 
-
-        public void Delete()
-        {
-            ParentTrigger = null;
-        }
 
         public void LoadFromXml(XElement xCondition)
         {
@@ -95,7 +89,7 @@ namespace CableGuardian
                     CompOperator = CompareOperator.EqualOrGreaterThan;
 
                 if (xCondition.GetElementValueOrNull("TargetHalfTurns") != null)
-                    TargetHalfTurns = (uint)xCondition.GetElementValueInt("TargetHalfTurns");
+                    TargetHalfTurns = (uint)xCondition.GetElementValueInt("TargetHalfTurns", 3);
                 else
                 {
                     TargetHalfTurns = (uint)xCondition.GetElementValueInt("TargetFullRotations") * 2; // backwards compatibility
@@ -122,7 +116,7 @@ namespace CableGuardian
                     TargetAccumulation = AccumulationStatus.Either;
 
                 if (xCondition.GetElementValueOrNull("TargetPeakHalfTurns") != null)
-                    TargetPeakHalfTurns = (uint)xCondition.GetElementValueInt("TargetPeakHalfTurns");
+                    TargetPeakHalfTurns = (uint)xCondition.GetElementValueInt("TargetPeakHalfTurns", 3);
                 else
                 {
                     TargetPeakHalfTurns = (uint)xCondition.GetElementValueInt("TargetPeakFullRotations") * 2; // backwards compatibility

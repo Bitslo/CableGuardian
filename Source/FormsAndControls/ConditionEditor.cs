@@ -148,28 +148,15 @@ namespace CableGuardian
 
             SkipFlaggedEventHandlers = false;
 
-            SetControlVisibilityAndDefaults();
+            SetControlVisibility();
         }
-                
-        public void SetControlVisibilityAndDefaults()
+
+        public void SetControlVisibility()
         {
             if (Condition == null)
                 return;
 
-            if (Condition.ParentTrigger.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition)
-            {                
-                comboBoxSide.SelectedItem = Direction.Either;
-                comboBoxOperator.SelectedItem = EqualOrGreaterThan;
-                comboBoxAccu.SelectedItem = AccumulationStatus.Either;                
-                numericUpDownHalfTurns.Value = 0;
-                numericUpDownHalfTurnsMax.Value = 99;
-                ShowOnlyResetPositionConditions(true);
-            }
-            else
-            {
-                ShowOnlyResetPositionConditions(false);
-                numericUpDownPeak.Value = 0;
-            }
+            ShowOnlyResetPositionConditions(Condition.ParentTrigger.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition);
         }
 
         void CheckHalfTurnMaxVisibility()
@@ -177,15 +164,7 @@ namespace CableGuardian
             if (Condition == null)
                 return;
 
-            if (Condition.CompOperator == CompareOperator.Equal || Condition.ParentTrigger.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition)
-            {                
-                panelHalfTurnsMax.Visible = false;
-                numericUpDownHalfTurnsMax.Value = 99;
-            }
-            else
-            {                
-                panelHalfTurnsMax.Visible = true;
-            }
+            panelHalfTurnsMax.Visible = !(Condition.CompOperator == CompareOperator.Equal || Condition.ParentTrigger.TriggeringEvent == YawTrackerOrientationEvent.ResetPosition);
         }
 
         void ShowOnlyResetPositionConditions(bool show)

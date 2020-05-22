@@ -79,8 +79,7 @@ namespace CableGuardian
 
         public void Delete()
         {
-            RotCondition.Delete();
-            Enabled = false;
+            Enabled = false;            
         }
                
         
