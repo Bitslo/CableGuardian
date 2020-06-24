@@ -38,17 +38,16 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.labelRestart = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.buttonPage = new System.Windows.Forms.Button();
             this.panelAck = new System.Windows.Forms.Panel();
-            this.labelTray = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.labelSaves = new System.Windows.Forms.Label();
             this.labelSimple = new System.Windows.Forms.Label();
             this.buttonEmail = new System.Windows.Forms.Button();
+            this.labelTitle = new System.Windows.Forms.Label();
+            this.pictureBoxStandard = new System.Windows.Forms.PictureBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.panelAck.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStandard)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonClose
@@ -58,9 +57,9 @@
             this.buttonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonClose.ForeColor = System.Drawing.Color.White;
-            this.buttonClose.Location = new System.Drawing.Point(929, 6);
+            this.buttonClose.Location = new System.Drawing.Point(896, 10);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(88, 30);
+            this.buttonClose.Size = new System.Drawing.Size(121, 30);
             this.buttonClose.TabIndex = 0;
             this.buttonClose.Text = "Close help";
             this.buttonClose.UseVisualStyleBackColor = false;
@@ -80,7 +79,7 @@
             // 
             this.labelVersion.BackColor = System.Drawing.Color.WhiteSmoke;
             this.labelVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVersion.Location = new System.Drawing.Point(390, 37);
+            this.labelVersion.Location = new System.Drawing.Point(399, 37);
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(234, 14);
             this.labelVersion.TabIndex = 2;
@@ -168,19 +167,6 @@
             this.textBox4.TabIndex = 9;
             this.textBox4.Text = "https://sonniss.com/gameaudiogdc18";
             // 
-            // labelRestart
-            // 
-            this.labelRestart.BackColor = System.Drawing.Color.Transparent;
-            this.labelRestart.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelRestart.ForeColor = System.Drawing.Color.Salmon;
-            this.labelRestart.Location = new System.Drawing.Point(12, 270);
-            this.labelRestart.Name = "labelRestart";
-            this.labelRestart.Size = new System.Drawing.Size(1005, 26);
-            this.labelRestart.TabIndex = 13;
-            this.labelRestart.Text = "You may have to restart Cable Guardian when VR drivers are updated. (e.g. Oculus " +
-    "update)";
-            this.labelRestart.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // textBox5
             // 
             this.textBox5.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -200,7 +186,7 @@
             this.buttonPage.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonPage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonPage.ForeColor = System.Drawing.Color.White;
-            this.buttonPage.Location = new System.Drawing.Point(887, 6);
+            this.buttonPage.Location = new System.Drawing.Point(777, 6);
             this.buttonPage.Name = "buttonPage";
             this.buttonPage.Size = new System.Drawing.Size(36, 30);
             this.buttonPage.TabIndex = 15;
@@ -225,48 +211,13 @@
             this.panelAck.Size = new System.Drawing.Size(1004, 117);
             this.panelAck.TabIndex = 16;
             // 
-            // labelTray
-            // 
-            this.labelTray.BackColor = System.Drawing.Color.Transparent;
-            this.labelTray.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTray.ForeColor = System.Drawing.Color.Yellow;
-            this.labelTray.Location = new System.Drawing.Point(15, 169);
-            this.labelTray.Name = "labelTray";
-            this.labelTray.Size = new System.Drawing.Size(1002, 23);
-            this.labelTray.TabIndex = 17;
-            this.labelTray.Text = "You can use the tray icon                        for setting up alarms.          " +
-    "      ";
-            this.labelTray.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::CableGuardian.Properties.Resources.CG_icon_pic;
-            this.pictureBox1.Location = new System.Drawing.Point(481, 154);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(48, 48);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 18;
-            this.pictureBox1.TabStop = false;
-            // 
-            // labelSaves
-            // 
-            this.labelSaves.BackColor = System.Drawing.Color.Transparent;
-            this.labelSaves.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSaves.ForeColor = System.Drawing.Color.Yellow;
-            this.labelSaves.Location = new System.Drawing.Point(15, 219);
-            this.labelSaves.Name = "labelSaves";
-            this.labelSaves.Size = new System.Drawing.Size(1002, 23);
-            this.labelSaves.TabIndex = 19;
-            this.labelSaves.Text = "Last five profile-saves are automatically backed up in numbered files .001 .002 ." +
-    ".";
-            this.labelSaves.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // labelSimple
             // 
             this.labelSimple.AutoSize = true;
             this.labelSimple.BackColor = System.Drawing.Color.Transparent;
+            this.labelSimple.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelSimple.ForeColor = System.Drawing.Color.White;
-            this.labelSimple.Location = new System.Drawing.Point(890, 42);
+            this.labelSimple.Location = new System.Drawing.Point(895, 45);
             this.labelSimple.Name = "labelSimple";
             this.labelSimple.Size = new System.Drawing.Size(124, 13);
             this.labelSimple.TabIndex = 82;
@@ -279,12 +230,46 @@
             this.buttonEmail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonEmail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonEmail.ForeColor = System.Drawing.Color.White;
-            this.buttonEmail.Location = new System.Drawing.Point(389, 54);
+            this.buttonEmail.Location = new System.Drawing.Point(399, 54);
             this.buttonEmail.Name = "buttonEmail";
-            this.buttonEmail.Size = new System.Drawing.Size(236, 24);
+            this.buttonEmail.Size = new System.Drawing.Size(234, 24);
             this.buttonEmail.TabIndex = 84;
-            this.buttonEmail.Text = "Have issues or ideas? Click HERE.";
+            this.buttonEmail.Text = "Have issues or ideas? Click here.";
             this.buttonEmail.UseVisualStyleBackColor = false;
+            // 
+            // labelTitle
+            // 
+            this.labelTitle.AutoSize = true;
+            this.labelTitle.BackColor = System.Drawing.Color.Transparent;
+            this.labelTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelTitle.ForeColor = System.Drawing.Color.MediumTurquoise;
+            this.labelTitle.Location = new System.Drawing.Point(421, 10);
+            this.labelTitle.Name = "labelTitle";
+            this.labelTitle.Size = new System.Drawing.Size(188, 24);
+            this.labelTitle.TabIndex = 89;
+            this.labelTitle.Text = "HELP AND ABOUT";
+            // 
+            // pictureBoxStandard
+            // 
+            this.pictureBoxStandard.Image = global::CableGuardian.Properties.Resources.Title;
+            this.pictureBoxStandard.Location = new System.Drawing.Point(453, 167);
+            this.pictureBoxStandard.Name = "pictureBoxStandard";
+            this.pictureBoxStandard.Size = new System.Drawing.Size(127, 127);
+            this.pictureBoxStandard.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxStandard.TabIndex = 92;
+            this.pictureBoxStandard.TabStop = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.Transparent;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(425, 136);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(183, 16);
+            this.label7.TabIndex = 91;
+            this.label7.Text = "USER GUIDE ON STEAM";
             // 
             // FormHelp
             // 
@@ -293,14 +278,13 @@
             this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.pictureBoxStandard);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.labelTitle);
             this.Controls.Add(this.buttonEmail);
             this.Controls.Add(this.labelSimple);
-            this.Controls.Add(this.labelSaves);
-            this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.labelTray);
             this.Controls.Add(this.panelAck);
             this.Controls.Add(this.buttonPage);
-            this.Controls.Add(this.labelRestart);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -309,7 +293,7 @@
             this.Text = "Cable Guardian Help";
             this.panelAck.ResumeLayout(false);
             this.panelAck.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStandard)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -327,14 +311,13 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Label labelRestart;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button buttonPage;
         private System.Windows.Forms.Panel panelAck;
-        private System.Windows.Forms.Label labelTray;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label labelSaves;
         private System.Windows.Forms.Label labelSimple;
         private System.Windows.Forms.Button buttonEmail;
+        private System.Windows.Forms.Label labelTitle;
+        private System.Windows.Forms.PictureBox pictureBoxStandard;
+        private System.Windows.Forms.Label label7;
     }
 }

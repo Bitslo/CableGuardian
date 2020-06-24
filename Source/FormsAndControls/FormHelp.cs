@@ -9,14 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Diagnostics;
 
 namespace CableGuardian
 {
     public partial class FormHelp : Form
     {
-        int CurrentPage = 1;
+        int CurrentPage = 2;
         int NumberOfPages = 2;
         static bool RunFromDesigner { get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); } }
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000};
 
         public FormHelp()
         {
@@ -27,22 +29,60 @@ namespace CableGuardian
             labelSimple.MouseEnter += (s, e) => { labelSimple.ForeColor = Color.Yellow; };
             labelSimple.MouseLeave += (s, e) => { labelSimple.ForeColor = Color.White; };
             labelSimple.Click += LabelSimple_Click;            
-            buttonEmail.Click += ButtonEmail_Click;                        
+            buttonEmail.Click += ButtonEmail_Click;
+            pictureBoxStandard.Click += PictureBoxStandard_Click;
 
+            pictureBoxStandard.MouseEnter += (s, e) => { pictureBoxStandard.Image = Properties.Resources.Title_hover; };
+            pictureBoxStandard.MouseLeave += (s, e) => { pictureBoxStandard.Image = Properties.Resources.Title; };
+            
             labelVersion.Text = Config.ProgramTitle + " v." +
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
                                 " \u00A9 Bitslo";
 
+            TTip.SetToolTip(buttonEmail, "Copies a support email template to the clipboard.");
+
             if (!RunFromDesigner)
-            {                
-                labelTray.ForeColor = Config.CGColor;
-                labelSaves.ForeColor = Config.CGColor;             
-                labelRestart.ForeColor = Config.CGErrorColor;
+            {        
+                labelTitle.ForeColor = Config.CGColor;                
             }
 
             SetLayoutForCurrentPage();
         }
 
+        private void PictureBoxStandard_Click(object sender, EventArgs e)
+        {            
+            string id = "2091663814";
+
+            try
+            {
+                if (Process.GetProcessesByName("Steam").Any())
+                {
+                    if (Process.GetProcessesByName(Config.SteamVRProcessName).Any())
+                        throw new Exception("SteamVR is running and preventing opening store.");
+
+                    Process.Start("steam://url/CommunityFilePage/" + id);
+                }
+                else
+                {
+                    throw new Exception("Steam not running");
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Process.Start("https://steamcommunity.com/sharedfiles/filedetails/?id=" + id);
+                }
+                catch (Exception exx)
+                {
+                    string msg = "Sorry, unable to open the Steam page.  :("
+                            + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine + exx.Message;
+                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+
+        }
 
         private void ButtonEmail_Click(object sender, EventArgs e)
         {
@@ -195,6 +235,8 @@ namespace CableGuardian
                         item.Visible = true;
                     }
                 }
+
+                buttonPage.Visible = false;
 
             }
         }

@@ -89,8 +89,9 @@ namespace CableGuardian
             System.Threading.ThreadPool.SetMinThreads(100, 100); // 100 should be more than enough for intended use cases
 
             // poll interval of 180ms should suffice (5.5 Hz) ...// UPDATE: Tightened to 150ms (6.67 Hz) just to be on the safe side. Still not too much CPU usage.
+            // UPDATE: tightened to 80ms to match the pro version
             // (head rotation must stay below 180 degrees between samples)
-            Observer = new VRObserver(OculusConn, 150);
+            Observer = new VRObserver(OculusConn, 80);
             Observer.Start();
                                     
             if (!RunFromDesigner)

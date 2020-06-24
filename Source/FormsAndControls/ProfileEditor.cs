@@ -42,9 +42,9 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxStartup,$"Load this profile when program starts.{Environment.NewLine}" 
                                             + "If a startup profile has not been defined, the previously used profile will be loaded.");
             TTip.SetToolTip(checkBoxFreeze, "Freeze profile to prevent accidental changes.");
-            TTip.SetToolTip(pictureBoxPlus, "Add a new rule");
-            TTip.SetToolTip(pictureBoxClone, "Clone the selected rule");
-            TTip.SetToolTip(pictureBoxMinus, "Delete the selected rule");
+            TTip.SetToolTip(pictureBoxPlus, "Add a new alert");
+            TTip.SetToolTip(pictureBoxClone, "Clone the selected alert");
+            TTip.SetToolTip(pictureBoxMinus, "Delete the selected alert");
             TTip.SetToolTip(comboBoxDeviceSource, "Source for the audio device for playing the waves in this profile.");
             TTip.SetToolTip(labelOcuChanges, $"Change in Oculus Home audio device is only updated to {Config.ProgramTitle} at startup OR when you change the device here.");            
             TTip.SetToolTip(checkBoxHome, $"When checked, the headset orientation is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +

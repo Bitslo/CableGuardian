@@ -146,6 +146,7 @@ namespace CableGuardian
             return rad * (180 / Math.PI);
         }
 
+        bool RotationUpdateInProgress = false;
         /// <summary>
         /// Checks the difference of the last two Yaw values and determines if either 0 or 180 degree position was crossed.
         /// Invokes rotation events and updates the lap counter (which in turn is used for counting the half-turns).
@@ -154,10 +155,15 @@ namespace CableGuardian
         /// <param name="newYawValue"></param>
         void UpdateRotation(double newYawValue)
         {
+            if (RotationUpdateInProgress)
+                return;
+
+            RotationUpdateInProgress = true;
+
             // Oculus rotation axis range is in radians from -pi to +pi. 
             // Zero is the middle point (facing forward). Rotation is positive when turning left. 
 
-            
+
             // *****************
             // only once at startup IF starting from a saved point of rotation (turn count memory)
             if (InitialHalfTurn != 0)
@@ -222,6 +228,7 @@ namespace CableGuardian
                 CurrentHalfTurn = (newYawValue < 0) ? -1 : 1;
             }
             _YawValue = newYawValue;
+            RotationUpdateInProgress = false;
         }
 
         int GetCorrectedInitialHalfTurn(double actualYawValue)

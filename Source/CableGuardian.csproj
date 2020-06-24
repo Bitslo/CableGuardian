@@ -245,6 +245,8 @@
     <None Include="Art\Defaults.png" />
     <None Include="Art\Defaults_hover.png" />
     <None Include="Art\HelpSimple.png" />
+    <None Include="Art\Title.png" />
+    <None Include="Art\Title_hover.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
