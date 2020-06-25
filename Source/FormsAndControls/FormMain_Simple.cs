@@ -88,7 +88,7 @@ namespace CableGuardian
             LoadConfigToGui();
 
             string msg = $"Welcome to {Config.ProgramTitle} full mode!{Environment.NewLine}{Environment.NewLine}" +
-                   $"For help, click the \"?\" in the top right corner.";
+                   $"Click the \"?\" in the top right corner for help.";
             MessageBox.Show(this, msg, "Full mode activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
      
