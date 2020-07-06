@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace CableGuardian
 {
@@ -16,6 +17,8 @@ namespace CableGuardian
         public event EventHandler<EventArgs> ProfileNameChanged;
         public event EventHandler<EventArgs> VRConnectionParameterChanged;
         public event EventHandler<EventArgs> PictureBoxMountingClicked;
+
+        XElement CopiedAction;
 
         Profile TheProfile;
         ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
@@ -82,8 +85,9 @@ namespace CableGuardian
             pictureBoxClone.Click += PictureBoxClone_Click;
             pictureBoxMinus.Click += PictureBoxMinus_Click;            
             listBoxActions.SelectedIndexChanged += ListBoxActions_SelectedIndexChanged;
-            checkBoxStartup.CheckedChanged += CheckBoxStartup_CheckedChanged;            
+            listBoxActions.KeyDown += ListBoxActions_KeyDown;
             listBoxActions.DrawItem += listBoxActions_DrawItem;
+            checkBoxStartup.CheckedChanged += CheckBoxStartup_CheckedChanged;                        
             WaveActionCtl.ChangeMade += OnActionControlChangeMade;
             comboBoxManual.DropDown += ComboBoxManual_DropDown;
 
@@ -104,6 +108,22 @@ namespace CableGuardian
                     ctl.KeyUp += AnyControl_KeyUp;
             }
 
+        }
+
+        private void ListBoxActions_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                CopiedAction = GetSelectedWaveActionXML();
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                if (PasteWaveAction(CopiedAction))
+                {
+                    SetControlVisibility();
+                    InvokeChangeMade(new ChangeEventArgs(listBoxActions));
+                }
+            }
         }
 
         private void CheckBoxMountingSound_CheckedChanged(object sender, EventArgs e)
@@ -179,7 +199,7 @@ namespace CableGuardian
 
         private void PictureBoxClone_Click(object sender, EventArgs e)
         {
-            CloneWaveAction();
+            PasteWaveAction(GetSelectedWaveActionXML());
             SetControlVisibility();
             InvokeChangeMade(new ChangeEventArgs(pictureBoxClone));
         }
@@ -353,20 +373,32 @@ namespace CableGuardian
 
         }
 
-        void CloneWaveAction()
+        XElement GetSelectedWaveActionXML()
         {
             TriggeredAction selAction = (listBoxActions.SelectedItem as TriggeredAction);
             if (selAction != null)
             {
+                return selAction.GetXml();
+            }
+            return null;
+        }
+
+        bool PasteWaveAction(XElement xAction)
+        {
+            if (xAction != null)
+            {
                 TriggeredAction ta = new TriggeredAction(FormMain.Tracker, TheProfile);
-                ta.LoadFromXml(selAction.GetXml());
-                
+                ta.LoadFromXml(xAction);                                
+
                 RefreshActionsListbox();
                 SkipFlaggedEventHandlers = true;
                 listBoxActions.SelectedItem = ta;
                 SkipFlaggedEventHandlers = false;
                 WaveActionCtl.LoadWaveAction(ta);
+
+                return true;
             }
+            return false;
         }
 
         private void ComboBoxDeviceSource_SelectedIndexChanged(object sender, EventArgs e)
