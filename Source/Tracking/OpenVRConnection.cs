@@ -47,6 +47,7 @@ namespace CableGuardian
         int HMDUserInteractionCounter = 0; // doesn't really make a difference for OpenVR, since we can't check the proximity sensor        
         int InitializationDivider = 0;
         int HMDUserInteractionDivider = 0;
+        bool SteamVRWasOffBefore = false;
 
 
         /// <summary>
@@ -313,11 +314,26 @@ namespace CableGuardian
                     {
                         PoseArray[i] = new TrackedDevicePose_t();
                     }
-                    
+
+                    if (SteamVRWasOffBefore)
+                    {
+                        // Wait a bit more before reporting OK and allowing hmd queries when SteamVR is started AFTER CG. 
+                        // The initial yaw values from the API sometimes threw the counter off by one half-turn.
+                        // Maybe there's a small window at the beginning when the headset readings are not stable...
+                        // This is very hard to reproduce/test as it happens so rarely. Shooting in the dark here.
+                        Thread.Sleep(3000);
+                        SteamVRWasOffBefore = false;
+                    }
+                    else
+                    {
+                        Thread.Sleep(500);
+                    }
+
                     OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
                 }
                 else
                 {
+                    SteamVRWasOffBefore = true;
                     OpenVRConnStatus = OpenVRConnectionStatus.NoSteamVR;
                 }
             }
