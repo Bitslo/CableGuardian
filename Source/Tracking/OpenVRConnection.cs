@@ -23,7 +23,7 @@ namespace CableGuardian
                                      // Also, intervals below 15ms are never going to happen.
                                      // https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep#remarks
                                      // But luckily I don't need accurate timing in this case, and the interval seems to be quick enough (whatever it actually is).
-        const int InitializationInterval = 1000;        
+        const int InitializationInterval = 2000;        
         int InitAttemptCount = 0;        
         const int InitAttemptLimit = 300; // (failed) OpenVR initialization attempt seems to leak about 0.1MB memory. Set a global limit (and request app restart)
         const int SleepTimeAfterQuit = 15000;
