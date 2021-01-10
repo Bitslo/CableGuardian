@@ -109,6 +109,9 @@ namespace CableGuardian
             Tracker.Yaw0 += Tracker_ThresholdCrossed;
             Tracker.Yaw180 += Tracker_ThresholdCrossed;
 
+            buttonLeftTurn.Click += (s, e) => { Tracker.ShiftHalfTurnCount(Direction.Left); RefreshHalfTurnLabel(); };
+            buttonRightTurn.Click += (s, e) => { Tracker.ShiftHalfTurnCount(Direction.Right); RefreshHalfTurnLabel(); };
+
             ReadProfilesFromFile();
             LoadConfigToGui();
             LoadStartupProfile();
@@ -435,6 +438,11 @@ namespace CableGuardian
                                             "Otherwise the notification disappears automatically after a few seconds.");
             TTip.SetToolTip(buttonReset, $"Reset the turn counter to zero. Use this if your cable twisting is not in sync with the app. Cable should be untwisted when counter = 0." + Environment.NewLine
                                         + $"The reset can also be done from the {Config.ProgramTitle} tray icon and with the \"Reset on mount\" -feature.");
+            string tip = $"Shift the current turn count one step* to the _DIR_." + Environment.NewLine
+                                        + $"You can use this to sync cable twisting instead of physically turning. (For example after accidentally hitting the reset button.)" + Environment.NewLine + Environment.NewLine
+                                        + "* NOTE: The steps are between valid values only! (ODD or EVEN depending on the headset orientation).";
+            TTip.SetToolTip(buttonLeftTurn, tip.Replace("_DIR_", "left"));
+            TTip.SetToolTip(buttonRightTurn, tip.Replace("_DIR_", "right"));
             TTip.SetToolTip(checkBoxTrayNotifications, $"Display a temporary Windows notification for certain interactions such as setting up alarms and resetting the turn counter. (for feedback)");
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
@@ -452,7 +460,7 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxStartMinAuto, $"Hide the main window when the program starts automatically with Windows or SteamVR. Recommended for normal usage after you have dialed in your settings.");
             TTip.SetToolTip(checkBoxStartMinUser, $"Hide the main window when the user starts the program manually.");
             TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
-                                                    + "You may find this convenient when using the SteamVR auto start & exit feature (OpenVR only).");
+                                                    + "You may find this convenient when using the SteamVR auto start & exit feature.");
             TTip.SetToolTip(numericUpDownRotMemory, $"Time limit (minutes) for the turn count memory (when {Config.ProgramTitle} is closed). The last turn count will be used at startup if the elapsed time since the last exit is less or equal to this value." + Environment.NewLine
                                                     + "If more time has passed, turn count will be zero at startup. Useful when you want to make sure the turn count will be zero after a longer pause (during which you probably unwinded the cable)." + Environment.NewLine + Environment.NewLine
                                                     + "***    0 = no limit = remember forever    ***");
@@ -1537,6 +1545,8 @@ namespace CableGuardian
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.ActiveProfile.API} - {conn.Status.ToString()}";
                 TrayMenuTitle.ForeColor = Config.CGErrorColor;
                 TrayMenuTitle.Text = Config.ProgramTitle + " - NOT OK";
+                buttonLeftTurn.Enabled = false;
+                buttonRightTurn.Enabled = false;
                 // to ensure the app is shutdown after auto-start if SteamVR disappears without a quit message (probably never happens)
                 if (OpenVRConn.OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR && Program.IsSteamVRStartup)
                 {
@@ -1555,6 +1565,8 @@ namespace CableGuardian
                 notifyIcon1.Text = Config.ProgramTitle + $": {Config.ActiveProfile.API} - {conn.Status.ToString()}";
                 TrayMenuTitle.ForeColor = Config.CGColor;
                 TrayMenuTitle.Text = Config.ProgramTitle + " - All OK";
+                buttonLeftTurn.Enabled = true;
+                buttonRightTurn.Enabled = true;
                 CheckSteamVRStartUpStatus();
             }
 

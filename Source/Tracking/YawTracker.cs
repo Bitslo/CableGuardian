@@ -140,7 +140,30 @@ namespace CableGuardian
         {
             UpdateRotation(e.HmdYaw * LeftRightMultiplier);
         }
-               
+
+        /// <summary>
+        /// Manually change the half turn count by one step in either direction.        
+        /// Takes the current orientation into consideration... 
+        /// ...E.g. if the headset is facing left while twisting left, only odd values are valid (1,3,5...)
+        /// Only works when VR connection is OK.
+        /// </summary>        
+        /// <param name="dir">Direction, Left/Right   ("Either" is ignored)</param>
+        public void ShiftHalfTurnCount(Direction dir)
+        {
+            if (dir == Direction.Either || !HmdObserver.IsVrConnectionOK()) // check vr connection to validate current half turn
+                return;
+
+            int step = (dir == Direction.Left ? 1 : -1) * LeftRightMultiplier; // either +1 or -1
+            if (CurrentHalfTurn + step == 0) // crossing zero while orientation != movement_direction   (e.g. facing L, add rotation to R  |  facing R, add rotation to L)
+                step *= 3;
+            else if (Math.Abs(CurrentHalfTurn) == 2 && Math.Abs(CurrentHalfTurn + step) == 1) // crossing zero while orientation == movement_direction
+                step *= 3;
+            else // not crossing zero
+                step *= 2;
+
+            CurrentHalfTurn += step;
+        }
+
         public static double RadToDeg(double rad)
         {
             return rad * (180 / Math.PI);

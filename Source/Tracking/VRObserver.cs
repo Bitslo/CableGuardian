@@ -56,6 +56,11 @@ namespace CableGuardian
             VR = vr ?? throw new Exception("null VR connection.");
         }
 
+        public bool IsVrConnectionOK()
+        {
+            return VR.Status == VRConnectionStatus.AllOK;
+        }
+
         public void Start()
         {
             if (!Worker.IsBusy)

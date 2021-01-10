@@ -81,6 +81,8 @@
             this.labelMore = new System.Windows.Forms.Label();
             this.comboBoxAPI = new System.Windows.Forms.ComboBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
+            this.buttonRightTurn = new System.Windows.Forms.Button();
+            this.buttonLeftTurn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -106,11 +108,11 @@
             this.buttonReset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.ForeColor = System.Drawing.Color.White;
-            this.buttonReset.Location = new System.Drawing.Point(177, 363);
+            this.buttonReset.Location = new System.Drawing.Point(204, 363);
             this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(142, 23);
+            this.buttonReset.Size = new System.Drawing.Size(88, 23);
             this.buttonReset.TabIndex = 20;
-            this.buttonReset.Text = "Reset turn counter";
+            this.buttonReset.Text = "Reset counter";
             this.buttonReset.UseVisualStyleBackColor = true;
             // 
             // labelYaw
@@ -676,6 +678,36 @@
             this.profileEditor.Size = new System.Drawing.Size(695, 445);
             this.profileEditor.TabIndex = 48;
             // 
+            // buttonRightTurn
+            // 
+            this.buttonRightTurn.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonRightTurn.Enabled = false;
+            this.buttonRightTurn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonRightTurn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonRightTurn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRightTurn.ForeColor = System.Drawing.Color.White;
+            this.buttonRightTurn.Location = new System.Drawing.Point(291, 363);
+            this.buttonRightTurn.Name = "buttonRightTurn";
+            this.buttonRightTurn.Size = new System.Drawing.Size(28, 23);
+            this.buttonRightTurn.TabIndex = 97;
+            this.buttonRightTurn.Text = ">";
+            this.buttonRightTurn.UseVisualStyleBackColor = true;
+            // 
+            // buttonLeftTurn
+            // 
+            this.buttonLeftTurn.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonLeftTurn.Enabled = false;
+            this.buttonLeftTurn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonLeftTurn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonLeftTurn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonLeftTurn.ForeColor = System.Drawing.Color.White;
+            this.buttonLeftTurn.Location = new System.Drawing.Point(177, 363);
+            this.buttonLeftTurn.Name = "buttonLeftTurn";
+            this.buttonLeftTurn.Size = new System.Drawing.Size(28, 23);
+            this.buttonLeftTurn.TabIndex = 96;
+            this.buttonLeftTurn.Text = "<";
+            this.buttonLeftTurn.UseVisualStyleBackColor = true;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -683,6 +715,8 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.buttonRightTurn);
+            this.Controls.Add(this.buttonLeftTurn);
             this.Controls.Add(this.comboBoxAPI);
             this.Controls.Add(this.labelMore);
             this.Controls.Add(this.panelSimple);
@@ -798,6 +832,8 @@
         private System.Windows.Forms.PictureBox pictureBoxPlay;
         private System.Windows.Forms.ComboBox comboBoxAPI;
         private System.Windows.Forms.CheckBox checkBoxMountingSound;
+        private System.Windows.Forms.Button buttonRightTurn;
+        private System.Windows.Forms.Button buttonLeftTurn;
     }
 }
 
