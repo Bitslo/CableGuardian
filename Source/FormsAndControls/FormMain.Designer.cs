@@ -703,7 +703,7 @@
             // 
             this.labelTracking.AutoSize = true;
             this.labelTracking.ForeColor = System.Drawing.Color.Red;
-            this.labelTracking.Location = new System.Drawing.Point(230, 389);
+            this.labelTracking.Location = new System.Drawing.Point(223, 389);
             this.labelTracking.Name = "labelTracking";
             this.labelTracking.Size = new System.Drawing.Size(88, 13);
             this.labelTracking.TabIndex = 98;

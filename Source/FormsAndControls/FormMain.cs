@@ -480,6 +480,8 @@ namespace CableGuardian
                                         + $"Some headsets must be worn for tracking to work (at least when using {VRAPI.OpenVR} API)." + Environment.NewLine
                                     + "There's usually a proximity sensor in the headset for detecting this.");
 
+            labelTracking.Text = $"NOT TRACKING -{Environment.NewLine}WEAR HEADSET";
+
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
             labelYaw.ForeColor = Config.CGErrorColor;                        
