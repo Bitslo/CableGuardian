@@ -32,7 +32,7 @@ namespace CableGuardian
                 bool changed = (_WaveOutDeviceSource != value);
                 _WaveOutDeviceSource = value;
                 if (!SuppressFlaggedEvents && changed)
-                    InvokeWaveOutDeviceChanged(new EventArgs());
+                    InvokeWaveOutDeviceChanged(EventArgs.Empty);
 
             }
         }
@@ -90,7 +90,7 @@ namespace CableGuardian
         /// </summary>
         public void SendDeviceRefreshRequest()
         {
-            InvokeWaveOutDeviceChanged(new EventArgs());
+            InvokeWaveOutDeviceChanged(EventArgs.Empty);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace CableGuardian
             WaveOutDeviceSource = AudioDeviceSource.Manual;
             SuppressFlaggedEvents = false;
             ManualDevice = device;
-            InvokeWaveOutDeviceChanged(new EventArgs());
+            InvokeWaveOutDeviceChanged(EventArgs.Empty);
         }
 
         public int GetWaveOutDeviceNumber()

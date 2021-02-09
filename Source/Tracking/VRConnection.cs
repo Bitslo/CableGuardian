@@ -64,16 +64,16 @@ namespace CableGuardian
 
         protected void InvokeStatusChanged()
         {
-            StatusChanged?.Invoke(this, new EventArgs());
+            StatusChanged?.Invoke(this, EventArgs.Empty);
 
             if (Status == VRConnectionStatus.AllOK && StatusChangedToAllOK != null)
             {
-                StatusChangedToAllOK(this, new EventArgs());
+                StatusChangedToAllOK(this, EventArgs.Empty);
             }
 
             if (PreviousStatus == VRConnectionStatus.AllOK && Status != VRConnectionStatus.AllOK && StatusChangedToNotOK != null)
             {
-                StatusChangedToNotOK(this, new EventArgs());
+                StatusChangedToNotOK(this, EventArgs.Empty);
             }
 
             PreviousStatus = Status;
@@ -81,12 +81,12 @@ namespace CableGuardian
 
         protected void InvokeHMDUserInteractionStarted()
         {
-            HMDUserInteractionStarted?.Invoke(this, new EventArgs());
+            HMDUserInteractionStarted?.Invoke(this, EventArgs.Empty);
         }
 
         protected void InvokeHMDUserInteractionStopped()
         {
-            HMDUserInteractionStopped?.Invoke(this, new EventArgs());
+            HMDUserInteractionStopped?.Invoke(this, EventArgs.Empty);
         }
 
     }

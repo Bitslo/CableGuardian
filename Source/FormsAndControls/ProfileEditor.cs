@@ -99,7 +99,7 @@ namespace CableGuardian
             pictureBoxMinus.MouseLeave += (s, e) => { pictureBoxMinus.Image = Properties.Resources.MinusSmall; };
             pictureBoxMounting.MouseEnter += (s, e) => { pictureBoxMounting.Image = Properties.Resources.Action_hover; };
             pictureBoxMounting.MouseLeave += (s, e) => { pictureBoxMounting.Image = Properties.Resources.Action; };
-            pictureBoxMounting.Click += (s, e) => { PictureBoxMountingClicked?.Invoke(this, new EventArgs()); };
+            pictureBoxMounting.Click += (s, e) => { PictureBoxMountingClicked?.Invoke(this, EventArgs.Empty); };
 
             KeyUp += AnyControl_KeyUp;
             foreach (Control ctl in Controls)
@@ -238,7 +238,7 @@ namespace CableGuardian
             
             SetControlVisibility();
             InvokeChangeMade(new ChangeEventArgs(comboBoxAPI));            
-            InvokeVRConnectionParameterChanged(new EventArgs());
+            InvokeVRConnectionParameterChanged(EventArgs.Empty);
         }
 
        
@@ -249,7 +249,7 @@ namespace CableGuardian
 
             TheProfile.RequireHome = checkBoxHome.Checked;
             InvokeChangeMade(new ChangeEventArgs(checkBoxHome));
-            InvokeVRConnectionParameterChanged(new EventArgs());
+            InvokeVRConnectionParameterChanged(EventArgs.Empty);
         }
 
         private void ComboBoxManual_SelectedIndexChanged(object sender, EventArgs e)
@@ -313,7 +313,7 @@ namespace CableGuardian
             else
                 Config.StartUpProfile = null;
 
-            InvokeProfileNameChanged(new EventArgs()); // to refresh profiles combo
+            InvokeProfileNameChanged(EventArgs.Empty); // to refresh profiles combo
             InvokeChangeMade(new ChangeEventArgs(checkBoxStartup));
         }
 
@@ -331,7 +331,7 @@ namespace CableGuardian
                     listBoxActions.SelectedIndex = (listBoxActions.Items.Count > index) ? index : index - 1;
                     SkipFlaggedEventHandlers = skipStatus;
                     // Force selected index change eventhandler (instead of letting it run automatically above - it did not always run):
-                    ListBoxActions_SelectedIndexChanged(listBoxActions, new EventArgs());
+                    ListBoxActions_SelectedIndexChanged(listBoxActions, EventArgs.Empty);
                 }
                 SetControlVisibility();
                 InvokeChangeMade(new ChangeEventArgs(pictureBoxMinus));
@@ -434,7 +434,7 @@ namespace CableGuardian
             if (!String.IsNullOrEmpty(newName))//&& (from Profile p in Config.Profiles where p.Name == newName && p != TheProfile select p).Count() == 0)
             {
                 TheProfile.Name = newName;
-                InvokeProfileNameChanged(new EventArgs());
+                InvokeProfileNameChanged(EventArgs.Empty);
                 InvokeChangeMade(new ChangeEventArgs(textBoxName));
             }
         }

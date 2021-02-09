@@ -41,7 +41,7 @@ namespace CableGuardian
         {
             if (InvokesProfileChanged)
             {
-                ProfileChangeMade?.Invoke(this, new EventArgs());
+                ProfileChangeMade?.Invoke(this, EventArgs.Empty);
             }
         }
 

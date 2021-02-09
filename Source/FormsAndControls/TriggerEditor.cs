@@ -79,7 +79,7 @@ namespace CableGuardian
                 TheTrigger.TriggeringEvent = YawTrackerOrientationEvent.Yaw0Yaw180;
 
             SetControlVisibilityAndDefaults();
-            InvokeTriggeringEventChanged(new EventArgs());
+            InvokeTriggeringEventChanged(EventArgs.Empty);
             InvokeChangeMade(new ChangeEventArgs(comboBoxEvent));
         }
 
