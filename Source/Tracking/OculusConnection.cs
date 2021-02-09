@@ -86,7 +86,7 @@ namespace CableGuardian
                     }
                     else if (_OculusStatus == OculusConnectionStatus.Resurrecting)
                     {
-                        StatusMessage = "Oculus HMD connection lost. Reconnecting...";
+                        StatusMessage = "Oculus HMD connection failed. Trying again...";
                         Status = VRConnectionStatus.Opening;
                     }
                     else if (_OculusStatus == OculusConnectionStatus.UnexpectedError)
@@ -254,6 +254,7 @@ namespace CableGuardian
             OpenImplementation();
         }
 
+        int ExceptionCounter = 0;
         void DoWork(object sender, DoWorkEventArgs e)
         {
             try
@@ -266,9 +267,19 @@ namespace CableGuardian
             }
             catch (Exception ex)
             {
+                ExceptionCounter++;
                 WorkerFailed = true;
                 LastExceptionMessage = ex.Message;
                 OculusStatus = OculusConnectionStatus.UnexpectedError;
+
+                // if oculus library not installed OR something else is wrong, the native calls will bite memory.
+                // Let's hasten the garbage collector because memory stacking just looks so nasty in the task manager.
+                // Of course this is not an actual use case, but since I noticed it, let's do it anyway.
+                if (ExceptionCounter % 5 == 0)                 
+                    GC.Collect();
+
+                if (ExceptionCounter == int.MaxValue)
+                    ExceptionCounter = 0;
             }
 
             EndCurrentSession();

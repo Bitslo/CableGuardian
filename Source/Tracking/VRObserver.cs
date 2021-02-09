@@ -14,17 +14,20 @@ namespace CableGuardian
         /// Current rotation around the y-axis (= Yaw) in radians.
         /// (range from -PI to +PI) (sign denotes direction from center - left or right depending on coordinate system)
         /// </summary>
-        public double HmdYaw { get; }        
-        public VRObserverEventArgs(double hmdYaw)
+        public double HmdYaw { get; }
+        public bool HmdYawChanged { get; }
+        public VRObserverEventArgs(double hmdYaw, bool hmdYawChanged)
         {
-            HmdYaw = hmdYaw;            
+            HmdYaw = hmdYaw;
+            HmdYawChanged = hmdYawChanged;
         }
     }
 
     class VRObserver
     {
-        public event EventHandler<VRObserverEventArgs> StateRefreshed;
-                
+        public event EventHandler<VRObserverEventArgs> ValidYawReceived;
+        public event EventHandler<EventArgs> InvalidYawReceived;
+
         VRConnection VR;
         double HmdYaw;        
 
@@ -76,6 +79,10 @@ namespace CableGuardian
         }
         
 
+        double PreviousYaw = 0;
+        const int SameYawThreshold = 5;
+        int SameYawCounter = 0;
+        int InvalidYawCounter = 0;
         /// <summary>
         /// NEVER MAKE CHANGES TO VR-CONNECTION FROM THIS THREAD
         /// </summary>
@@ -85,8 +92,31 @@ namespace CableGuardian
         {
             while (StopFlag == false)
             {
-                if(VR.GetHmdYaw(ref HmdYaw))
-                    Worker.ReportProgress(0, null);
+                if (VR.GetHmdYaw(ref HmdYaw))
+                {
+                    if (HmdYaw == PreviousYaw)
+                    {
+                        if (SameYawCounter < SameYawThreshold)
+                            SameYawCounter++;
+                        else
+                            Worker.ReportProgress(1, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        Worker.ReportProgress(0, EventArgs.Empty);
+                        SameYawCounter = 0;
+                    }
+
+                    PreviousYaw = HmdYaw;
+                    InvalidYawCounter = 0;
+                }
+                else
+                {
+                    if (InvalidYawCounter < SameYawThreshold)
+                        InvalidYawCounter++;
+                    else
+                        Worker.ReportProgress(2, EventArgs.Empty);
+                }
                
                 Thread.Sleep(PollInterval);
             }            
@@ -94,12 +124,12 @@ namespace CableGuardian
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            InvokeStateRefreshed();
-        }
-
-        void InvokeStateRefreshed()
-        {
-            StateRefreshed?.Invoke(this, new VRObserverEventArgs(HmdYaw));
+            if (e.ProgressPercentage == 0)
+                ValidYawReceived?.Invoke(this, new VRObserverEventArgs(HmdYaw, true));
+            else if (e.ProgressPercentage == 1)
+                ValidYawReceived?.Invoke(this, new VRObserverEventArgs(HmdYaw, false));
+            else if (e.ProgressPercentage == 2)
+                InvalidYawReceived?.Invoke(this, EventArgs.Empty);
         }
     }
 }

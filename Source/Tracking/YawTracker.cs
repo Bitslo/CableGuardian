@@ -133,7 +133,7 @@ namespace CableGuardian
             InitialHalfTurn = initialHalfTurn;    // in case we start from a recorded rotation value (auto-restart or "Remember turn count" -feature)      
             ExpectedInitialYaw = expectedInitialYaw; // same as above. This will be the last recorded yaw value to use as a reference point.
 
-            HmdObserver.StateRefreshed += OnHmdStateRefreshed;            
+            HmdObserver.ValidYawReceived += OnHmdStateRefreshed;            
         }
 
         void OnHmdStateRefreshed(object sender, VRObserverEventArgs e)

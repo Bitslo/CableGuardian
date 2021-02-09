@@ -475,14 +475,18 @@ namespace CableGuardian
                                        + $"\u2022 More audio clips" + Environment.NewLine);
             TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
             TTip.SetToolTip(pictureBoxDefaults, "Restore the default CG profiles. Custom profiles will not be touched.");
-           
+            TTip.SetToolTip(labelTracking, $"Tracking data is not being transmitted." + Environment.NewLine + Environment.NewLine
+                                        + $"Some headsets are required to be worn for tracking to work (at least when using {VRAPI.OpenVR} API)." + Environment.NewLine
+                                    + "There's usually a proximity sensor in the headset for detecting this.");
+
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
             labelYaw.ForeColor = Config.CGErrorColor;                        
             labelHalfTurns.ForeColor = Config.CGErrorColor;
             labelHalfTurnTitle.ForeColor = Config.CGErrorColor;
             labelAlarmAt.ForeColor = Config.CGColor;
-                      
+            labelTracking.ForeColor = Config.CGErrorColor;
+
             SimpleMode_InitializeAppearance();
         }
 
@@ -564,7 +568,8 @@ namespace CableGuardian
             checkBoxRememberRotation.CheckedChanged += CheckBoxRememberRotation_CheckedChanged;
             numericUpDownRotMemory.ValueChanged += NumericUpDownRotMemory_ValueChanged;
 
-            Observer.StateRefreshed += Observer_StateRefreshed;            
+            Observer.ValidYawReceived += Observer_ValidYawReceived;
+            Observer.InvalidYawReceived += (s, e) => { RefreshTrackingStatus(false); };
             profileEditor.ProfileNameChanged += (s, e) => { Config.SortProfilesByName(); RefreshProfileCombo(); };
             profileEditor.ChangeMade += OnProfileChangeMade;
             profileEditor.VRConnectionParameterChanged += (s, e) => { RefreshVRConnectionForActiveProfile(); };
@@ -1481,12 +1486,28 @@ namespace CableGuardian
             labelYaw.Visible = checkBoxShowYaw.Checked;                                    
         }
 
-        void Observer_StateRefreshed(object sender, VRObserverEventArgs e)
+        void Observer_ValidYawReceived(object sender, VRObserverEventArgs e)
         {
+            RefreshTrackingStatus(e.HmdYawChanged);
+
             if (UpdateYawToForm)
             {
                 labelYaw.Text = YawTracker.RadToDeg(Tracker.YawValue).ToString();                
             }
+        }
+
+        bool IsTracking = false;
+        void RefreshTrackingStatus(bool isTracking)
+        {
+            if (isTracking == IsTracking)
+                return;
+
+            if (!isTracking && ActiveConnection.Status == VRConnectionStatus.AllOK)   
+                labelTracking.Visible = true;            
+            else               
+                labelTracking.Visible = false;
+            
+            IsTracking = isTracking;
         }
 
         void AddDragEventHandlers()
@@ -1572,7 +1593,7 @@ namespace CableGuardian
             }
 
             labelStatus.Text = $"VR Headset Connection Status:{Environment.NewLine}{Environment.NewLine}" + conn.StatusMessage;
-                       
+            RefreshTrackingStatus(!IsTracking); // just an initialization
             buttonRetry.Visible = (conn.Status == VRConnectionStatus.Closed);
 
             if (conn.Status == VRConnectionStatus.InitLimitReached)

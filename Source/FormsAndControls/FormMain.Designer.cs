@@ -80,9 +80,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.labelMore = new System.Windows.Forms.Label();
             this.comboBoxAPI = new System.Windows.Forms.ComboBox();
-            this.profileEditor = new CableGuardian.ProfileEditor();
             this.buttonRightTurn = new System.Windows.Forms.Button();
             this.buttonLeftTurn = new System.Windows.Forms.Button();
+            this.labelTracking = new System.Windows.Forms.Label();
+            this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
@@ -668,16 +669,6 @@
             this.comboBoxAPI.TabIndex = 82;
             this.comboBoxAPI.Visible = false;
             // 
-            // profileEditor
-            // 
-            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.profileEditor.Location = new System.Drawing.Point(328, 38);
-            this.profileEditor.Name = "profileEditor";
-            this.profileEditor.Size = new System.Drawing.Size(695, 445);
-            this.profileEditor.TabIndex = 48;
-            // 
             // buttonRightTurn
             // 
             this.buttonRightTurn.Cursor = System.Windows.Forms.Cursors.Default;
@@ -708,6 +699,28 @@
             this.buttonLeftTurn.Text = "<";
             this.buttonLeftTurn.UseVisualStyleBackColor = true;
             // 
+            // labelTracking
+            // 
+            this.labelTracking.AutoSize = true;
+            this.labelTracking.ForeColor = System.Drawing.Color.Red;
+            this.labelTracking.Location = new System.Drawing.Point(230, 389);
+            this.labelTracking.Name = "labelTracking";
+            this.labelTracking.Size = new System.Drawing.Size(88, 13);
+            this.labelTracking.TabIndex = 98;
+            this.labelTracking.Tag = "MANUAL";
+            this.labelTracking.Text = "NOT TRACKING";
+            this.labelTracking.Visible = false;
+            // 
+            // profileEditor
+            // 
+            this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.profileEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.profileEditor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.profileEditor.Location = new System.Drawing.Point(328, 38);
+            this.profileEditor.Name = "profileEditor";
+            this.profileEditor.Size = new System.Drawing.Size(695, 445);
+            this.profileEditor.TabIndex = 48;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -715,6 +728,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.labelTracking);
             this.Controls.Add(this.buttonRightTurn);
             this.Controls.Add(this.buttonLeftTurn);
             this.Controls.Add(this.comboBoxAPI);
@@ -834,6 +848,7 @@
         private System.Windows.Forms.CheckBox checkBoxMountingSound;
         private System.Windows.Forms.Button buttonRightTurn;
         private System.Windows.Forms.Button buttonLeftTurn;
+        private System.Windows.Forms.Label labelTracking;
     }
 }
 
