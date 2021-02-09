@@ -78,7 +78,11 @@ namespace CableGuardian
         /// <summary>
         /// Occurs when Yaw axis value 180 degrees is crossed (half turn, facing away from 0).
         /// </summary>
-        public event EventHandler<RotationEventArgs> Yaw180;                     
+        public event EventHandler<RotationEventArgs> Yaw180;
+        /// <summary>
+        /// Occurs when the turn count is adjusted due to special conditions (initial turn count)
+        /// </summary>
+        public event EventHandler<EventArgs> TurnCountAdjusted;
 
         VRObserver HmdObserver { get; }
         public double YawValue { get { return (_YawValue == null) ? 0.0 : (double)_YawValue ; } } 
@@ -193,7 +197,8 @@ namespace CableGuardian
             {
                 _YawValue = newYawValue;                
                 CurrentHalfTurn = GetCorrectedInitialHalfTurn(newYawValue);
-                InitialHalfTurn = 0; 
+                InitialHalfTurn = 0;
+                TurnCountAdjusted?.Invoke(this, EventArgs.Empty);
             }
             // *****************
 

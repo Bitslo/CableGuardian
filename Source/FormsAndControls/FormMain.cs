@@ -108,6 +108,7 @@ namespace CableGuardian
             Tracker = new YawTracker(Observer, GetInitialHalfTurn(), Config.LastYawValue); // after reading config but before reading profiles
             Tracker.Yaw0 += Tracker_ThresholdCrossed;
             Tracker.Yaw180 += Tracker_ThresholdCrossed;
+            Tracker.TurnCountAdjusted += (s, e) => { RefreshHalfTurnLabel(); };
 
             buttonLeftTurn.Click += (s, e) => { Tracker.ShiftHalfTurnCount(Direction.Left); RefreshHalfTurnLabel(); };
             buttonRightTurn.Click += (s, e) => { Tracker.ShiftHalfTurnCount(Direction.Right); RefreshHalfTurnLabel(); };
@@ -476,7 +477,7 @@ namespace CableGuardian
             TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
             TTip.SetToolTip(pictureBoxDefaults, "Restore the default CG profiles. Custom profiles will not be touched.");
             TTip.SetToolTip(labelTracking, $"Tracking data is not being transmitted." + Environment.NewLine + Environment.NewLine
-                                        + $"Some headsets are required to be worn for tracking to work (at least when using {VRAPI.OpenVR} API)." + Environment.NewLine
+                                        + $"Some headsets must be worn for tracking to work (at least when using {VRAPI.OpenVR} API)." + Environment.NewLine
                                     + "There's usually a proximity sensor in the headset for detecting this.");
 
             buttonSave.ForeColor = Config.CGColor;            
