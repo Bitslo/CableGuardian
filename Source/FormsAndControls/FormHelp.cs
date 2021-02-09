@@ -26,10 +26,11 @@ namespace CableGuardian
 
             buttonClose.Click += ButtonClose_Click;
             buttonPage.Click += ButtonPage_Click;
+            buttonDiscussions.Click += ButtonDiscussions_Click;
+            buttonCopyInfo.Click += ButtonCopyInfo_Click;
             labelSimple.MouseEnter += (s, e) => { labelSimple.ForeColor = Color.Yellow; };
             labelSimple.MouseLeave += (s, e) => { labelSimple.ForeColor = Color.White; };
-            labelSimple.Click += LabelSimple_Click;            
-            buttonEmail.Click += ButtonEmail_Click;
+            labelSimple.Click += LabelSimple_Click;                        
             pictureBoxStandard.Click += PictureBoxStandard_Click;
 
             pictureBoxStandard.MouseEnter += (s, e) => { pictureBoxStandard.Image = Properties.Resources.Title_hover; };
@@ -39,7 +40,10 @@ namespace CableGuardian
                                 System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() +
                                 " \u00A9 Bitslo";
 
-            TTip.SetToolTip(buttonEmail, "Copies a support email template to the clipboard.");
+            TTip.SetToolTip(buttonCopyInfo, "Copies your system information and Cable Guardian configuration to clipboard." + Environment.NewLine
+                                        + "It can be useful when solving problems.");
+            TTip.SetToolTip(buttonDiscussions, "Steam Discussions may have the answer your looking for. Feel free to start a new discussion!" + Environment.NewLine
+                                        + "p.s. Check out the user guide below.");
 
             if (!RunFromDesigner)
             {        
@@ -50,9 +54,12 @@ namespace CableGuardian
         }
 
         private void PictureBoxStandard_Click(object sender, EventArgs e)
-        {            
-            string id = "2091663814";
+        {
+            OpenSteamPage("steam://url/CommunityFilePage/2091663814", "https://steamcommunity.com/sharedfiles/filedetails/?id=2091663814");
+        }
 
+        void OpenSteamPage(string steamUrl, string genericUrl)
+        {
             try
             {
                 if (Process.GetProcessesByName("Steam").Any())
@@ -60,7 +67,7 @@ namespace CableGuardian
                     if (Process.GetProcessesByName(Config.SteamVRProcessName).Any())
                         throw new Exception("SteamVR is running and preventing opening store.");
 
-                    Process.Start("steam://url/CommunityFilePage/" + id);
+                    Process.Start(steamUrl);
                 }
                 else
                 {
@@ -71,7 +78,7 @@ namespace CableGuardian
             {
                 try
                 {
-                    Process.Start("https://steamcommunity.com/sharedfiles/filedetails/?id=" + id);
+                    Process.Start(genericUrl);
                 }
                 catch (Exception exx)
                 {
@@ -80,53 +87,40 @@ namespace CableGuardian
                     MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
-
         }
 
-        private void ButtonEmail_Click(object sender, EventArgs e)
+
+        private void ButtonCopyInfo_Click(object sender, EventArgs e)
         {
-            string separator = "__________________________________________________________________________________";
+            string separator = "_____________________________________________________________________________________________";
 
-            string addr = "bitslo" + "." + "cableguardian";
-            addr += "@g";
-            addr += "ma" + "il.";
-            addr += "com";
-
-            string txt = addr;
-            txt += Environment.NewLine;
-            txt += "*******************************";
-            txt += Environment.NewLine;
-            txt += "^ Send to the address above.";
-            txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
-            txt += "TYPE YOUR MESSAGE HERE. ATTACH SCREENSHOTS WHEN NEEDED.";
-            txt += Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
-            txt += "IF YOU ARE REPORTING AN ISSUE, PLEASE INCLUDE EVERYTHING BELOW THIS LINE UNEDITED.";
-            txt += Environment.NewLine;
+            string txt = "";
             txt += separator;
-            txt += Environment.NewLine;
+            txt += Environment.NewLine + Environment.NewLine;
             txt += Config.ProgramTitle + " v." + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
             txt += Environment.NewLine;
-            txt += (Environment.Is64BitOperatingSystem) ? "64 bit OS" : "32 bit OS";            
+            txt += (Environment.Is64BitOperatingSystem) ? "64 bit OS" : "32 bit OS";
             txt += (Environment.Is64BitProcess) ? ", 64 bit process" : ", 32 bit process";
             txt += Environment.NewLine;
             txt += GetOSDescription() + Environment.NewLine;
-            txt += GetDotNetDescription() + Environment.NewLine;            
+            txt += GetDotNetDescription() + Environment.NewLine;
             txt += "OpenVR: " + FormMain.OpenVRConn.Status.ToString() + " - " + FormMain.OpenVRConn.StatusMessage;
             txt += Environment.NewLine;
             txt += "Oculus: " + FormMain.OculusConn.Status.ToString() + " - " + FormMain.OculusConn.StatusMessage;
             txt += Environment.NewLine;
-            txt += "Active profile = " + Config.ActiveProfile?.Name ?? "";            
+            txt += "Active profile = " + Config.ActiveProfile?.Name ?? "";
+            txt += Environment.NewLine;
+            txt += separator;
             txt += Environment.NewLine + Environment.NewLine + Environment.NewLine;
 
             try
             {
                 txt += Config.GetProfilesXml().ToString();
                 txt += Environment.NewLine + Environment.NewLine;
-                
+
                 txt += Config.GetConfigXml().ToString();
                 txt += Environment.NewLine + Environment.NewLine;
-                
+
                 if (File.Exists(Program.LogFile))
                     txt += File.ReadAllText(Program.LogFile);
             }
@@ -135,19 +129,23 @@ namespace CableGuardian
                 // intentionally ignore
             }
 
-            string msg = $"Email body copied to clipboard. Create a new email and paste the clipboard contents into the empty message. {Environment.NewLine}{Environment.NewLine}"
-              + $"Copy the receiver address from the first line. Don't forget to include your description of the issue / idea." + Environment.NewLine+ Environment.NewLine
-              +"Thanks!";
+            string msg = $"System configuration copied to clipboard!";
+
             try
             {
-                Clipboard.SetText(txt);                
+                Clipboard.SetText(txt);
             }
             catch (Exception ex)
             {
-                msg = "Sorry, copying the email body to clipboard failed*. Please send your message to " + addr + Environment.NewLine + Environment.NewLine + "* " + ex.Message;
+                msg = "Sorry, copying system configuration to clipboard failed*." + Environment.NewLine + Environment.NewLine + "* " + ex.Message;
             }
-            
-            MessageBox.Show(this, msg, "SUPPORT EMAIL", MessageBoxButtons.OK, MessageBoxIcon.Information);            
+
+            MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ButtonDiscussions_Click(object sender, EventArgs e)
+        {
+            OpenSteamPage("steam://openurl/https://steamcommunity.com/app/1208080/discussions/0/", "https://steamcommunity.com/app/1208080/discussions/0/");
         }
 
         private void LabelSimple_Click(object sender, EventArgs e)

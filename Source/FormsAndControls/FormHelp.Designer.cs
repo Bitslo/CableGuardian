@@ -42,10 +42,11 @@
             this.buttonPage = new System.Windows.Forms.Button();
             this.panelAck = new System.Windows.Forms.Panel();
             this.labelSimple = new System.Windows.Forms.Label();
-            this.buttonEmail = new System.Windows.Forms.Button();
             this.labelTitle = new System.Windows.Forms.Label();
             this.pictureBoxStandard = new System.Windows.Forms.PictureBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.buttonCopyInfo = new System.Windows.Forms.Button();
+            this.buttonDiscussions = new System.Windows.Forms.Button();
             this.panelAck.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxStandard)).BeginInit();
             this.SuspendLayout();
@@ -223,20 +224,6 @@
             this.labelSimple.TabIndex = 82;
             this.labelSimple.Text = "Back to simplified mode?";
             // 
-            // buttonEmail
-            // 
-            this.buttonEmail.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.buttonEmail.Cursor = System.Windows.Forms.Cursors.Default;
-            this.buttonEmail.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.buttonEmail.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonEmail.ForeColor = System.Drawing.Color.White;
-            this.buttonEmail.Location = new System.Drawing.Point(399, 54);
-            this.buttonEmail.Name = "buttonEmail";
-            this.buttonEmail.Size = new System.Drawing.Size(234, 24);
-            this.buttonEmail.TabIndex = 84;
-            this.buttonEmail.Text = "Have issues or ideas? Click here.";
-            this.buttonEmail.UseVisualStyleBackColor = false;
-            // 
             // labelTitle
             // 
             this.labelTitle.AutoSize = true;
@@ -271,6 +258,34 @@
             this.label7.TabIndex = 91;
             this.label7.Text = "USER GUIDE ON STEAM";
             // 
+            // buttonCopyInfo
+            // 
+            this.buttonCopyInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonCopyInfo.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonCopyInfo.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonCopyInfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonCopyInfo.ForeColor = System.Drawing.Color.White;
+            this.buttonCopyInfo.Location = new System.Drawing.Point(516, 54);
+            this.buttonCopyInfo.Name = "buttonCopyInfo";
+            this.buttonCopyInfo.Size = new System.Drawing.Size(117, 24);
+            this.buttonCopyInfo.TabIndex = 94;
+            this.buttonCopyInfo.Text = "Copy System Info";
+            this.buttonCopyInfo.UseVisualStyleBackColor = false;
+            // 
+            // buttonDiscussions
+            // 
+            this.buttonDiscussions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonDiscussions.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonDiscussions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonDiscussions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonDiscussions.ForeColor = System.Drawing.Color.White;
+            this.buttonDiscussions.Location = new System.Drawing.Point(399, 54);
+            this.buttonDiscussions.Name = "buttonDiscussions";
+            this.buttonDiscussions.Size = new System.Drawing.Size(117, 24);
+            this.buttonDiscussions.TabIndex = 93;
+            this.buttonDiscussions.Text = "Steam Discussions";
+            this.buttonDiscussions.UseVisualStyleBackColor = false;
+            // 
             // FormHelp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,10 +293,11 @@
             this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.buttonCopyInfo);
+            this.Controls.Add(this.buttonDiscussions);
             this.Controls.Add(this.pictureBoxStandard);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.labelTitle);
-            this.Controls.Add(this.buttonEmail);
             this.Controls.Add(this.labelSimple);
             this.Controls.Add(this.panelAck);
             this.Controls.Add(this.buttonPage);
@@ -315,9 +331,10 @@
         private System.Windows.Forms.Button buttonPage;
         private System.Windows.Forms.Panel panelAck;
         private System.Windows.Forms.Label labelSimple;
-        private System.Windows.Forms.Button buttonEmail;
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.PictureBox pictureBoxStandard;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button buttonCopyInfo;
+        private System.Windows.Forms.Button buttonDiscussions;
     }
 }

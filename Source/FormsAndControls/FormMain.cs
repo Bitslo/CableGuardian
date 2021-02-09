@@ -440,7 +440,8 @@ namespace CableGuardian
                                         + $"The reset can also be done from the {Config.ProgramTitle} tray icon and with the \"Reset on mount\" -feature.");
             string tip = $"Shift the current turn count one step* to the _DIR_." + Environment.NewLine
                                         + $"You can use this to sync cable twisting instead of physically turning. (For example after accidentally hitting the reset button.)" + Environment.NewLine + Environment.NewLine
-                                        + "* NOTE: The steps are between valid values only! (ODD or EVEN depending on the headset orientation).";
+                                        + "* The steps are between valid values only. (ODD or EVEN depending on the headset orientation)." + Environment.NewLine
+                                        + "Also note that the shift buttons do not trigger rotation alerts.";
             TTip.SetToolTip(buttonLeftTurn, tip.Replace("_DIR_", "left"));
             TTip.SetToolTip(buttonRightTurn, tip.Replace("_DIR_", "right"));
             TTip.SetToolTip(checkBoxTrayNotifications, $"Display a temporary Windows notification for certain interactions such as setting up alarms and resetting the turn counter. (for feedback)");
