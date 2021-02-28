@@ -24,7 +24,7 @@ namespace CableGuardian
             Width = 328;            
             checkBoxConnLost.Visible = false;
             checkBoxOnAPIQuit.Visible = false;
-            checkBoxSticky.Visible = false;
+            checkBoxSticky.Visible = false;            
             labelMore.Visible = true;
             panelSimple.Visible = true;
             panelSimple.Focus();
@@ -42,9 +42,7 @@ namespace CableGuardian
                 comboBoxAPI.Visible = true;
 
             Config.UseSimpleMode = true;
-            // use these defaults with simple mode
-            Config.MinimizeAtAutoStartup = true;
-            Config.MinimizeAtUserStartup = false;
+            // use these defaults with simple mode            
             Config.TurnCountMemoryMinutes = -1;
             Config.TrayMenuNotifications = true;
             Config.NotifyWhenVRConnectionLost = true;            
@@ -55,8 +53,10 @@ namespace CableGuardian
             SaveConfigurationToFile();
             SetProfilesSaveStatus(true);
 
-            if (!Program.IsAutoStartup)
+            if (!Config.StartMinimized)
                 RestoreFromTray();
+
+            TTip.SetToolTip(checkBoxExitWithSteamVR, $"{Config.ProgramTitle} will close when SteamVR is closed.");
 
             Enabled = true;
         }
@@ -66,7 +66,7 @@ namespace CableGuardian
             Width = OriginalWidth;            
             checkBoxConnLost.Visible = true;
             checkBoxOnAPIQuit.Visible = true;
-            checkBoxSticky.Visible = true;
+            checkBoxSticky.Visible = true;            
             labelMore.Visible = false;
             panelSimple.Visible = false;
             comboBoxAPI.Visible = false;
@@ -87,8 +87,9 @@ namespace CableGuardian
 
             LoadConfigToGui();
 
-            string msg = $"Welcome to {Config.ProgramTitle} full mode!{Environment.NewLine}{Environment.NewLine}" +
-                   $"Click the \"?\" in the top right corner for help.";
+            TTip.SetToolTip(checkBoxExitWithSteamVR, $"{Config.ProgramTitle} will close when SteamVR is closed - unless there are unsaved changes to your profiles.");
+
+            string msg = $"Welcome to {Config.ProgramTitle} full mode!";                   
             MessageBox.Show(this, msg, "Full mode activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
      

@@ -55,38 +55,7 @@ namespace CableGuardian
 
         private void PictureBoxStandard_Click(object sender, EventArgs e)
         {
-            OpenSteamPage("steam://url/CommunityFilePage/2091663814", "https://steamcommunity.com/sharedfiles/filedetails/?id=2091663814");
-        }
-
-        void OpenSteamPage(string steamUrl, string genericUrl)
-        {
-            try
-            {
-                if (Process.GetProcessesByName("Steam").Any())
-                {
-                    if (Process.GetProcessesByName(Config.SteamVRProcessName).Any())
-                        throw new Exception("SteamVR is running and preventing opening store.");
-
-                    Process.Start(steamUrl);
-                }
-                else
-                {
-                    throw new Exception("Steam not running");
-                }
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    Process.Start(genericUrl);
-                }
-                catch (Exception exx)
-                {
-                    string msg = "Sorry, unable to open the Steam page.  :("
-                            + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine + exx.Message;
-                    MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            FormMain.OpenSteamPage("steam://url/CommunityFilePage/2091663814", "https://steamcommunity.com/sharedfiles/filedetails/?id=2091663814", this);
         }
 
 
@@ -145,14 +114,14 @@ namespace CableGuardian
 
         private void ButtonDiscussions_Click(object sender, EventArgs e)
         {
-            OpenSteamPage("steam://openurl/https://steamcommunity.com/app/1208080/discussions/0/", "https://steamcommunity.com/app/1208080/discussions/0/");
+            FormMain.OpenSteamPage("steam://openurl/https://steamcommunity.com/app/1208080/discussions/0/", "https://steamcommunity.com/app/1208080/discussions/0/", this);
         }
 
         private void LabelSimple_Click(object sender, EventArgs e)
         {
-            string msg = $"Too much hassle? Click Yes to go back to simplified mode. You will lose the changes you made in full mode.{Environment.NewLine}{Environment.NewLine}"
+            string msg = $"Click Yes to go back to simplified mode. You will lose the changes you made in full mode.{Environment.NewLine}{Environment.NewLine}"
                + $"Click No to stay in full mode.";
-            if (MessageBox.Show(this, msg, "Switch to simplified mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(this, msg, "Switch to simplified mode?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 DialogResult = DialogResult.Abort;
                 Close();

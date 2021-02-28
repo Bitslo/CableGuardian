@@ -178,6 +178,7 @@
     <Compile Include="Actions\Trigger.cs" />
     <Compile Include="AudioDevices\WaveOutDevice.cs" />
     <Compile Include="Actions\TriggeredAction.cs" />
+    <None Include="Config\CableGuardianVrManifestNoSteam.txt" />
     <None Include="Config\Profile_CG_Speech_OpenVR.xml" />
     <None Include="Config\Profile_CG_Speech_Oculus.xml" />
     <None Include="Config\Profile_CG_Beep_OpenVR.xml" />

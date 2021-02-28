@@ -24,9 +24,9 @@ namespace CableGuardian
         public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);                
         public static string ProfilesFile { get; private set; }
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
-        public static string SteamVRProcessName { get; private set; } = "vrserver";        
-        public static bool MinimizeAtUserStartup { get; set; } = false;
-        public static bool MinimizeAtAutoStartup { get; set; } = true;        
+        public static string SteamVRProcessName { get; private set; } = "vrserver";
+        public static bool StartMinimized { get; set; } = false;
+        public static bool NotifyStartMinimized { get; set; } = true;
         public static bool NotifyWhenVRConnectionLost { get; set; } = true;
         public static bool ConnLostNotificationIsSticky { get; set; } = true;
         public static bool NotifyOnAPIQuit { get; set; } = false;
@@ -55,7 +55,10 @@ namespace CableGuardian
         /// </summary>
         public static VRAPI LegacyAPI { get; private set; } = VRAPI.OculusVR;
         public static bool IsLegacyConfig { get; private set; } = false;
+        public static bool IsConfig1332OrEarlier { get; private set; } = false;
         public static bool SaveProfilesAtStartup { get; set; } = false;
+                
+        public static bool ExitWithSteamVR { get; set; } = false;
 
         public static bool UseSimpleMode { get; set; } = false;
         public static uint SimpleModeThreshold { get; set; } = 3;
@@ -69,7 +72,11 @@ namespace CableGuardian
         {   
             ProfilesFile = Program.ExeFolder + $@"\{ProfilesName}.xml";
 
-            ManifestContents = Properties.Resources.CableGuardianVrManifest;
+            if (Program.IsSteamInstallation)
+                ManifestContents = Properties.Resources.CableGuardianVrManifest;
+            else
+                ManifestContents = Properties.Resources.CableGuardianVrManifestNoSteam;
+
             ManifestContents = ManifestContents.Replace("$APPKEY$", GetManifestAppKey());
             ManifestContents = ManifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
             ManifestContents = ManifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
@@ -384,25 +391,17 @@ namespace CableGuardian
                         LegacyAPI = a;                    
                 }
 
-                if (xConfig.GetElementValueOrNull("StartMinimized") != null) // backwards compatibility
+                if (xConfig.GetElementValueOrNull("StartMinimized") == null) // backwards compatibility
                 {
-                    MinimizeAtUserStartup = xConfig.GetElementValueBool("StartMinimized");
-                    MinimizeAtAutoStartup = MinimizeAtUserStartup;
+                    IsConfig1332OrEarlier = true;
+                    StartMinimized = xConfig.GetElementValueBool("MinimizeAtUserStartup");
                 }
                 else
                 {
-                    MinimizeAtUserStartup = xConfig.GetElementValueBool("MinimizeAtUserStartup");
-
-                    if (xConfig.GetElementValueOrNull("MinimizeAtWindowsStartup") != null) // backwards compatibility
-                    {
-                        MinimizeAtAutoStartup = xConfig.GetElementValueBool("MinimizeAtWindowsStartup");
-                    }
-                    else
-                    {
-                        MinimizeAtAutoStartup = xConfig.GetElementValueBool("MinimizeAtAutoStartup");
-                    }   
+                    StartMinimized = xConfig.GetElementValueBool("StartMinimized");
                 }
-                
+
+                NotifyStartMinimized = xConfig.GetElementValueBool("NotifyStartMinimized", true);
                 NotifyWhenVRConnectionLost = xConfig.GetElementValueBool("NotifyWhenVRConnectionLost", true);
                 ConnLostNotificationIsSticky = xConfig.GetElementValueBool("ConnLostNotificationIsSticky", true);
                 NotifyOnAPIQuit = xConfig.GetElementValueBool("NotifyOnAPIQuit");
@@ -413,7 +412,9 @@ namespace CableGuardian
                 LastExitSeconds = xConfig.GetElementValueUInt("LastExitSeconds");                
                 LastHalfTurn = xConfig.GetElementValueInt("LastHalfTurn");
                 LastYawValue = xConfig.GetElementValueDouble("LastYawValue");
-                
+                                
+                ExitWithSteamVR = xConfig.GetElementValueBool("ExitWithSteamVR", false);
+
                 if (xConfig.GetElementValueOrNull("TurnCountMemoryMinutes") != null)
                     TurnCountMemoryMinutes = xConfig.GetElementValueInt("TurnCountMemoryMinutes");
                 else
@@ -471,9 +472,9 @@ namespace CableGuardian
 
         public static XElement GetConfigXml(bool isExit = false)
         {
-            return new XElement(Program.ConfigName, 
-                                new XElement("MinimizeAtUserStartup", MinimizeAtUserStartup),
-                                new XElement("MinimizeAtAutoStartup", MinimizeAtAutoStartup),
+            return new XElement(Program.ConfigName,
+                                new XElement("StartMinimized", StartMinimized),
+                                new XElement("NotifyStartMinimized", NotifyStartMinimized),
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
                                 new XElement("ConnLostNotificationIsSticky", ConnLostNotificationIsSticky),
                                 new XElement("NotifyOnAPIQuit", NotifyOnAPIQuit),
@@ -484,7 +485,8 @@ namespace CableGuardian
                                 new XElement("LastHalfTurn", FormMain.Tracker.CurrentHalfTurn.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("LastYawValue", FormMain.Tracker.YawValue.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                                new XElement("Alarm", Alarm.GetXml()),
+                                new XElement("Alarm", Alarm.GetXml()),                                                           
+                                new XElement("ExitWithSteamVR", ExitWithSteamVR),
                                 new XElement("UseSimpleMode", UseSimpleMode),
                                 new XElement("SimpleModeThreshold", SimpleModeThreshold),
                                 new XElement("SimpleModeNotifType", SimpleModeNotifType),

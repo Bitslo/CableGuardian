@@ -66,7 +66,7 @@ namespace CableGuardian
         /// One-time flag to allow hiding the form at startup
         /// </summary>
         bool ForceHide = true;
-        bool IsRestart = false;
+        bool IsToBeRestarted = false;
         string RestartArgs = "";
         bool IsExiting = false;
 
@@ -93,7 +93,9 @@ namespace CableGuardian
             // (head rotation must stay below 180 degrees between samples)
             Observer = new VRObserver(OculusConn, 80);
             Observer.Start();
-                                    
+
+            ReadConfigFromFileAndCheckDefaultSounds();
+
             if (!RunFromDesigner)
             {
                 InitializeTrayMenu();
@@ -103,8 +105,7 @@ namespace CableGuardian
             OriginalWidth = Width;
 
             AddEventHandlers();
-
-            ReadConfigFromFileAndCheckDefaultSounds();
+            
             Tracker = new YawTracker(Observer, GetInitialHalfTurn(), Config.LastYawValue); // after reading config but before reading profiles
             Tracker.Yaw0 += Tracker_ThresholdCrossed;
             Tracker.Yaw180 += Tracker_ThresholdCrossed;
@@ -164,9 +165,25 @@ namespace CableGuardian
                 ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
             }
 
-            if (Config.MinimizeAtUserStartup && !Program.IsAutoStartup)
+            if (Config.StartMinimized && Config.NotifyStartMinimized)
             {
+                BalloonTipRestoresTheUI = true;
                 ShowTemporaryTrayNotification(2000, Config.ProgramTitle, "Started minimized. ");
+            }
+
+            if (!String.IsNullOrWhiteSpace(Program.SteamRestartErrorMsg))
+            {
+                notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, Program.SteamRestartErrorMsg, ToolTipIcon.Warning);
+            }
+
+            if (!String.IsNullOrWhiteSpace(Program.InstanceCheckErrorMsg))
+            {
+                notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, Program.InstanceCheckErrorMsg, ToolTipIcon.Warning);
+            }
+
+            if (Config.IsConfig1332OrEarlier)
+            {
+                ShowHighlightsForUpdateAfter1332();
             }
         }
 
@@ -174,40 +191,102 @@ namespace CableGuardian
         {
             base.SetVisibleCore(ForceHide ? false : value);
         }
+                
 
         void ExitIfAlreadyRunning()
         {
-            // Exit if already running from the same location. Multiple instances are allowed from different locations for no particular reason.
-
             // Rather than showing a notification from this new instance...
             // ...it might be cleaner to use a mutex and send a message to the existing instance without ever starting forms but... nah            
 
+            if (Program.IsRestart) // don't exit on a restarted instance. (the previous process might still be alive)
+                return;
+
+
+            if (Program.AnotherInstanceExists)
+            {
+                notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;
+
+                ShowTemporaryTrayNotification(3300, "", $"{Config.ProgramTitle} is already running.");
+                System.Threading.Thread.Sleep(3300);
+
+                notifyIcon1.Visible = false; // otherwise the empty icon lingers in the tray
+                Environment.Exit(0);
+            }
+
+        }
+
+
+        void ShowHighlightsForUpdateAfter1332()
+        {
+            BalloonTipOpensLaunchOptions = true;
+
+            string tt = "- RECENT UPDATE NOTE: User-startup and Auto-startup are no longer separated due to new Steam startup handling." + Environment.NewLine
+                           + "The \"Start minimized\" -option is now combined for all startup types.";
+            tt = TTip.GetToolTip(checkBoxStartMinimized) + Environment.NewLine + Environment.NewLine + tt;
+            TTip.SetToolTip(checkBoxStartMinimized, tt);
+
+            Point p = new Point(checkBoxStartMinimized.Location.X + checkBoxStartMinimized.Width + 10, checkBoxStartMinimized.Location.Y);
+            AddUpdateHighlightLabel("UPDATED", panelLaunchOptions, p);
+            
+            p = new Point(checkBoxNotifyMin.Location.X + checkBoxNotifyMin.Width + 10, checkBoxNotifyMin.Location.Y);
+            AddUpdateHighlightLabel("NEW", panelLaunchOptions, p);
+
+            tt = "- RECENT UPDATE NOTE: Before the update the app always closed automatically with SteamVR when using SteamVR auto-start." + Environment.NewLine
+                           + "Now you can toggle this behavior separately with this option. ";
+            tt = TTip.GetToolTip(checkBoxExitWithSteamVR) + Environment.NewLine + Environment.NewLine + tt;
+            TTip.SetToolTip(checkBoxExitWithSteamVR, tt);
+            p = new Point(checkBoxExitWithSteamVR.Location.X + checkBoxExitWithSteamVR.Width + 10, checkBoxExitWithSteamVR.Location.Y);
+            AddUpdateHighlightLabel("NEW", panelLaunchOptions, p);
+
+            p = new Point(labelLaunchOptionsBase.Location.X + labelLaunchOptionsBase.Width + 15, labelLaunchOptionsBase.Location.Y);
+            AddUpdateHighlightLabel("NEW", panelLaunchOptionsBase, p);
+                        
+            
+            notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle + " updated", $"Check out the changed launch options!", ToolTipIcon.Info);
+            
+        }
+
+        void AddUpdateHighlightLabel(string text, Control parent, Point location)
+        {
+            Label l = new Label();
+            l.Text = text;
+            l.ForeColor = Color.Yellow;
+            parent.Controls.Add(l);
+            l.Location = location;
+            l.Click += (s, e) => { l.Visible = false; };
+        }
+
+        public static void OpenSteamPage(string steamUrl, string genericUrl, IWin32Window messageParent)
+        {
             try
             {
-                string cgName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-                Process current = Process.GetCurrentProcess();
-                if (Process.GetProcessesByName(cgName).Where
-                    (
-                        p => p.Id != current.Id
-                        &&
-                        String.Compare(p.MainModule.FileName, current.MainModule.FileName, true) == 0 // only from the same location
-                    ).Any())
+                if (Process.GetProcessesByName("Steam").Any())
                 {
-                    notifyIcon1.Icon = CableGuardian.Properties.Resources.CG_error;
-                    if (!Program.IsAutoStartup) // show notification only on user startup
-                    {
-                        ShowTemporaryTrayNotification(3300, "", $"{Config.ProgramTitle} is already running.");
-                        System.Threading.Thread.Sleep(3300);
-                    }
-                    notifyIcon1.Visible = false; // otherwise the empty icon lingers in the tray
-                    Environment.Exit(0);
+                    if (Process.GetProcessesByName(Config.SteamVRProcessName).Any())
+                        throw new Exception("SteamVR is running and prevents opening the Steam page with the Steam client.");
+
+                    Process.Start(steamUrl);
+                }
+                else
+                {
+                    throw new Exception("Steam not running");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Config.WriteLog("Failed to check existing instance. " + e.Message);
+                try
+                {
+                    Process.Start(genericUrl);
+                }
+                catch (Exception exx)
+                {
+                    string msg = "Sorry, unable to open the Steam page.  :("
+                            + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine + exx.Message;
+                    MessageBox.Show(messageParent, msg, Config.ProgramTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
+
 
         int GetInitialHalfTurn()
         {
@@ -291,9 +370,10 @@ namespace CableGuardian
               
         void LoadConfigToGui()
         {
-            SkipFlaggedEventHandlers = true;            
-            checkBoxStartMinUser.Checked = Config.MinimizeAtUserStartup;
-            checkBoxStartMinAuto.Checked = Config.MinimizeAtAutoStartup;
+            SkipFlaggedEventHandlers = true;
+            checkBoxStartMinimized.Checked = Config.StartMinimized;
+            checkBoxNotifyMin.Checked = Config.NotifyStartMinimized;                        
+            checkBoxExitWithSteamVR.Checked = Config.ExitWithSteamVR;
             checkBoxConnLost.Checked = Config.NotifyWhenVRConnectionLost;
             checkBoxSticky.Checked = Config.ConnLostNotificationIsSticky;
             checkBoxOnAPIQuit.Checked = Config.NotifyOnAPIQuit;
@@ -308,10 +388,7 @@ namespace CableGuardian
             }
             else if (Program.CmdArgsLCase.Contains(Program.Arg_Minimized) == false)
             {
-                if (!Config.MinimizeAtUserStartup && !Program.IsAutoStartup)
-                    RestoreFromTrayAtStartup = true;
-
-                if (!Config.MinimizeAtAutoStartup && Program.IsAutoStartup)
+                if (!Config.StartMinimized)
                     RestoreFromTrayAtStartup = true;
             }            
 
@@ -414,9 +491,10 @@ namespace CableGuardian
                     itemAMM.Click += TrayMenuAlarmAtItem_Click;
                 }
             }
-        }        
+        }
 
-               
+
+        string LaunchOpt = "Click here to _ the launch options.";
         void InitializeAppearance()
         {
             InitializeAppearanceCommon(this);
@@ -449,18 +527,17 @@ namespace CableGuardian
             TTip.SetToolTip(checkBoxShowYaw, $"Show rotation data to confirm functionality. Keep it hidden to save a few of those precious CPU cycles.{Environment.NewLine}" 
                                             + $"Some headsets / API versions might require that the headset is on your head for tracking to work.");            
             TTip.SetToolTip(comboBoxProfile, $"Switch between profiles. Only one profile can be active at a time.");
-            TTip.SetToolTip(labelAutoStart, $"After dialing in your settings, it's recommended to set an automatic startup for {Config.ProgramTitle}." + Environment.NewLine
-                                            + $"Note that SteamVR autostart toggle is available only when SteamVR is running and {Config.ProgramTitle} is connected via OpenVR API (default for non-Oculus headsets).");
             TTip.SetToolTip(checkBoxWindowsStart, $"Start {Config.ProgramTitle} automatically when Windows boots up. " + Environment.NewLine + Environment.NewLine
                                                 + $"Note that {Config.ProgramTitle} will wait for {Program.WindowsStartupWaitInSeconds} seconds after boot before being available." + Environment.NewLine
                                                 +"This is to ensure that all audio devices have been initialized by the OS before trying to use them.");
-            TTip.SetToolTip(checkBoxSteamVRStart, $"Start and exit {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
-                                                + $"\u2022 IMPORTANT: If the installation location changes (for example moving Steam to another drive), this setting needs to be re-activated." + Environment.NewLine + Environment.NewLine
-                                                + $"\u2022 NOTE 1: Steam will not show \"Now playing {Config.ProgramTitle}\" when the app is auto-started. This is intentional to prevent {Config.ProgramTitle} showing up in \"most played\"." + Environment.NewLine
-                                                + $"\u2022 NOTE 2: {Config.ProgramTitle} will exit automatically ONLY if it was automatically started by SteamVR. (not if user started the app)" + Environment.NewLine
-                                                + $"\u2022 NOTE 3: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location." + Environment.NewLine);
-            TTip.SetToolTip(checkBoxStartMinAuto, $"Hide the main window when the program starts automatically with Windows or SteamVR. Recommended for normal usage after you have dialed in your settings.");
-            TTip.SetToolTip(checkBoxStartMinUser, $"Hide the main window when the user starts the program manually.");
+            TTip.SetToolTip(checkBoxSteamVRStart, $"Start {Config.ProgramTitle} automatically with SteamVR." + Environment.NewLine + Environment.NewLine
+                                                + $"\u2022 NOTE 1: Automatic start will be cancelled if an instance of {Config.ProgramTitle} is already running from the same location." + Environment.NewLine
+                                                + $"\u2022 NOTE 2: If the installation location changes (for example moving Steam to another drive), this setting needs to be re-activated.");
+            TTip.SetToolTip(labelSteamVRAutoStart, $"This option is available only when {VRAPI.OpenVR} API is selected and the connection is ok. SteamVR needs to be running.");
+            TTip.SetToolTip(checkBoxStartMinimized, $"Minimize to tray when the app starts." + Environment.NewLine
+                                                + "Recommended for normal usage after you have dialed in your settings." + Environment.NewLine + Environment.NewLine
+                                                + "If you don't want to be notified, uncheck the \"Notify when starting minimized\" -option.");
+            TTip.SetToolTip(checkBoxNotifyMin, $"Show a temporary Windows notification when the app starts minimized.");
             TTip.SetToolTip(checkBoxRememberRotation, $"Remember the turn count when {Config.ProgramTitle} is closed. Otherwise turn count is always zero at startup." + Environment.NewLine
                                                     + "You may find this convenient when using the SteamVR auto start & exit feature.");
             TTip.SetToolTip(numericUpDownRotMemory, $"Time limit (minutes) for the turn count memory (when {Config.ProgramTitle} is closed). The last turn count will be used at startup if the elapsed time since the last exit is less or equal to this value." + Environment.NewLine
@@ -475,13 +552,15 @@ namespace CableGuardian
                                        + $"\u2022 Expandable user interface" + Environment.NewLine
                                        + $"\u2022 More audio clips" + Environment.NewLine);
             TTip.SetToolTip(labelHalfTurns, "Current number of half-turns (180\u00B0) from the neutral (forward facing) orientation");
-            TTip.SetToolTip(pictureBoxDefaults, "Restore the default CG profiles. Custom profiles will not be touched.");
+            TTip.SetToolTip(pictureBoxDefaults, "Restore the default profiles. Custom profiles will not be touched.");
             TTip.SetToolTip(labelTracking, $"Tracking data is not being transmitted." + Environment.NewLine + Environment.NewLine
                                         + $"Some headsets must be worn for tracking to work (at least when using {VRAPI.OpenVR} API)." + Environment.NewLine
-                                    + "There's usually a proximity sensor in the headset for detecting this.");
+                                    + "There's usually a proximity sensor in the headset for detecting this.");            
+            TTip.SetToolTip(checkBoxExitWithSteamVR, $"{Config.ProgramTitle} will close when SteamVR is closed - unless there are unsaved changes to your profiles.");
 
+            
             labelTracking.Text = $"NOT TRACKING -{Environment.NewLine}WEAR HEADSET";
-
+            panelLaunchOptions.Location = panelLaunchOptionsBase.Location;
             buttonSave.ForeColor = Config.CGColor;            
             labelProf.ForeColor = Config.CGColor;
             labelYaw.ForeColor = Config.CGErrorColor;                        
@@ -489,6 +568,8 @@ namespace CableGuardian
             labelHalfTurnTitle.ForeColor = Config.CGErrorColor;
             labelAlarmAt.ForeColor = Config.CGColor;
             labelTracking.ForeColor = Config.CGErrorColor;
+            labelLaunchOptions.ForeColor = Color.Yellow;
+            labelLaunchOptionsBase.Text = LaunchOpt.Replace("_", "show");
 
             SimpleMode_InitializeAppearance();
         }
@@ -523,6 +604,7 @@ namespace CableGuardian
             FormClosed += FormMain_FormClosed;
             notifyIcon1.MouseClick += NotifyIcon1_MouseClick;
             notifyIcon1.DoubleClick += NotifyIcon1_DoubleClick;
+            notifyIcon1.BalloonTipClicked += NotifyIcon1_BalloonTipClicked;
 
             pictureBoxMinimize.MouseClick += PictureBoxMinimize_MouseClick;
             pictureBoxClose.MouseClick += PictureBoxClose_MouseClick;            
@@ -552,7 +634,13 @@ namespace CableGuardian
             pictureBoxGetPro.MouseLeave += (s, e) => { pictureBoxGetPro.Image = Properties.Resources.GetPro; };
             pictureBoxDefaults.MouseEnter += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults_hover; };
             pictureBoxDefaults.MouseLeave += (s, e) => { pictureBoxDefaults.Image = Properties.Resources.Defaults; };
-          
+
+            labelLaunchOptions.MouseEnter += (s, e) => { labelLaunchOptions.Text = LaunchOpt.Replace("_", "hide") + " \u2191"; };
+            labelLaunchOptions.MouseLeave += (s, e) => { labelLaunchOptions.Text = LaunchOpt.Replace("_", "hide"); };
+            labelLaunchOptionsBase.MouseEnter += (s, e) => { labelLaunchOptionsBase.ForeColor = Color.Yellow; labelLaunchOptionsBase.Text = LaunchOpt.Replace("_", "show") + " \u2193"; };
+            labelLaunchOptionsBase.MouseLeave += (s, e) => { labelLaunchOptionsBase.ForeColor = Color.White; labelLaunchOptionsBase.Text = LaunchOpt.Replace("_", "show"); };
+            labelLaunchOptions.Click += (s, e) => { ToggleLaunchOptionsPanel(); };
+            labelLaunchOptionsBase.Click += (s, e) => { ToggleLaunchOptionsPanel(); };
 
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
@@ -562,8 +650,9 @@ namespace CableGuardian
             checkBoxShowYaw.CheckedChanged += CheckBoxShowYaw_CheckedChanged;
             checkBoxWindowsStart.CheckedChanged += CheckBoxWindowsStart_CheckedChanged;
             checkBoxSteamVRStart.CheckedChanged += CheckBoxSteamVRStart_CheckedChanged;
-            checkBoxStartMinUser.CheckedChanged += CheckBoxStartMinUser_CheckedChanged;
-            checkBoxStartMinAuto.CheckedChanged += CheckBoxStartMinWin_CheckedChanged;
+            checkBoxStartMinimized.CheckedChanged += CheckBoxStartMin_CheckedChanged;
+            checkBoxNotifyMin.CheckedChanged += CheckBoxNotifyMin_CheckedChanged;                        
+            checkBoxExitWithSteamVR.CheckedChanged += CheckBoxExitWithSteamVR_CheckedChanged;
             checkBoxConnLost.CheckedChanged += CheckBoxConnLost_CheckedChanged;
             checkBoxSticky.CheckedChanged += CheckBoxSticky_CheckedChanged;
             checkBoxOnAPIQuit.CheckedChanged += CheckBoxOnAPIQuit_CheckedChanged;
@@ -600,12 +689,66 @@ namespace CableGuardian
             SimpleMode_AddEventHandlers();
         }
 
+        private void CheckBoxStartMin_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.StartMinimized = checkBoxStartMinimized.Checked;
+            SaveConfigurationToFile();
+        }
+        private void CheckBoxNotifyMin_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.NotifyStartMinimized = checkBoxNotifyMin.Checked;
+            SaveConfigurationToFile();
+        }
+
+        private void CheckBoxExitWithSteamVR_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.ExitWithSteamVR = checkBoxExitWithSteamVR.Checked;
+            SaveConfigurationToFile();
+        }
+
+        bool BalloonTipRestoresTheUI = false;
+        bool BalloonTipOpensLaunchOptions = false;
+        private void NotifyIcon1_BalloonTipClicked(object sender, EventArgs e)
+        {
+        
+         if (BalloonTipRestoresTheUI)
+            {
+                RestoreFromTray();
+                BalloonTipRestoresTheUI = false;
+            }
+            else if (BalloonTipOpensLaunchOptions)
+            {
+                ToggleLaunchOptionsPanel(true);
+                BalloonTipOpensLaunchOptions = false;
+            }
+        }
+
+        void ToggleLaunchOptionsPanel(bool? visible = null)
+        {
+            bool vis = (visible == null) ? panelLaunchOptionsBase.Visible : (bool)visible;
+
+            panelLaunchOptionsBase.Visible = !vis;
+            panelLaunchOptions.Visible = vis;
+            labelSteamVRAutoStart.Visible = !checkBoxSteamVRStart.Visible;
+        }
+
 
         private void PictureBoxDefaults_Click(object sender, EventArgs e)
         {
-            string msg = $"Restore the default CG profiles to their original state?{Environment.NewLine}Any changes in them will be lost."
-                            + Environment.NewLine + "Your custom profiles will not be touched.";
-            if(MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)            
+            string msg = $"Restore the default profiles to their original state? Any changes in them will be lost." + Environment.NewLine + Environment.NewLine
+                           + "CG_Beep" + Environment.NewLine
+                           + "CG_Speech" + Environment.NewLine + Environment.NewLine                           
+                           + "Your custom profiles will not be touched.";
+            if (MessageBox.Show(this, msg, Config.ProgramTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)            
             {
                 Enabled = false;
 
@@ -1188,6 +1331,7 @@ namespace CableGuardian
                 pictureBoxLogo.Image = Properties.Resources.CGLogo;
                 checkBoxSteamVRStart.Visible = (checkBoxSteamVRStart.Checked);
                 pictureBoxSteamVRStartUp.Visible = (pictureBoxSteamVRStartUp.Visible && checkBoxSteamVRStart.Visible);
+                labelSteamVRAutoStart.Visible = !checkBoxSteamVRStart.Visible;
                 connToClose = OpenVRConn;                
             }
             else
@@ -1227,24 +1371,7 @@ namespace CableGuardian
             SetProfilesSaveStatus(false);
         }
 
-        private void CheckBoxStartMinUser_CheckedChanged(object sender, EventArgs e)
-        {
-            if (SkipFlaggedEventHandlers)
-                return;
-
-            Config.MinimizeAtUserStartup = checkBoxStartMinUser.Checked;
-            SaveConfigurationToFile();
-        }
-
-        private void CheckBoxStartMinWin_CheckedChanged(object sender, EventArgs e)
-        {
-            if (SkipFlaggedEventHandlers)
-                return;
-
-            Config.MinimizeAtAutoStartup = checkBoxStartMinAuto.Checked;
-            SaveConfigurationToFile();
-        }
-
+       
         private void PictureBoxMinus_Click(object sender, EventArgs e)
         {
             Profile selProf = comboBoxProfile.SelectedItem as Profile;
@@ -1412,7 +1539,7 @@ namespace CableGuardian
             try
             {
                 if (OpenVRConn.Status != VRConnectionStatus.AllOK)
-                    throw new Exception("OpenVR connection not established.");
+                    throw new Exception("OpenVR connection not established. Make sure SteamVR is running.");
 
                 if (startupStatus)
                 {
@@ -1446,6 +1573,7 @@ namespace CableGuardian
 
             checkBoxSteamVRStart.Visible = true;
             pictureBoxSteamVRStartUp.Visible = false;
+            labelSteamVRAutoStart.Visible = !checkBoxSteamVRStart.Visible;
 
             bool check = false;
             try
@@ -1571,12 +1699,12 @@ namespace CableGuardian
                 TrayMenuTitle.ForeColor = Config.CGErrorColor;
                 TrayMenuTitle.Text = Config.ProgramTitle + " - NOT OK";
                 buttonLeftTurn.Enabled = false;
-                buttonRightTurn.Enabled = false;
+                buttonRightTurn.Enabled = false;                
                 // to ensure the app is shutdown after auto-start if SteamVR disappears without a quit message (probably never happens)
-                if (OpenVRConn.OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR && Program.IsSteamVRStartup)
+                if (OpenVRConn.OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR
+                    && Config.ExitWithSteamVR && OpenVRConnection.ConnectionWasOKDuringSession && ProfilesSaved)
                 {
-                    ProfilesSaved = true; // bypass save dialog if not saved                             
-                    Exit();                    
+                    Exit();
                 }
             }
             else
@@ -1616,6 +1744,11 @@ namespace CableGuardian
                 else if(sender == OpenVRConn && OpenVRConn.OpenVRConnStatus == OpenVRConnectionStatus.SteamVRQuit)
                     controlledAPIQuit = true;
 
+                // Close program if it was started automatically with SteamVR
+                if (controlledAPIQuit && Config.ExitWithSteamVR && ProfilesSaved)
+                {
+                    Exit();
+                }
 
                 bool show = false;
                 if (Config.NotifyWhenVRConnectionLost && !controlledAPIQuit)                
@@ -1635,13 +1768,6 @@ namespace CableGuardian
                     System.Threading.Thread.Sleep(1000);
                     Config.ConnLost.Play();
                 }
-
-                // Close program if it was started automatically with SteamVR
-                if (controlledAPIQuit && Program.IsSteamVRStartup)
-                {
-                    ProfilesSaved = true; // bypass save dialog if not saved                              
-                    Exit();
-                }
             }
 
             IntentionalAPIChange = false;
@@ -1653,7 +1779,7 @@ namespace CableGuardian
             RestartArgs += (Visible) ? Program.Arg_Maximized : Program.Arg_Minimized;
             RestartArgs += Tracker.CurrentHalfTurn.ToString(); 
             ProfilesSaved = true; // bypass save dialog if not saved            
-            IsRestart = true;
+            IsToBeRestarted = true;
             Exit();
         }
 
@@ -1756,7 +1882,7 @@ namespace CableGuardian
         void StartNewProcessIfRestart()
         {
             notifyIcon1.Visible = false;
-            if (IsRestart)
+            if (IsToBeRestarted)
             {
                 try
                 {
@@ -1768,7 +1894,7 @@ namespace CableGuardian
                     // intentionally ignore
                 }
 
-                IsRestart = false;
+                IsToBeRestarted = false;
             }
         }
 

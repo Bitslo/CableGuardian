@@ -28,23 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.buttonClose = new System.Windows.Forms.Button();
             this.labelVersion = new System.Windows.Forms.Label();
+            this.buttonDiscussions = new System.Windows.Forms.Button();
+            this.buttonGuides = new System.Windows.Forms.Button();
+            this.buttonClose = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // buttonClose
-            // 
-            this.buttonClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-            this.buttonClose.Cursor = System.Windows.Forms.Cursors.Default;
-            this.buttonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonClose.ForeColor = System.Drawing.Color.White;
-            this.buttonClose.Location = new System.Drawing.Point(234, 6);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(88, 30);
-            this.buttonClose.TabIndex = 0;
-            this.buttonClose.Text = "Close help";
-            this.buttonClose.UseVisualStyleBackColor = false;
             // 
             // labelVersion
             // 
@@ -59,6 +47,48 @@
             this.labelVersion.Text = "Cable Guardian v.1.01 by Bitslo";
             this.labelVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // buttonDiscussions
+            // 
+            this.buttonDiscussions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonDiscussions.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonDiscussions.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonDiscussions.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonDiscussions.ForeColor = System.Drawing.Color.White;
+            this.buttonDiscussions.Location = new System.Drawing.Point(200, 56);
+            this.buttonDiscussions.Name = "buttonDiscussions";
+            this.buttonDiscussions.Size = new System.Drawing.Size(122, 24);
+            this.buttonDiscussions.TabIndex = 7;
+            this.buttonDiscussions.Text = "Steam Discussions...";
+            this.buttonDiscussions.UseVisualStyleBackColor = false;
+            // 
+            // buttonGuides
+            // 
+            this.buttonGuides.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonGuides.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonGuides.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonGuides.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonGuides.ForeColor = System.Drawing.Color.White;
+            this.buttonGuides.Location = new System.Drawing.Point(200, 31);
+            this.buttonGuides.Name = "buttonGuides";
+            this.buttonGuides.Size = new System.Drawing.Size(122, 26);
+            this.buttonGuides.TabIndex = 6;
+            this.buttonGuides.Text = "User Guides...";
+            this.buttonGuides.UseVisualStyleBackColor = false;
+            // 
+            // buttonClose
+            // 
+            this.buttonClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
+            this.buttonClose.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonClose.ForeColor = System.Drawing.Color.White;
+            this.buttonClose.Location = new System.Drawing.Point(200, 6);
+            this.buttonClose.Name = "buttonClose";
+            this.buttonClose.Size = new System.Drawing.Size(122, 26);
+            this.buttonClose.TabIndex = 5;
+            this.buttonClose.Text = "Close help";
+            this.buttonClose.UseVisualStyleBackColor = false;
+            // 
             // FormHelpSimple
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -67,8 +97,10 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(328, 492);
             this.ControlBox = false;
-            this.Controls.Add(this.labelVersion);
+            this.Controls.Add(this.buttonDiscussions);
+            this.Controls.Add(this.buttonGuides);
             this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.labelVersion);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormHelpSimple";
             this.ShowInTaskbar = false;
@@ -79,8 +111,9 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.Label labelVersion;
+        private System.Windows.Forms.Button buttonDiscussions;
+        private System.Windows.Forms.Button buttonGuides;
+        private System.Windows.Forms.Button buttonClose;
     }
 }

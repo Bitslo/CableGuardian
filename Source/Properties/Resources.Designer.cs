@@ -134,6 +134,33 @@ namespace CableGuardian.Properties {
         ///   Looks up a localized string similar to {
         ///    &quot;applications&quot;: [
         ///        {
+        ///            &quot;app_key&quot;: &quot;$APPKEY$&quot;,            
+        ///            &quot;binary_path_windows&quot;: &quot;$EXEPATH$&quot;,
+        ///            &quot;image_path&quot;: &quot;&quot;,
+        ///            &quot;is_dashboard_overlay&quot;: true,
+        ///            &quot;launch_type&quot;: &quot;url&quot;,
+        ///            &quot;url&quot;: &quot;steam://run/1208080&quot;,
+        ///            &quot;strings&quot;: {
+        ///                &quot;en_us&quot;: {
+        ///                    &quot;description&quot;: &quot;Cable Guardian&quot;,
+        ///                    &quot;name&quot;: &quot;Cable Guardian&quot;
+        ///                }
+        ///            }
+        ///        }
+        ///    ]
+        ///}
+        ///.
+        /// </summary>
+        internal static string CableGuardianVrManifest {
+            get {
+                return ResourceManager.GetString("CableGuardianVrManifest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;applications&quot;: [
+        ///        {
         ///            &quot;app_key&quot;: &quot;$APPKEY$&quot;,
         ///            &quot;arguments&quot;: &quot;$ARGS$&quot;,
         ///            &quot;binary_path_windows&quot;: &quot;$EXEPATH$&quot;,
@@ -151,9 +178,9 @@ namespace CableGuardian.Properties {
         ///}
         ///.
         /// </summary>
-        internal static string CableGuardianVrManifest {
+        internal static string CableGuardianVrManifestNoSteam {
             get {
-                return ResourceManager.GetString("CableGuardianVrManifest", resourceCulture);
+                return ResourceManager.GetString("CableGuardianVrManifestNoSteam", resourceCulture);
             }
         }
         

@@ -48,7 +48,11 @@ namespace CableGuardian
             TTip.SetToolTip(pictureBoxPlus, "Add a new alert");
             TTip.SetToolTip(pictureBoxClone, "Clone the selected alert");
             TTip.SetToolTip(pictureBoxMinus, "Delete the selected alert");
-            TTip.SetToolTip(comboBoxDeviceSource, "Source for the audio device for playing the waves in this profile.");
+            TTip.SetToolTip(comboBoxDeviceSource, "Source for the audio device for playing the waves in this profile." + Environment.NewLine + Environment.NewLine
+                       + $"\u2022 {AudioDeviceSource.OculusHome} = Use the audio device defined in Oculus Home. Note that if you change the device in Oculus Home, you need to restart {Config.ProgramTitle}.{Environment.NewLine}"
+                       + $"\u2022 {AudioDeviceSource.Windows}  = Use whichever audio device is selected in Windows (taskbar speaker icon). This is the default when using OpenVR API (SteamVR)." + Environment.NewLine
+                       + $"\u2022 {AudioDeviceSource.Manual} = Force the output to any of the available audio devices. (A drop-down list will appear next to this selection.)");
+                                    
             TTip.SetToolTip(labelOcuChanges, $"Change in Oculus Home audio device is only updated to {Config.ProgramTitle} at startup OR when you change the device here.");            
             TTip.SetToolTip(checkBoxHome, $"When checked, the headset orientation is polled only when Oculus Home is running. This minimizes CPU usage for those non-VR moments. {Environment.NewLine}" +
                                          $"The presence of Home is polled once in two seconds.");

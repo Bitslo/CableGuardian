@@ -36,10 +36,8 @@
             this.pictureBoxClose = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.checkBoxStartMinUser = new System.Windows.Forms.CheckBox();
             this.checkBoxShowYaw = new System.Windows.Forms.CheckBox();
             this.labelStatus = new System.Windows.Forms.Label();
-            this.checkBoxWindowsStart = new System.Windows.Forms.CheckBox();
             this.buttonSave = new System.Windows.Forms.Button();
             this.pictureBoxPlus = new System.Windows.Forms.PictureBox();
             this.labelProf = new System.Windows.Forms.Label();
@@ -53,12 +51,9 @@
             this.labelHalfTurnTitle = new System.Windows.Forms.Label();
             this.labelHalfTurns = new System.Windows.Forms.Label();
             this.checkBoxOnAPIQuit = new System.Windows.Forms.CheckBox();
-            this.checkBoxStartMinAuto = new System.Windows.Forms.CheckBox();
             this.checkBoxSticky = new System.Windows.Forms.CheckBox();
-            this.labelAutoStart = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.pictureBoxSteamVRStartUp = new System.Windows.Forms.PictureBox();
-            this.checkBoxSteamVRStart = new System.Windows.Forms.CheckBox();
+            this.panelLaunchOptionsBase = new System.Windows.Forms.Panel();
+            this.labelLaunchOptionsBase = new System.Windows.Forms.Label();
             this.checkBoxRememberRotation = new System.Windows.Forms.CheckBox();
             this.numericUpDownRotMemory = new System.Windows.Forms.NumericUpDown();
             this.labelRotMemMinutes = new System.Windows.Forms.Label();
@@ -83,6 +78,15 @@
             this.buttonRightTurn = new System.Windows.Forms.Button();
             this.buttonLeftTurn = new System.Windows.Forms.Button();
             this.labelTracking = new System.Windows.Forms.Label();
+            this.panelLaunchOptions = new System.Windows.Forms.Panel();
+            this.checkBoxNotifyMin = new System.Windows.Forms.CheckBox();
+            this.labelSteamVRAutoStart = new System.Windows.Forms.Label();
+            this.labelLaunchOptions = new System.Windows.Forms.Label();
+            this.checkBoxExitWithSteamVR = new System.Windows.Forms.CheckBox();
+            this.pictureBoxSteamVRStartUp = new System.Windows.Forms.PictureBox();
+            this.checkBoxWindowsStart = new System.Windows.Forms.CheckBox();
+            this.checkBoxSteamVRStart = new System.Windows.Forms.CheckBox();
+            this.checkBoxStartMinimized = new System.Windows.Forms.CheckBox();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -91,8 +95,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHelp)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).BeginInit();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).BeginInit();
+            this.panelLaunchOptionsBase.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).BeginInit();
@@ -101,6 +104,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHalfTurns)).BeginInit();
+            this.panelLaunchOptions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonReset
@@ -167,16 +172,6 @@
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             // 
-            // checkBoxStartMinUser
-            // 
-            this.checkBoxStartMinUser.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinUser.Location = new System.Drawing.Point(9, 257);
-            this.checkBoxStartMinUser.Name = "checkBoxStartMinUser";
-            this.checkBoxStartMinUser.Size = new System.Drawing.Size(162, 17);
-            this.checkBoxStartMinUser.TabIndex = 4;
-            this.checkBoxStartMinUser.Text = "Minimize on User startup";
-            this.checkBoxStartMinUser.UseVisualStyleBackColor = true;
-            // 
             // checkBoxShowYaw
             // 
             this.checkBoxShowYaw.AutoSize = true;
@@ -197,16 +192,6 @@
             this.labelStatus.Name = "labelStatus";
             this.labelStatus.Size = new System.Drawing.Size(310, 95);
             this.labelStatus.TabIndex = 0;
-            // 
-            // checkBoxWindowsStart
-            // 
-            this.checkBoxWindowsStart.ForeColor = System.Drawing.Color.White;
-            this.checkBoxWindowsStart.Location = new System.Drawing.Point(117, 1);
-            this.checkBoxWindowsStart.Name = "checkBoxWindowsStart";
-            this.checkBoxWindowsStart.Size = new System.Drawing.Size(87, 17);
-            this.checkBoxWindowsStart.TabIndex = 0;
-            this.checkBoxWindowsStart.Text = "Windows";
-            this.checkBoxWindowsStart.UseVisualStyleBackColor = true;
             // 
             // buttonSave
             // 
@@ -355,16 +340,6 @@
             this.checkBoxOnAPIQuit.Text = "...on API quit";
             this.checkBoxOnAPIQuit.UseVisualStyleBackColor = true;
             // 
-            // checkBoxStartMinAuto
-            // 
-            this.checkBoxStartMinAuto.ForeColor = System.Drawing.Color.White;
-            this.checkBoxStartMinAuto.Location = new System.Drawing.Point(9, 235);
-            this.checkBoxStartMinAuto.Name = "checkBoxStartMinAuto";
-            this.checkBoxStartMinAuto.Size = new System.Drawing.Size(173, 17);
-            this.checkBoxStartMinAuto.TabIndex = 64;
-            this.checkBoxStartMinAuto.Text = "Minimize on auto-startup";
-            this.checkBoxStartMinAuto.UseVisualStyleBackColor = true;
-            // 
             // checkBoxSticky
             // 
             this.checkBoxSticky.AutoSize = true;
@@ -376,50 +351,25 @@
             this.checkBoxSticky.Text = "...sticky";
             this.checkBoxSticky.UseVisualStyleBackColor = true;
             // 
-            // labelAutoStart
+            // panelLaunchOptionsBase
             // 
-            this.labelAutoStart.AutoSize = true;
-            this.labelAutoStart.ForeColor = System.Drawing.Color.White;
-            this.labelAutoStart.Location = new System.Drawing.Point(3, 2);
-            this.labelAutoStart.Name = "labelAutoStart";
-            this.labelAutoStart.Size = new System.Drawing.Size(83, 13);
-            this.labelAutoStart.TabIndex = 69;
-            this.labelAutoStart.Text = "Auto start && exit:";
+            this.panelLaunchOptionsBase.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelLaunchOptionsBase.Controls.Add(this.labelLaunchOptionsBase);
+            this.panelLaunchOptionsBase.Location = new System.Drawing.Point(9, 206);
+            this.panelLaunchOptionsBase.Name = "panelLaunchOptionsBase";
+            this.panelLaunchOptionsBase.Size = new System.Drawing.Size(310, 22);
+            this.panelLaunchOptionsBase.TabIndex = 70;
             // 
-            // panel1
+            // labelLaunchOptionsBase
             // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.pictureBoxSteamVRStartUp);
-            this.panel1.Controls.Add(this.checkBoxSteamVRStart);
-            this.panel1.Controls.Add(this.labelAutoStart);
-            this.panel1.Controls.Add(this.checkBoxWindowsStart);
-            this.panel1.Location = new System.Drawing.Point(9, 206);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(310, 22);
-            this.panel1.TabIndex = 70;
-            // 
-            // pictureBoxSteamVRStartUp
-            // 
-            this.pictureBoxSteamVRStartUp.Cursor = System.Windows.Forms.Cursors.Default;
-            this.pictureBoxSteamVRStartUp.Image = global::CableGuardian.Properties.Resources.Attention;
-            this.pictureBoxSteamVRStartUp.Location = new System.Drawing.Point(286, 1);
-            this.pictureBoxSteamVRStartUp.Name = "pictureBoxSteamVRStartUp";
-            this.pictureBoxSteamVRStartUp.Size = new System.Drawing.Size(16, 16);
-            this.pictureBoxSteamVRStartUp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBoxSteamVRStartUp.TabIndex = 71;
-            this.pictureBoxSteamVRStartUp.TabStop = false;
-            this.pictureBoxSteamVRStartUp.Visible = false;
-            // 
-            // checkBoxSteamVRStart
-            // 
-            this.checkBoxSteamVRStart.ForeColor = System.Drawing.Color.White;
-            this.checkBoxSteamVRStart.Location = new System.Drawing.Point(210, 1);
-            this.checkBoxSteamVRStart.Name = "checkBoxSteamVRStart";
-            this.checkBoxSteamVRStart.Size = new System.Drawing.Size(72, 17);
-            this.checkBoxSteamVRStart.TabIndex = 70;
-            this.checkBoxSteamVRStart.Text = "SteamVR";
-            this.checkBoxSteamVRStart.UseVisualStyleBackColor = true;
-            this.checkBoxSteamVRStart.Visible = false;
+            this.labelLaunchOptionsBase.AutoSize = true;
+            this.labelLaunchOptionsBase.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLaunchOptionsBase.ForeColor = System.Drawing.Color.White;
+            this.labelLaunchOptionsBase.Location = new System.Drawing.Point(3, 3);
+            this.labelLaunchOptionsBase.Name = "labelLaunchOptionsBase";
+            this.labelLaunchOptionsBase.Size = new System.Drawing.Size(184, 13);
+            this.labelLaunchOptionsBase.TabIndex = 70;
+            this.labelLaunchOptionsBase.Text = "Click here to show the launch options";
             // 
             // checkBoxRememberRotation
             // 
@@ -711,6 +661,114 @@
             this.labelTracking.Text = "NOT TRACKING";
             this.labelTracking.Visible = false;
             // 
+            // panelLaunchOptions
+            // 
+            this.panelLaunchOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelLaunchOptions.Controls.Add(this.checkBoxNotifyMin);
+            this.panelLaunchOptions.Controls.Add(this.labelSteamVRAutoStart);
+            this.panelLaunchOptions.Controls.Add(this.labelLaunchOptions);
+            this.panelLaunchOptions.Controls.Add(this.checkBoxExitWithSteamVR);
+            this.panelLaunchOptions.Controls.Add(this.pictureBoxSteamVRStartUp);
+            this.panelLaunchOptions.Controls.Add(this.checkBoxWindowsStart);
+            this.panelLaunchOptions.Controls.Add(this.checkBoxSteamVRStart);
+            this.panelLaunchOptions.Controls.Add(this.checkBoxStartMinimized);
+            this.panelLaunchOptions.Location = new System.Drawing.Point(685, 132);
+            this.panelLaunchOptions.Name = "panelLaunchOptions";
+            this.panelLaunchOptions.Size = new System.Drawing.Size(310, 183);
+            this.panelLaunchOptions.TabIndex = 99;
+            this.panelLaunchOptions.Visible = false;
+            // 
+            // checkBoxNotifyMin
+            // 
+            this.checkBoxNotifyMin.AutoSize = true;
+            this.checkBoxNotifyMin.ForeColor = System.Drawing.Color.White;
+            this.checkBoxNotifyMin.Location = new System.Drawing.Point(46, 109);
+            this.checkBoxNotifyMin.Name = "checkBoxNotifyMin";
+            this.checkBoxNotifyMin.Size = new System.Drawing.Size(167, 17);
+            this.checkBoxNotifyMin.TabIndex = 100;
+            this.checkBoxNotifyMin.Text = "Notify when starting minimized";
+            this.checkBoxNotifyMin.UseVisualStyleBackColor = true;
+            // 
+            // labelSteamVRAutoStart
+            // 
+            this.labelSteamVRAutoStart.AutoSize = true;
+            this.labelSteamVRAutoStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelSteamVRAutoStart.ForeColor = System.Drawing.Color.Gray;
+            this.labelSteamVRAutoStart.Location = new System.Drawing.Point(60, 47);
+            this.labelSteamVRAutoStart.Name = "labelSteamVRAutoStart";
+            this.labelSteamVRAutoStart.Size = new System.Drawing.Size(163, 13);
+            this.labelSteamVRAutoStart.TabIndex = 99;
+            this.labelSteamVRAutoStart.Tag = "MANUAL";
+            this.labelSteamVRAutoStart.Text = "Start automatically with SteamVR";
+            // 
+            // labelLaunchOptions
+            // 
+            this.labelLaunchOptions.AutoSize = true;
+            this.labelLaunchOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLaunchOptions.ForeColor = System.Drawing.Color.White;
+            this.labelLaunchOptions.Location = new System.Drawing.Point(3, 3);
+            this.labelLaunchOptions.Name = "labelLaunchOptions";
+            this.labelLaunchOptions.Size = new System.Drawing.Size(182, 13);
+            this.labelLaunchOptions.TabIndex = 98;
+            this.labelLaunchOptions.Text = "Click here to hide the launch options.";
+            // 
+            // checkBoxExitWithSteamVR
+            // 
+            this.checkBoxExitWithSteamVR.AutoSize = true;
+            this.checkBoxExitWithSteamVR.ForeColor = System.Drawing.Color.White;
+            this.checkBoxExitWithSteamVR.Location = new System.Drawing.Point(46, 67);
+            this.checkBoxExitWithSteamVR.Name = "checkBoxExitWithSteamVR";
+            this.checkBoxExitWithSteamVR.Size = new System.Drawing.Size(186, 17);
+            this.checkBoxExitWithSteamVR.TabIndex = 70;
+            this.checkBoxExitWithSteamVR.Text = "Close automatically with SteamVR";
+            this.checkBoxExitWithSteamVR.UseVisualStyleBackColor = true;
+            // 
+            // pictureBoxSteamVRStartUp
+            // 
+            this.pictureBoxSteamVRStartUp.Cursor = System.Windows.Forms.Cursors.Default;
+            this.pictureBoxSteamVRStartUp.Image = global::CableGuardian.Properties.Resources.Attention;
+            this.pictureBoxSteamVRStartUp.Location = new System.Drawing.Point(241, 45);
+            this.pictureBoxSteamVRStartUp.Name = "pictureBoxSteamVRStartUp";
+            this.pictureBoxSteamVRStartUp.Size = new System.Drawing.Size(16, 16);
+            this.pictureBoxSteamVRStartUp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxSteamVRStartUp.TabIndex = 71;
+            this.pictureBoxSteamVRStartUp.TabStop = false;
+            this.pictureBoxSteamVRStartUp.Visible = false;
+            // 
+            // checkBoxWindowsStart
+            // 
+            this.checkBoxWindowsStart.AutoSize = true;
+            this.checkBoxWindowsStart.ForeColor = System.Drawing.Color.White;
+            this.checkBoxWindowsStart.Location = new System.Drawing.Point(46, 25);
+            this.checkBoxWindowsStart.Name = "checkBoxWindowsStart";
+            this.checkBoxWindowsStart.Size = new System.Drawing.Size(181, 17);
+            this.checkBoxWindowsStart.TabIndex = 0;
+            this.checkBoxWindowsStart.Text = "Start automatically with Windows";
+            this.checkBoxWindowsStart.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxSteamVRStart
+            // 
+            this.checkBoxSteamVRStart.AutoSize = true;
+            this.checkBoxSteamVRStart.ForeColor = System.Drawing.Color.White;
+            this.checkBoxSteamVRStart.Location = new System.Drawing.Point(46, 46);
+            this.checkBoxSteamVRStart.Name = "checkBoxSteamVRStart";
+            this.checkBoxSteamVRStart.Size = new System.Drawing.Size(182, 17);
+            this.checkBoxSteamVRStart.TabIndex = 4;
+            this.checkBoxSteamVRStart.Text = "Start automatically with SteamVR";
+            this.checkBoxSteamVRStart.UseVisualStyleBackColor = true;
+            this.checkBoxSteamVRStart.Visible = false;
+            // 
+            // checkBoxStartMinimized
+            // 
+            this.checkBoxStartMinimized.AutoSize = true;
+            this.checkBoxStartMinimized.ForeColor = System.Drawing.Color.White;
+            this.checkBoxStartMinimized.Location = new System.Drawing.Point(46, 88);
+            this.checkBoxStartMinimized.Name = "checkBoxStartMinimized";
+            this.checkBoxStartMinimized.Size = new System.Drawing.Size(96, 17);
+            this.checkBoxStartMinimized.TabIndex = 12;
+            this.checkBoxStartMinimized.Text = "Start minimized";
+            this.checkBoxStartMinimized.UseVisualStyleBackColor = true;
+            // 
             // profileEditor
             // 
             this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -728,6 +786,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.panelLaunchOptions);
             this.Controls.Add(this.labelTracking);
             this.Controls.Add(this.buttonRightTurn);
             this.Controls.Add(this.buttonLeftTurn);
@@ -739,7 +798,7 @@
             this.Controls.Add(this.pictureBoxAlarmClock);
             this.Controls.Add(this.pictureBoxGetPro);
             this.Controls.Add(this.labelRotMemMinutes);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panelLaunchOptionsBase);
             this.Controls.Add(this.checkBoxSticky);
             this.Controls.Add(this.checkBoxOnAPIQuit);
             this.Controls.Add(this.labelHalfTurns);
@@ -762,8 +821,6 @@
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.labelYaw);
             this.Controls.Add(this.pictureBoxLogo);
-            this.Controls.Add(this.checkBoxStartMinAuto);
-            this.Controls.Add(this.checkBoxStartMinUser);
             this.Controls.Add(this.numericUpDownRotMemory);
             this.Controls.Add(this.checkBoxRememberRotation);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -777,9 +834,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHelp)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClone)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).EndInit();
+            this.panelLaunchOptionsBase.ResumeLayout(false);
+            this.panelLaunchOptionsBase.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotMemory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGetPro)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxAlarmClock)).EndInit();
@@ -789,6 +845,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHalfTurns)).EndInit();
+            this.panelLaunchOptions.ResumeLayout(false);
+            this.panelLaunchOptions.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxSteamVRStartUp)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -801,10 +860,8 @@
         private System.Windows.Forms.PictureBox pictureBoxClose;
         private System.Windows.Forms.PictureBox pictureBoxMinimize;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.CheckBox checkBoxStartMinUser;
         private System.Windows.Forms.CheckBox checkBoxShowYaw;
         private System.Windows.Forms.Label labelStatus;
-        private System.Windows.Forms.CheckBox checkBoxWindowsStart;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.PictureBox pictureBoxPlus;
         private System.Windows.Forms.Label labelProf;
@@ -819,12 +876,8 @@
         private System.Windows.Forms.Label labelHalfTurnTitle;
         private System.Windows.Forms.Label labelHalfTurns;
         private System.Windows.Forms.CheckBox checkBoxOnAPIQuit;
-        private System.Windows.Forms.CheckBox checkBoxStartMinAuto;
         private System.Windows.Forms.CheckBox checkBoxSticky;
-        private System.Windows.Forms.Label labelAutoStart;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.CheckBox checkBoxSteamVRStart;
-        private System.Windows.Forms.PictureBox pictureBoxSteamVRStartUp;
+        private System.Windows.Forms.Panel panelLaunchOptionsBase;
         private System.Windows.Forms.CheckBox checkBoxRememberRotation;
         private System.Windows.Forms.NumericUpDown numericUpDownRotMemory;
         private System.Windows.Forms.Label labelRotMemMinutes;
@@ -849,6 +902,16 @@
         private System.Windows.Forms.Button buttonRightTurn;
         private System.Windows.Forms.Button buttonLeftTurn;
         private System.Windows.Forms.Label labelTracking;
+        private System.Windows.Forms.Panel panelLaunchOptions;
+        private System.Windows.Forms.CheckBox checkBoxNotifyMin;
+        private System.Windows.Forms.Label labelSteamVRAutoStart;
+        private System.Windows.Forms.Label labelLaunchOptions;
+        private System.Windows.Forms.CheckBox checkBoxExitWithSteamVR;
+        private System.Windows.Forms.PictureBox pictureBoxSteamVRStartUp;
+        private System.Windows.Forms.CheckBox checkBoxWindowsStart;
+        private System.Windows.Forms.CheckBox checkBoxSteamVRStart;
+        private System.Windows.Forms.CheckBox checkBoxStartMinimized;
+        private System.Windows.Forms.Label labelLaunchOptionsBase;
     }
 }
 

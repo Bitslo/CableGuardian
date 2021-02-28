@@ -13,6 +13,7 @@ namespace CableGuardian
 
     class OpenVRConnection : VRConnection
     {
+        public static bool ConnectionWasOKDuringSession { get; private set; } = false;
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         BackgroundWorker WorkerManager = new BackgroundWorker();
@@ -242,6 +243,7 @@ namespace CableGuardian
             EndCurrentSession();
         }
 
+        bool IsFirstInitAfterIdle = true;
         void KeepAlive()
         {
             KeepAliveCounter++;
@@ -264,6 +266,14 @@ namespace CableGuardian
                 // To avoid a memory leak, check that SteamVR is running before trying to Initialize                
                 if (System.Diagnostics.Process.GetProcessesByName(Config.SteamVRProcessName).Any())
                 {
+                    if (IsFirstInitAfterIdle)
+                    {
+                        // Wait a little for SteamVR to get its act together. There's no science behind this and it's maybe pointless.  
+                        // This is in case of SteamVR -autostart, but might as well do it always.
+                        Thread.Sleep(2000);
+                        IsFirstInitAfterIdle = false;
+                    }
+
                     if (InitAttemptCount >= InitAttemptLimit)
                     {
                         Stop(true); // no point to keep looping and eating memory forever                                                                    
@@ -330,6 +340,8 @@ namespace CableGuardian
                     }
 
                     OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
+                    IsFirstInitAfterIdle = true;
+                    ConnectionWasOKDuringSession = true;
                 }
                 else
                 {

@@ -4,6 +4,7 @@ source/bin/debug/*.xml
 source/bin/debug/*.exe
 source/bin/debug/*.wav
 source/bin/debug/*.pdb
+source/bin/debug/*.ghb
 source/bin/debug/*.config
 source/bin/debug/*.txt
 source/bin/debug/*/*.pdn
