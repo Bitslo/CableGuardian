@@ -92,6 +92,12 @@
     <Compile Include="FormsAndControls\FormSound.designer.cs">
       <DependentUpon>FormSound.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormsAndControls\FormWelcome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormsAndControls\FormWelcome.designer.cs">
+      <DependentUpon>FormWelcome.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormsAndControls\TriggeredActionControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -192,6 +198,9 @@
     <EmbeddedResource Include="FormsAndControls\FormSound.resx">
       <DependentUpon>FormSound.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormsAndControls\FormWelcome.resx">
+      <DependentUpon>FormWelcome.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormsAndControls\TriggeredActionControl.resx">
       <DependentUpon>TriggeredActionControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -248,6 +257,9 @@
     <None Include="Art\HelpSimple.png" />
     <None Include="Art\Title.png" />
     <None Include="Art\Title_hover.png" />
+    <None Include="Art\SmallCapsule.png" />
+    <None Include="Art\CG_icon_blue.png" />
+    <None Include="Art\CG_icon_red.png" />
     <Content Include="Config\CableGuardianVrManifest.txt" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -18,7 +18,7 @@ namespace CableGuardian
         int CurrentPage = 2;
         int NumberOfPages = 2;
         static bool RunFromDesigner { get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); } }
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000};
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
 
         public FormHelp()
         {
@@ -27,10 +27,7 @@ namespace CableGuardian
             buttonClose.Click += ButtonClose_Click;
             buttonPage.Click += ButtonPage_Click;
             buttonDiscussions.Click += ButtonDiscussions_Click;
-            buttonCopyInfo.Click += ButtonCopyInfo_Click;
-            labelSimple.MouseEnter += (s, e) => { labelSimple.ForeColor = Color.Yellow; };
-            labelSimple.MouseLeave += (s, e) => { labelSimple.ForeColor = Color.White; };
-            labelSimple.Click += LabelSimple_Click;                        
+            buttonCopyInfo.Click += ButtonCopyInfo_Click;            
             pictureBoxStandard.Click += PictureBoxStandard_Click;
 
             pictureBoxStandard.MouseEnter += (s, e) => { pictureBoxStandard.Image = Properties.Resources.Title_hover; };
@@ -116,17 +113,7 @@ namespace CableGuardian
         {
             FormMain.OpenSteamPage("steam://openurl/https://steamcommunity.com/app/1208080/discussions/0/", "https://steamcommunity.com/app/1208080/discussions/0/", this);
         }
-
-        private void LabelSimple_Click(object sender, EventArgs e)
-        {
-            string msg = $"Click Yes to go back to simplified mode. You will lose the changes you made in full mode.{Environment.NewLine}{Environment.NewLine}"
-               + $"Click No to stay in full mode.";
-            if (MessageBox.Show(this, msg, "Switch to simplified mode?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                DialogResult = DialogResult.Abort;
-                Close();
-            }
-        }
+                
 
         string GetDotNetDescription()
         {
@@ -186,7 +173,7 @@ namespace CableGuardian
                 this.BackgroundImage = global::CableGuardian.Properties.Resources.Help1;
                 foreach (Control item in Controls)
                 {
-                    if (item != buttonPage && item != buttonClose && item != labelSimple)
+                    if (item != buttonPage && item != buttonClose)
                     {
                         item.Visible = false;
                     }
@@ -197,7 +184,7 @@ namespace CableGuardian
                 this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
                 foreach (Control item in Controls)
                 {
-                    if (item != buttonPage && item != buttonClose && item != labelSimple)
+                    if (item != buttonPage && item != buttonClose)
                     {
                         item.Visible = true;
                     }

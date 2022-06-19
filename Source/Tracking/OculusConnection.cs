@@ -230,7 +230,7 @@ namespace CableGuardian
 
         void DoManagementWork(object sender, DoWorkEventArgs e)
         {
-            while (!StopFlag)
+            while (!StopFlag && !StopRequested)
             {
                 if (WorkerFailed)
                 {
@@ -251,7 +251,8 @@ namespace CableGuardian
         private void WorkerManager_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // currently the managers only task is to report when the worker has unexpectedly stopped --> restart            
-            OpenImplementation();
+            if (!StopFlag && !StopRequested) // do not re-open when a stop was called (manually)
+                OpenImplementation();
         }
 
         int ExceptionCounter = 0;

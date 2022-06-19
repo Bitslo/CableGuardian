@@ -73,7 +73,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.numericUpDownHalfTurns = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.labelMore = new System.Windows.Forms.Label();
             this.comboBoxAPI = new System.Windows.Forms.ComboBox();
             this.buttonRightTurn = new System.Windows.Forms.Button();
             this.buttonLeftTurn = new System.Windows.Forms.Button();
@@ -87,6 +86,7 @@
             this.checkBoxWindowsStart = new System.Windows.Forms.CheckBox();
             this.checkBoxSteamVRStart = new System.Windows.Forms.CheckBox();
             this.checkBoxStartMinimized = new System.Windows.Forms.CheckBox();
+            this.labelUI = new System.Windows.Forms.Label();
             this.profileEditor = new CableGuardian.ProfileEditor();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMinimize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxClose)).BeginInit();
@@ -598,17 +598,6 @@
             this.label1.TabIndex = 70;
             this.label1.Text = "threshold";
             // 
-            // labelMore
-            // 
-            this.labelMore.AutoSize = true;
-            this.labelMore.ForeColor = System.Drawing.Color.White;
-            this.labelMore.Location = new System.Drawing.Point(210, 445);
-            this.labelMore.Name = "labelMore";
-            this.labelMore.Size = new System.Drawing.Size(105, 13);
-            this.labelMore.TabIndex = 81;
-            this.labelMore.Text = "Need more choices?";
-            this.labelMore.Visible = false;
-            // 
             // comboBoxAPI
             // 
             this.comboBoxAPI.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -769,6 +758,19 @@
             this.checkBoxStartMinimized.Text = "Start minimized";
             this.checkBoxStartMinimized.UseVisualStyleBackColor = true;
             // 
+            // labelUI
+            // 
+            this.labelUI.BackColor = System.Drawing.Color.Transparent;
+            this.labelUI.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelUI.ForeColor = System.Drawing.Color.Gray;
+            this.labelUI.Location = new System.Drawing.Point(128, 153);
+            this.labelUI.Name = "labelUI";
+            this.labelUI.Size = new System.Drawing.Size(80, 11);
+            this.labelUI.TabIndex = 101;
+            this.labelUI.Tag = "MANUAL";
+            this.labelUI.Text = "[ADVANCED]";
+            this.labelUI.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // profileEditor
             // 
             this.profileEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -786,12 +788,12 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
+            this.Controls.Add(this.labelUI);
             this.Controls.Add(this.panelLaunchOptions);
             this.Controls.Add(this.labelTracking);
             this.Controls.Add(this.buttonRightTurn);
             this.Controls.Add(this.buttonLeftTurn);
             this.Controls.Add(this.comboBoxAPI);
-            this.Controls.Add(this.labelMore);
             this.Controls.Add(this.panelSimple);
             this.Controls.Add(this.pictureBoxDefaults);
             this.Controls.Add(this.labelAlarmAt);
@@ -894,7 +896,6 @@
         private System.Windows.Forms.TrackBar trackBarVolume;
         private System.Windows.Forms.CheckBox checkBoxResetOnMount;
         private System.Windows.Forms.ComboBox comboBoxNotifType;
-        private System.Windows.Forms.Label labelMore;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBoxPlay;
         private System.Windows.Forms.ComboBox comboBoxAPI;
@@ -912,6 +913,7 @@
         private System.Windows.Forms.CheckBox checkBoxSteamVRStart;
         private System.Windows.Forms.CheckBox checkBoxStartMinimized;
         private System.Windows.Forms.Label labelLaunchOptionsBase;
+        private System.Windows.Forms.Label labelUI;
     }
 }
 

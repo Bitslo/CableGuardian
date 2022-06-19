@@ -41,7 +41,6 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.buttonPage = new System.Windows.Forms.Button();
             this.panelAck = new System.Windows.Forms.Panel();
-            this.labelSimple = new System.Windows.Forms.Label();
             this.labelTitle = new System.Windows.Forms.Label();
             this.pictureBoxStandard = new System.Windows.Forms.PictureBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -55,6 +54,7 @@
             // 
             this.buttonClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
             this.buttonClose.Cursor = System.Windows.Forms.Cursors.Default;
+            this.buttonClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonClose.ForeColor = System.Drawing.Color.White;
@@ -212,18 +212,6 @@
             this.panelAck.Size = new System.Drawing.Size(1004, 117);
             this.panelAck.TabIndex = 16;
             // 
-            // labelSimple
-            // 
-            this.labelSimple.AutoSize = true;
-            this.labelSimple.BackColor = System.Drawing.Color.Transparent;
-            this.labelSimple.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelSimple.ForeColor = System.Drawing.Color.White;
-            this.labelSimple.Location = new System.Drawing.Point(895, 45);
-            this.labelSimple.Name = "labelSimple";
-            this.labelSimple.Size = new System.Drawing.Size(124, 13);
-            this.labelSimple.TabIndex = 82;
-            this.labelSimple.Text = "Back to simplified mode?";
-            // 
             // labelTitle
             // 
             this.labelTitle.AutoSize = true;
@@ -288,9 +276,11 @@
             // 
             // FormHelp
             // 
+            this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::CableGuardian.Properties.Resources.Help2;
+            this.CancelButton = this.buttonClose;
             this.ClientSize = new System.Drawing.Size(1032, 492);
             this.ControlBox = false;
             this.Controls.Add(this.buttonCopyInfo);
@@ -298,7 +288,6 @@
             this.Controls.Add(this.pictureBoxStandard);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.labelTitle);
-            this.Controls.Add(this.labelSimple);
             this.Controls.Add(this.panelAck);
             this.Controls.Add(this.buttonPage);
             this.Controls.Add(this.labelVersion);
@@ -330,7 +319,6 @@
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Button buttonPage;
         private System.Windows.Forms.Panel panelAck;
-        private System.Windows.Forms.Label labelSimple;
         private System.Windows.Forms.Label labelTitle;
         private System.Windows.Forms.PictureBox pictureBoxStandard;
         private System.Windows.Forms.Label label7;

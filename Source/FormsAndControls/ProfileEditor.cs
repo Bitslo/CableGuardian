@@ -21,7 +21,7 @@ namespace CableGuardian
         XElement CopiedAction;
 
         Profile TheProfile;
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
         /// <summary>
         /// Don't disable event handlers before method calls. Use only within a single method when accessing properties.
         /// </summary>

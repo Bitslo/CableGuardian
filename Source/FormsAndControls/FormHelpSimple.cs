@@ -14,13 +14,14 @@ namespace CableGuardian
 {
     public partial class FormHelpSimple : Form
     {
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, OwnerDraw = true, IsBalloon = false };
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
 
         public FormHelpSimple()
         {
             InitializeComponent();
 
             buttonClose.Click += ButtonClose_Click;
+            buttonTutorial.Click += ButtonTutorial_Click;
             buttonGuides.Click += ButtonGuides_Click;
             buttonDiscussions.Click += ButtonDiscussions_Click;
             labelVersion.Text = Config.ProgramTitle + " v." +
@@ -29,6 +30,12 @@ namespace CableGuardian
 
             TTip.SetToolTip(buttonGuides, $"See the {Config.ProgramTitle} user guides on Steam.");
             TTip.SetToolTip(buttonDiscussions, "Steam Discussions may have the answer your looking for. Feel free to start a new discussion!");
+        }
+
+        private void ButtonTutorial_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Ignore;
+            Close();
         }
 
         private void ButtonGuides_Click(object sender, EventArgs e)

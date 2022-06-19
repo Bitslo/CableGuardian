@@ -14,7 +14,7 @@ namespace CableGuardian
     {
         public event EventHandler<ChangeEventArgs> ChangeMade;
         public RotationCondition Condition { get; private set; }
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
 
         const string Equal = "=";
         const string EqualOrGreaterThan = "\u2265";

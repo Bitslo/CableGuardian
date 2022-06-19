@@ -15,7 +15,7 @@ namespace CableGuardian
         public event EventHandler<ChangeEventArgs> ChangeMade;
                 
         CGActionWave TheWave;
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 20000 };
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
 
         bool SkipFlaggedEventHandlers = false;
        

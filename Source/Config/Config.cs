@@ -17,11 +17,12 @@ namespace CableGuardian
         public const string ProgramTitle = "Cable Guardian";
         const string ManifestAppKeyBase = "cableguardian";
         static string ManifestAppKey = null; // will be generated
-        public static string ManifestPath { get { return Program.ExeFolder + "\\CableGuardian.vrmanifest"; } }
-        public static string ManifestContents { get; private set; }
+        public static string ManifestPath { get { return Program.ExeFolder + "\\CableGuardian.vrmanifest"; } }        
         public static readonly Color CGColor = Color.FromArgb(86, 184, 254);
         public static readonly  Color CGErrorColor = Color.FromArgb(254, 84, 84);
-        public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);                
+        public static readonly Color CGBackColor = Color.FromArgb(15, 15, 15);
+        static string ZeroVer = "0.0.0.0";
+        public static Version LoadedVersion { get; private set; } = new Version(ZeroVer);
         public static string ProfilesFile { get; private set; }
         public static string OculusHomeProcessName { get; private set; } = "oculusclient";
         public static string SteamVRProcessName { get; private set; } = "vrserver";
@@ -54,32 +55,24 @@ namespace CableGuardian
         /// backwards compatibility only
         /// </summary>
         public static VRAPI LegacyAPI { get; private set; } = VRAPI.OculusVR;
-        public static bool IsLegacyConfig { get; private set; } = false;
-        public static bool IsConfig1332OrEarlier { get; private set; } = false;
-        public static bool SaveProfilesAtStartup { get; set; } = false;
-                
+        public static bool IsLegacyConfig { get; private set; } = false;        
+        public static bool SaveProfilesAtStartup { get; set; } = false;                
         public static bool ExitWithSteamVR { get; set; } = false;
-
+        public static bool WelcomeFormClosed { get; set; } = false;
+        public static bool UseRawCoordinatesInOpenVR { get; set; } = true;
+        
         public static bool UseSimpleMode { get; set; } = false;
         public static uint SimpleModeThreshold { get; set; } = 3;
         public static SimpleNotifType SimpleModeNotifType { get; set; } = SimpleNotifType.Beep;
         public static int SimpleModeVolume { get; set; } = 75;
         public static bool SimpleModeResetOnMount { get; set; } = false;
         public static bool SimpleModePlayMountingSound { get; set; } = false;
+        
 
 
         static Config()
         {   
             ProfilesFile = Program.ExeFolder + $@"\{ProfilesName}.xml";
-
-            if (Program.IsSteamInstallation)
-                ManifestContents = Properties.Resources.CableGuardianVrManifest;
-            else
-                ManifestContents = Properties.Resources.CableGuardianVrManifestNoSteam;
-
-            ManifestContents = ManifestContents.Replace("$APPKEY$", GetManifestAppKey());
-            ManifestContents = ManifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
-            ManifestContents = ManifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
         }
 
         /// <summary>
@@ -267,7 +260,18 @@ namespace CableGuardian
 
         public static void WriteManifestFile()
         {
-            File.WriteAllText(ManifestPath, ManifestContents);
+            string manifestContents;
+
+            if (Program.IsSteamInstallation)
+                manifestContents = Properties.Resources.CableGuardianVrManifest;
+            else
+                manifestContents = Properties.Resources.CableGuardianVrManifestNoSteam;
+
+            manifestContents = manifestContents.Replace("$APPKEY$", GetManifestAppKey());
+            manifestContents = manifestContents.Replace("$ARGS$", Program.Arg_SteamVRStartup);
+            manifestContents = manifestContents.Replace("$EXEPATH$", Program.ExeFile.Replace("\\", "\\\\"));
+
+            File.WriteAllText(ManifestPath, manifestContents);
         }
 
         public static void WriteConfigToFile(bool isExit = false)
@@ -383,6 +387,20 @@ namespace CableGuardian
         {
             if (xConfig != null)
             {                
+                string ver = xConfig.GetElementValueTrimmed("Version");
+                if (String.IsNullOrWhiteSpace(ver))
+                    ver = ZeroVer;
+
+                try
+                {
+                    LoadedVersion = new Version(ver);
+                }
+                catch (Exception)
+                {
+                    LoadedVersion = new Version(ZeroVer);                    
+                }
+
+
                 if (xConfig.GetElementValueOrNull("API") != null) // backwards compatibility
                 {
                     IsLegacyConfig = true;
@@ -392,8 +410,7 @@ namespace CableGuardian
                 }
 
                 if (xConfig.GetElementValueOrNull("StartMinimized") == null) // backwards compatibility
-                {
-                    IsConfig1332OrEarlier = true;
+                {                    
                     StartMinimized = xConfig.GetElementValueBool("MinimizeAtUserStartup");
                 }
                 else
@@ -425,6 +442,7 @@ namespace CableGuardian
 
                 JingleXML_Legacy = xConfig.Element("Jingle");
 
+                WelcomeFormClosed = xConfig.GetElementValueBool("WelcomeFormClosed", false);
 
                 UseSimpleMode = xConfig.GetElementValueBool("UseSimpleMode", false);
                 SimpleModeThreshold = xConfig.GetElementValueUInt("SimpleModeThreshold", 3);
@@ -468,11 +486,14 @@ namespace CableGuardian
                 SortProfilesByName();
                 StartUpProfile = Profiles.Where(p => p.Name == xProfiles.GetElementValueTrimmed("StartupProfile")).FirstOrDefault();                
             }
-        }
+        }                
 
         public static XElement GetConfigXml(bool isExit = false)
         {
+            Version ver = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;            
+
             return new XElement(Program.ConfigName,
+                                new XElement("Version", ver.ToString()),
                                 new XElement("StartMinimized", StartMinimized),
                                 new XElement("NotifyStartMinimized", NotifyStartMinimized),
                                 new XElement("NotifyWhenVRConnectionLost", NotifyWhenVRConnectionLost),
@@ -487,6 +508,7 @@ namespace CableGuardian
                                 new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("Alarm", Alarm.GetXml()),                                                           
                                 new XElement("ExitWithSteamVR", ExitWithSteamVR),
+                                new XElement("WelcomeFormClosed", WelcomeFormClosed),
                                 new XElement("UseSimpleMode", UseSimpleMode),
                                 new XElement("SimpleModeThreshold", SimpleModeThreshold),
                                 new XElement("SimpleModeNotifType", SimpleModeNotifType),

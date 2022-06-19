@@ -24,8 +24,8 @@ namespace CableGuardian
             Width = 328;            
             checkBoxConnLost.Visible = false;
             checkBoxOnAPIQuit.Visible = false;
-            checkBoxSticky.Visible = false;            
-            labelMore.Visible = true;
+            checkBoxSticky.Visible = false;
+            labelProf.Visible = false;            
             panelSimple.Visible = true;
             panelSimple.Focus();
             IsSimpleModeOn = true;
@@ -55,19 +55,24 @@ namespace CableGuardian
 
             if (!Config.StartMinimized)
                 RestoreFromTray();
-
+                        
             TTip.SetToolTip(checkBoxExitWithSteamVR, $"{Config.ProgramTitle} will close when SteamVR is closed.");
+
+            RefreshUILabel();
 
             Enabled = true;
         }
 
         void SimpleMode_TurnOff()
         {
+            if (WelcomeForm != null && WelcomeForm.Visible)
+                WelcomeForm.Close();
+
             Width = OriginalWidth;            
             checkBoxConnLost.Visible = true;
             checkBoxOnAPIQuit.Visible = true;
-            checkBoxSticky.Visible = true;            
-            labelMore.Visible = false;
+            checkBoxSticky.Visible = true;
+            labelProf.Visible = true;            
             panelSimple.Visible = false;
             comboBoxAPI.Visible = false;
             IsSimpleModeOn = false;
@@ -85,17 +90,17 @@ namespace CableGuardian
             ComboBoxProfile_SelectedIndexChanged(comboBoxProfile, null);
             SkipFlaggedEventHandlers = skipStatus;
 
-            LoadConfigToGui();
-
+            LoadConfigToGui();                        
             TTip.SetToolTip(checkBoxExitWithSteamVR, $"{Config.ProgramTitle} will close when SteamVR is closed - unless there are unsaved changes to your profiles.");
 
-            string msg = $"Welcome to {Config.ProgramTitle} full mode!";                   
-            MessageBox.Show(this, msg, "Full mode activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            RefreshUILabel();
+
+            string msg = $"Welcome to {Config.ProgramTitle} advanced mode!";                   
+            MessageBox.Show(this, msg, "Advanced mode activated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
      
         void SimpleMode_InitializeAppearance()
-        {
-            TTip.SetToolTip(labelMore, $"{Config.ProgramTitle} is currently in simplified mode. Click here to toggle full mode with all available options.");
+        {            
             TTip.SetToolTip(numericUpDownHalfTurns, $"A sound will play each time you reach this (or a higher) number of HALF-TURNS (180\u00B0).");
             TTip.SetToolTip(comboBoxNotifType, $"Select the type of sound you wish to hear when turning too much." + Environment.NewLine
                                     + $"\u2022 Beep --> You will get two short beeps in the ear that is on the side of excess rotation. (Turn left too much --> left ear)" + Environment.NewLine
@@ -114,8 +119,7 @@ namespace CableGuardian
                                                 + Environment.NewLine + "You can preview the sound by checking this box." + Environment.NewLine + Environment.NewLine
                                                 + $"NOTE: Depending on the detection hardware and API implementation, this feature may not work as you'd expect.");
 
-            panelSimple.Location = new Point(6, 229);
-            labelMore.Location = new Point(210, 465);
+            panelSimple.Location = new Point(6, 229);            
             comboBoxAPI.Location = new Point(12, 459);
 
             comboBoxNotifType.DataSource = Enum.GetValues(typeof(SimpleNotifType));
@@ -123,16 +127,15 @@ namespace CableGuardian
 
             checkBoxMountingSound.ForeColor = Color.White;
             checkBoxMountingSound.Text = "\u266C";
+
+                        
         }
 
         void SimpleMode_AddEventHandlers()
         {
             comboBoxAPI.SelectedIndexChanged += ComboBoxAPI_SelectedIndexChanged;
             checkBoxResetOnMount.CheckedChanged += SimpleMode_CheckBoxResetOnMount_CheckedChanged;
-            checkBoxMountingSound.CheckedChanged += SimpleMode_CheckBoxMountingSound_CheckedChanged;
-            labelMore.MouseEnter += (s, e) => { labelMore.ForeColor = Color.Yellow; };
-            labelMore.MouseLeave += (s, e) => { labelMore.ForeColor = Color.White; };
-            labelMore.Click += SimpleMode_LabelMore_Click;
+            checkBoxMountingSound.CheckedChanged += SimpleMode_CheckBoxMountingSound_CheckedChanged;                        
             comboBoxNotifType.SelectedIndexChanged += SimpleMode_ComboBoxNotifType_SelectedIndexChanged;
             numericUpDownHalfTurns.ValueChanged += SimpleMode_NumericUpDownHalfTurns_ValueChanged;
             trackBarVolume.ValueChanged += SimpleMode_TrackBarVolume_ValueChanged;
@@ -229,17 +232,7 @@ namespace CableGuardian
             SimpleMode_LoadProfile(Config.SimpleModeNotifType);
             SimpleMode_SaveConfigAndUpdateProfile();
         }
-
-        private void SimpleMode_LabelMore_Click(object sender, EventArgs e)
-        {
-            if (SkipFlaggedEventHandlers)
-                return;
-
-            string msg = $"If you want more control over the app, click Yes to enter the full mode with all available options.{Environment.NewLine}{Environment.NewLine}"
-                + $"If you are happy with the current configuration, click No to stay in simplified mode.";
-            if (MessageBox.Show(this, msg, "Switch to full mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                SimpleMode_TurnOff();
-        }
+       
 
         private void SimpleMode_CheckBoxResetOnMount_CheckedChanged(object sender, EventArgs e)
         {

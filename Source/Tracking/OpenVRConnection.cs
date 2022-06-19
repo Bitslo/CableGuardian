@@ -14,6 +14,7 @@ namespace CableGuardian
     class OpenVRConnection : VRConnection
     {
         public static bool ConnectionWasOKDuringSession { get; private set; } = false;
+        ETrackingUniverseOrigin TrackingUniverse { get; set; } = ETrackingUniverseOrigin.TrackingUniverseStanding;
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         BackgroundWorker WorkerManager = new BackgroundWorker();
@@ -339,6 +340,11 @@ namespace CableGuardian
                         Thread.Sleep(500);
                     }
 
+                    if (Config.UseRawCoordinatesInOpenVR)                    
+                        TrackingUniverse = ETrackingUniverseOrigin.TrackingUniverseRawAndUncalibrated;
+                    else                    
+                        TrackingUniverse = ETrackingUniverseOrigin.TrackingUniverseStanding;
+
                     OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
                     IsFirstInitAfterIdle = true;
                     ConnectionWasOKDuringSession = true;
@@ -357,6 +363,7 @@ namespace CableGuardian
                 // It seems that SteamVR kills the VR processes that don't get Quit event with PollNextEvent().                 
                 if (NextVREvent.eventType == (uint)EVREventType.VREvent_Quit)
                 {
+                    VRSys.AcknowledgeQuit_Exiting();
                     OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // to immediately prevent native methods from being called
                     EndCurrentSession();
                     OpenVRConnStatus = OpenVRConnectionStatus.SteamVRQuit; // again to get correct status (changed in EndCurrentSession())
@@ -437,7 +444,7 @@ namespace CableGuardian
             if (OpenVRConnStatus != OpenVRConnectionStatus.AllOK)                            
                 return false;            
 
-            VRSys.GetDeviceToAbsoluteTrackingPose(ETrackingUniverseOrigin.TrackingUniverseStanding, 0, PoseArray);
+            VRSys.GetDeviceToAbsoluteTrackingPose(TrackingUniverse, 0, PoseArray);
             if (!PoseArray[HmdIndex].bPoseIsValid)            
                 return false;            
             

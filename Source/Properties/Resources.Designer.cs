@@ -207,9 +207,29 @@ namespace CableGuardian.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CG_icon_blue {
+            get {
+                object obj = ResourceManager.GetObject("CG_icon_blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CG_icon_pic {
             get {
                 object obj = ResourceManager.GetObject("CG_icon_pic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CG_icon_red {
+            get {
+                object obj = ResourceManager.GetObject("CG_icon_red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -647,6 +667,16 @@ namespace CableGuardian.Properties {
         internal static System.Drawing.Bitmap Refresh24_hover {
             get {
                 object obj = ResourceManager.GetObject("Refresh24_hover", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SmallCapsule {
+            get {
+                object obj = ResourceManager.GetObject("SmallCapsule", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

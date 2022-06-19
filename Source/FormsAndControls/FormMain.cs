@@ -19,7 +19,7 @@ namespace CableGuardian
 
     public partial class FormMain : Form
     {
-        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000 };
+        ToolTip TTip = new ToolTip() { AutoPopDelay = 30000, ShowAlways = true };
 
         const string AlarmTag = "ALARM";
         ContextMenuStrip TrayMenu = new ContextMenuStrip();
@@ -72,6 +72,8 @@ namespace CableGuardian
 
         int OriginalWidth;
         bool RestoreFromTrayAtStartup = false;
+
+        FormWelcome WelcomeForm;
 
         public FormMain()
         {   
@@ -153,16 +155,11 @@ namespace CableGuardian
                 }
             }
 
-            if (Config.ConfigFileMissingAtStartup) // Most likely a first time launch
-            {
-                notifyIcon1.Visible = false;
-                string msg = $"Welcome to {Config.ProgramTitle}!{Environment.NewLine}{Environment.NewLine}" +
-                          $"1. The intended control method is mouse + keyboard.   {Environment.NewLine}{Environment.NewLine}" +
-                        $"2. Hold the cursor over items for tooltips.   {Environment.NewLine}{Environment.NewLine}" +                        
-                        $"3. Click the CG icon in the system tray for a menu.";
-                MessageBox.Show(this, msg, "First time launch", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                notifyIcon1.Visible = true;
-                ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. ");
+            RefreshUILabel();
+            
+            if (!Config.WelcomeFormClosed && IsSimpleModeOn)
+            {                
+                ShowWelcomeForm();
             }
 
             if (Config.StartMinimized && Config.NotifyStartMinimized)
@@ -181,9 +178,10 @@ namespace CableGuardian
                 notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle, Program.InstanceCheckErrorMsg, ToolTipIcon.Warning);
             }
 
-            if (Config.IsConfig1332OrEarlier)
-            {
-                ShowHighlightsForUpdateAfter1332();
+            if (!Config.ConfigFileMissingAtStartup)
+            {                
+                if (Config.LoadedVersion < new Version("1.3.3.3"))
+                    ShowHighlightsForUpdateAfter1332();
             }
         }
 
@@ -216,9 +214,74 @@ namespace CableGuardian
         }
 
 
+        Panel PanelHighlight;
+        void ShowWelcomeForm()
+        {
+            if (WelcomeForm != null && WelcomeForm.Visible)
+                return;
+
+            if (PanelHighlight == null)
+            {
+                PanelHighlight = new Panel();
+                PanelHighlight.BorderStyle = BorderStyle.Fixed3D;
+                PanelHighlight.BackColor = Color.Transparent;
+                PanelHighlight.Location = new Point(0, 0);
+                PanelHighlight.Size = Size;
+                PanelHighlight.Visible = false;
+                this.Controls.Add(PanelHighlight);
+                PanelHighlight.SendToBack();
+            }
+
+            WelcomeForm = new FormWelcome();
+            WelcomeForm.AnimStatus += (s, e) => { labelStatus.Visible = e.State; };
+            WelcomeForm.AnimAPI += (s, e) => { comboBoxAPI.Visible = e.State; };
+            WelcomeForm.AnimUI += (s, e) => { PanelHighlight.Visible = !e.State; };
+            WelcomeForm.AnimMinimize += (s, e) => { ToggleLaunchOptionsPanel(true); pictureBoxMinimize.Visible = e.State; checkBoxStartMinimized.Visible = e.State; };
+            WelcomeForm.AnimRotSettings += (s, e) => { numericUpDownHalfTurns.Visible = e.State; comboBoxNotifType.Visible = e.State; };
+            WelcomeForm.AnimLaunchOptions += (s, e) => { labelLaunchOptionsBase.Visible = e.State; };
+            WelcomeForm.AnimHelp += (s, e) => { pictureBoxHelp.Visible = e.State; };
+            WelcomeForm.AnimFullMode += (s, e) => { labelUI.Visible = e.State; };
+            WelcomeForm.AnimOff += WelcomeForm_AnimOff;
+            WelcomeForm.MouseEnter += (s, e) => { if(!Visible) RestoreFromTray(); };
+            WelcomeForm.FormClosed += (s, e) => { pictureBoxHelp.Visible = true; };
+            WelcomeForm.TrayWelcome += (s, e) => { ShowTemporaryTrayNotification(2000, "Welcome to " + Config.ProgramTitle + "!", "Check out the CG icon in the system tray. "); };
+            
+            WelcomeForm.StartPosition = FormStartPosition.Manual;
+            
+            if (Location.X > WelcomeForm.Width)            
+                WelcomeForm.Location = new Point(Location.X - WelcomeForm.Width - 30, Location.Y);
+            else
+                WelcomeForm.Location = new Point(Location.X + Width + 30, Location.Y);
+
+            //SkipFlaggedEventHandlers = true;
+            //TrayMenu.Enabled = false;
+            WelcomeForm.Show(this);
+            pictureBoxHelp.Visible = false;
+            //TrayMenu.Enabled = true;
+            //SkipFlaggedEventHandlers = false;                                            
+
+        }
+
+        private void WelcomeForm_AnimOff(object sender, EventArgs e)
+        {
+            PanelHighlight.Visible = false;
+            pictureBoxMinimize.Visible = true;
+            checkBoxStartMinimized.Visible = true;
+            ToggleLaunchOptionsPanel(false);
+            labelStatus.Visible = true;
+            comboBoxAPI.Visible = true;
+            numericUpDownHalfTurns.Visible = true;
+            comboBoxNotifType.Visible = true;
+            labelLaunchOptionsBase.Visible = true;
+            labelUI.Visible = true;
+
+            bool vis = WelcomeForm != null && WelcomeForm.Visible ? false : true;            
+            pictureBoxHelp.Visible = vis;
+        }
+
         void ShowHighlightsForUpdateAfter1332()
         {
-            BalloonTipOpensLaunchOptions = true;
+            BalloonTipOpensNews = true;
 
             string tt = "- RECENT UPDATE NOTE: User-startup and Auto-startup are no longer separated due to new Steam startup handling." + Environment.NewLine
                            + "The \"Start minimized\" -option is now combined for all startup types.";
@@ -242,7 +305,7 @@ namespace CableGuardian
             AddUpdateHighlightLabel("NEW", panelLaunchOptionsBase, p);
                         
             
-            notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle + " updated", $"Check out the changed launch options!", ToolTipIcon.Info);
+            notifyIcon1.ShowBalloonTip(4000, Config.ProgramTitle + " updated", $"Please read the update notes on Steam!", ToolTipIcon.Info);
             
         }
 
@@ -545,9 +608,9 @@ namespace CableGuardian
                                                     + "***    0 = no limit = remember forever    ***");
             TTip.SetToolTip(pictureBoxGetPro, $"Cable Guardian Pro available!{Environment.NewLine}Click to visit the Steam store page." + Environment.NewLine + Environment.NewLine
                                         + "Features include:" + Environment.NewLine
-                                       + $"\u2022 Visual indicators" + Environment.NewLine
-                                       + $"\u2022 Floor markers with alerts" + Environment.NewLine
-                                       + $"\u2022 FOV measuring tool" + Environment.NewLine
+                                       + $"\u2022 Visual indicators (SteamVR only)" + Environment.NewLine
+                                       + $"\u2022 Floor markers with alerts (SteamVR only)" + Environment.NewLine
+                                       + $"\u2022 FOV measuring tool (SteamVR only)" + Environment.NewLine
                                        + $"\u2022 Automatic profile selection per app" + Environment.NewLine
                                        + $"\u2022 Expandable user interface" + Environment.NewLine
                                        + $"\u2022 More audio clips" + Environment.NewLine);
@@ -642,6 +705,10 @@ namespace CableGuardian
             labelLaunchOptions.Click += (s, e) => { ToggleLaunchOptionsPanel(); };
             labelLaunchOptionsBase.Click += (s, e) => { ToggleLaunchOptionsPanel(); };
 
+            labelUI.MouseEnter += (s, e) => { labelUI.ForeColor = Color.Yellow; };
+            labelUI.MouseLeave += (s, e) => { labelUI.ForeColor = Color.Gray; };
+            labelUI.Click += LabelUI_Click;
+
             buttonSave.Click += ButtonSave_Click;
             buttonReset.Click += ButtonReset_Click;
             buttonRetry.Click += ButtonRetry_Click;                     
@@ -716,19 +783,19 @@ namespace CableGuardian
         }
 
         bool BalloonTipRestoresTheUI = false;
-        bool BalloonTipOpensLaunchOptions = false;
+        bool BalloonTipOpensNews = false;
         private void NotifyIcon1_BalloonTipClicked(object sender, EventArgs e)
         {
         
-         if (BalloonTipRestoresTheUI)
+            if (BalloonTipRestoresTheUI)
             {
                 RestoreFromTray();
                 BalloonTipRestoresTheUI = false;
             }
-            else if (BalloonTipOpensLaunchOptions)
+            else if (BalloonTipOpensNews)
             {
-                ToggleLaunchOptionsPanel(true);
-                BalloonTipOpensLaunchOptions = false;
+                OpenSteamPage("steam://openurl/https://steamcommunity.com/app/1208080/allnews/", "https://steamcommunity.com/app/1208080/allnews/", this);                
+                BalloonTipOpensNews = false;
             }
         }
 
@@ -741,6 +808,49 @@ namespace CableGuardian
             labelSteamVRAutoStart.Visible = !checkBoxSteamVRStart.Visible;
         }
 
+
+        private void LabelUI_Click(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            if (IsSimpleModeOn)
+            {
+                string msg = $"If you want full control over the app, click Yes to enter the advanced mode. "
+                    + "As the name implies, the advanced mode is more difficult to use due to the extensive customization possibilities."
+                    + Environment.NewLine + Environment.NewLine
+                + $"If you are happy with the current configuration, click No to stay in simple mode. (You can also return later at any time.)";
+                if (MessageBox.Show(this, msg, "Switch to advanced mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    SimpleMode_TurnOff();
+                }
+            }
+            else
+            {
+                string msg = $"Click Yes to go back to simple mode. Any changes to the default profiles will be lost. Custom profiles are preserved.{Environment.NewLine}{Environment.NewLine}"
+               + $"Click No to stay in advanced mode.";
+                if (MessageBox.Show(this, msg, "Switch to simple mode", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {                    
+                    SimpleMode_TurnOn();
+                }
+            }
+        }
+
+        void RefreshUILabel()
+        {
+            if (IsSimpleModeOn)
+            {
+                labelUI.Text = "[SIMPLE]";
+                TTip.SetToolTip(labelUI, $"{Config.ProgramTitle} is currently in simple mode with limited options."
+                        + Environment.NewLine
+                        + "Click here to switch to advanced mode with all available features and options (if you don't mind tinkering).");
+            }
+            else
+            {
+                labelUI.Text = "[ADVANCED]";
+                TTip.SetToolTip(labelUI, $"{Config.ProgramTitle} is currently in advanced mode. Click here to return to simple mode.");
+            }
+        }
 
         private void PictureBoxDefaults_Click(object sender, EventArgs e)
         {
@@ -1208,13 +1318,18 @@ namespace CableGuardian
 
             help.StartPosition = FormStartPosition.CenterParent;
             SkipFlaggedEventHandlers = true;
-            //TrayMenu.Enabled = false;
+            string txt = TrayMenuExit.Text;
+            TrayMenuExit.Text = TrayMenuExit.Text + " (close Help first)";
+            TrayMenuGUI.Enabled = false;
+            TrayMenuExit.Enabled = false;            
             DialogResult res = help.ShowDialog(this);
-            //TrayMenu.Enabled = true;
+            TrayMenuExit.Text = txt;
+            TrayMenuGUI.Enabled = true;
+            TrayMenuExit.Enabled = true;            
             SkipFlaggedEventHandlers = false;
-
-            if (res == DialogResult.Abort)
-                SimpleMode_TurnOn();
+                        
+            if (res == DialogResult.Ignore)
+                ShowWelcomeForm();
         }
 
         void SetProfilesSaveStatus(bool saved)
