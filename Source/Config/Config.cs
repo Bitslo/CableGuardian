@@ -443,6 +443,9 @@ namespace CableGuardian
                 JingleXML_Legacy = xConfig.Element("Jingle");
 
                 WelcomeFormClosed = xConfig.GetElementValueBool("WelcomeFormClosed", false);
+                // Do not show the welcome form if an earlier version of the app was already in use
+                if (LoadedVersion < new Version("1.3.3.3")) 
+                    WelcomeFormClosed = true;
 
                 UseSimpleMode = xConfig.GetElementValueBool("UseSimpleMode", false);
                 SimpleModeThreshold = xConfig.GetElementValueUInt("SimpleModeThreshold", 3);
