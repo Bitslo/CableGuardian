@@ -742,7 +742,8 @@ namespace CableGuardian
             OpenVRConn.HMDUserInteractionStarted += OnHMDUserInteractionStarted;
             OculusConn.HMDUserInteractionStopped += OnHMDUserInteractionStopped;
             OpenVRConn.HMDUserInteractionStopped += OnHMDUserInteractionStopped;
-            
+            OpenVRConn.CenterRawUpdated += (s, e) => { RefreshVRConnectionForActiveProfile(); };
+
             TrayMenuReset.Click += TrayMenutReset_Click;
             TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
             TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
@@ -1418,7 +1419,18 @@ namespace CableGuardian
         }
 
         private void RefreshVRConnectionForActiveProfile()
-        { 
+        {
+            if (Config.ActiveProfile.API == VRAPI.OpenVR && Config.UseRawCoordinatesInOpenVR)
+            {
+                OpenVRConn.TrackingUniverse = Valve.VR.ETrackingUniverseOrigin.TrackingUniverseRawAndUncalibrated;                
+                Tracker.ThresholdOffset  = OpenVRConn.GetRawCenterYawOffset();
+            }
+            else
+            {
+                OpenVRConn.TrackingUniverse = Valve.VR.ETrackingUniverseOrigin.TrackingUniverseStanding;
+                Tracker.ThresholdOffset = 0;
+            }
+
             if (Config.ActiveProfile.API == VRAPI.OculusVR)
                 SwitchVRConnection(OculusConn);
             else

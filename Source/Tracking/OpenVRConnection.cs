@@ -9,12 +9,19 @@ using System.Threading;
 
 namespace CableGuardian
 {
-    public enum OpenVRConnectionStatus { AllOK, NoHMD, Initializing, NoSteamVR, SteamVRQuit, InitLimitReached, UnexpectedError, Stopped }
+    public enum OpenVRConnectionStatus { AllOK, NoHMD, Initializing, NoSteamVR, NoRawCenter, SteamVRQuit, InitLimitReached, UnexpectedError, Stopped }
 
     class OpenVRConnection : VRConnection
     {
+        public event EventHandler<EventArgs> CenterRawUpdated;
+
         public static bool ConnectionWasOKDuringSession { get; private set; } = false;
-        ETrackingUniverseOrigin TrackingUniverse { get; set; } = ETrackingUniverseOrigin.TrackingUniverseStanding;
+        public ETrackingUniverseOrigin TrackingUniverse { get; set; } = ETrackingUniverseOrigin.TrackingUniverseStanding;
+        /// <summary>
+        /// The user-calibrated Center in raw room coordinates.
+        /// </summary>
+        public HmdMatrix34_t CenterRaw { get; set; } = new HmdMatrix34_t();
+        public bool IsCenterRawOk { get; private set; } = false;
         public double Yaw = 0;
         BackgroundWorker Worker = new BackgroundWorker();
         BackgroundWorker WorkerManager = new BackgroundWorker();
@@ -25,6 +32,7 @@ namespace CableGuardian
                                      // Also, intervals below 15ms are never going to happen.
                                      // https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep#remarks
                                      // But luckily I don't need accurate timing in this case, and the interval seems to be quick enough (whatever it actually is).
+        const int CenterReadInterval = 200;
         const int InitializationInterval = 2000;        
         int InitAttemptCount = 0;        
         const int InitAttemptLimit = 300; // (failed) OpenVR initialization attempt seems to leak about 0.1MB memory. Set a global limit (and request app restart)
@@ -48,6 +56,7 @@ namespace CableGuardian
         bool HMDUserInteraction_previousReading = false;
         int HMDUserInteractionCounter = 0; // doesn't really make a difference for OpenVR, since we can't check the proximity sensor        
         int InitializationDivider = 0;
+        int CenterReadDivider = 0;
         int HMDUserInteractionDivider = 0;
         bool SteamVRWasOffBefore = false;
 
@@ -86,6 +95,13 @@ namespace CableGuardian
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoSteamVR)
                     {
                         StatusMessage = "Waiting for SteamVR.";
+                        Status = VRConnectionStatus.Waiting;
+                    }
+                    else if (_OpenVRConnStatus == OpenVRConnectionStatus.NoRawCenter)
+                    {
+                        StatusMessage = $"Detecting... Place the headset within the play area."
+                                        + $"{Environment.NewLine}Make sure you have completed SteamVR Room Setup."
+                                        + $"{Environment.NewLine}Do not use \"Seated\" mode.";
                         Status = VRConnectionStatus.Waiting;
                     }
                     else if (_OpenVRConnStatus == OpenVRConnectionStatus.SteamVRQuit)
@@ -139,6 +155,7 @@ namespace CableGuardian
         {
             // link all intervals to pollrate to be able to change them independently           
             InitializationDivider = InitializationInterval / PollInterval;
+            CenterReadDivider = CenterReadInterval / PollInterval;
             HMDUserInteractionDivider = HMDUserInteractionBufferTime / PollInterval;
 
             Worker.ProgressChanged += Worker_ProgressChanged;
@@ -244,6 +261,7 @@ namespace CableGuardian
             EndCurrentSession();
         }
 
+        bool OkStatusPending = false;
         bool IsFirstInitAfterIdle = true;
         void KeepAlive()
         {
@@ -340,12 +358,7 @@ namespace CableGuardian
                         Thread.Sleep(500);
                     }
 
-                    if (Config.UseRawCoordinatesInOpenVR)                    
-                        TrackingUniverse = ETrackingUniverseOrigin.TrackingUniverseRawAndUncalibrated;
-                    else                    
-                        TrackingUniverse = ETrackingUniverseOrigin.TrackingUniverseStanding;
-
-                    OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
+                    OkStatusPending = true;
                     IsFirstInitAfterIdle = true;
                     ConnectionWasOKDuringSession = true;
                 }
@@ -357,6 +370,29 @@ namespace CableGuardian
             }
             else // VRSys != null (connection has been initialized)
             {
+                if (OkStatusPending)
+                {
+                    // when using raw coordinates we must first transform the relative center to absolute
+                    if (Config.UseRawCoordinatesInOpenVR)
+                    {
+                        OpenVRConnStatus = OpenVRConnectionStatus.NoRawCenter;
+                        if (KeepAliveCounter % CenterReadDivider != 0) // do not try to read center on every loop.
+                        {
+                            ReadCenter();
+                            if (IsCenterRawOk)
+                            {
+                                OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
+                                OkStatusPending = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        OpenVRConnStatus = OpenVRConnectionStatus.AllOK;
+                        OkStatusPending = false;
+                    }
+                }
+
                 // Check quit request
                 VRSys.PollNextEvent(ref NextVREvent, (uint)System.Runtime.InteropServices.Marshal.SizeOf(NextVREvent));
                 // this doesn't always work... I suppose the quit event can fly by when the poll rate is relatively low
@@ -483,6 +519,32 @@ namespace CableGuardian
         {
             OpenVR.Applications.SetApplicationAutoLaunch("cableguardian", false);
             Thread.Sleep(100);
+        }
+
+        public void ReadCenter()
+        {
+            if (!IsCenterRawOk)
+            {
+                try
+                {
+                    HmdMatrix34_t pose = new HmdMatrix34_t();
+                    if (OpenVR.ChaperoneSetup.GetWorkingStandingZeroPoseToRawTrackingPose(ref pose))
+                    {
+                        CenterRaw = pose;
+                        IsCenterRawOk = true;
+                        CenterRawUpdated?.Invoke(this, EventArgs.Empty);
+                    }
+                }
+                catch (Exception)
+                {
+                    // intentionally ignore
+                }
+            }
+        }
+
+        public double GetRawCenterYawOffset()
+        {
+            return IsCenterRawOk ? GetYawFromOrientation(GetOrientation(CenterRaw)) : 0;
         }
 
         HmdQuaternion_t GetOrientation(HmdMatrix34_t matrix)

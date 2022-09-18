@@ -66,6 +66,7 @@ namespace CableGuardian
         public const string S_ResetPosition = "total rotation = 0  (NEUTRAL)";
 
         const double Threshold180Abs = 3.14F;
+        public double ThresholdOffset { get; set; } = 0;
 
         /// <summary>
         /// Occurs when Yaw axis value 0 is crossed in neutral orientation (= zero rotation)
@@ -173,6 +174,15 @@ namespace CableGuardian
             return rad * (180 / Math.PI);
         }
 
+        public static double GetRotatedYaw(double yaw, double rotation)
+        {
+            yaw -= rotation;
+            if (Math.Abs(yaw) > (Math.PI))
+                yaw -= (Math.PI * 2 * (yaw < 0 ? -1 : 1));
+
+            return yaw;
+        }
+
         bool RotationUpdateInProgress = false;
         /// <summary>
         /// Checks the difference of the last two Yaw values and determines if either 0 or 180 degree position was crossed.
@@ -190,6 +200,8 @@ namespace CableGuardian
             // Oculus rotation axis range is in radians from -pi to +pi. 
             // Zero is the middle point (facing forward). Rotation is positive when turning left. 
 
+            // Get corrected value in case the triggering threshold is not at 0 degrees. (Transformed Origin)
+            newYawValue = GetRotatedYaw(newYawValue, ThresholdOffset);
 
             // *****************
             // only once at startup IF starting from a saved point of rotation (turn count memory)
