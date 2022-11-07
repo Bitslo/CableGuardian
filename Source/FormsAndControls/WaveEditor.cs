@@ -83,6 +83,15 @@ namespace CableGuardian
         {
             try
             {
+                try
+                {
+                    System.IO.Directory.CreateDirectory(WaveFilePool.WaveFolder); // this should already exist
+                }
+                catch (Exception)
+                {
+                    // intentionally ignore
+                }                
+
                 using (System.Diagnostics.Process p = new System.Diagnostics.Process())
                 {
                     p.StartInfo.FileName = "explorer";

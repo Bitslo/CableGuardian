@@ -51,7 +51,8 @@ namespace CableGuardian
                                                  // https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep#remarks
                                                  // But let's just leave it like this and use a Stopwatch to check the time.
         int WaveMonitorLoopCount = 0;
-        const int MaxPlayDuration_ms = 5000;
+        const int MinPlayDuration_ms = WaveMonitorLoopLength_ms + 1;
+        const int MaxPlayDuration_ms = 18000000; // 5 hours  :D
 
         Stopwatch StopWatch = new Stopwatch();
         int PlayDurationMs = 0;
@@ -139,7 +140,13 @@ namespace CableGuardian
                 WaveOut.Init(MixedWave);
 
                 // limit play duration in case wave length is reported incorrectly or a long sound is loaded   
-                PlayDurationMs = (WaveDurationMs < MaxPlayDuration_ms && WaveDurationMs > WaveMonitorLoopLength_ms) ? WaveDurationMs : MaxPlayDuration_ms;                
+                if (WaveDurationMs < MinPlayDuration_ms)
+                    PlayDurationMs = MinPlayDuration_ms;
+                else if(WaveDurationMs > MaxPlayDuration_ms)
+                    PlayDurationMs = MaxPlayDuration_ms;
+                else
+                    PlayDurationMs =  WaveDurationMs;                
+
                 WaveMonitorLoopCount = Convert.ToInt32(Math.Ceiling(PlayDurationMs / (float)WaveMonitorLoopLength_ms));
 
                 Error = false;                
