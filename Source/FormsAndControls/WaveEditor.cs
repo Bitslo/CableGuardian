@@ -30,10 +30,10 @@ namespace CableGuardian
                                                     $"Put your custom sound files ({WaveFilePool.WaveFileExtension}) in: \"{WaveFilePool.WaveFolder}\"");
                 TTip.SetToolTip(pictureBoxAddWaves, $"Open Windows explorer to manage your custom sounds ({WaveFilePool.WaveFileExtension}).");
                 TTip.SetToolTip(labelNoWaves, $"Please add sound files ({WaveFilePool.WaveFileExtension}) to \"{WaveFilePool.WaveFolder}\" and click the refresh button.");
-                TTip.SetToolTip(comboBoxWave, $"Select the sound file to play. Due to audio implementation, only the first 5 seconds of the wave will be played.");
+                TTip.SetToolTip(comboBoxWave, $"Select the sound file to play.");
                 TTip.SetToolTip(numericUpDownLoop, $"Loop count. How many times the sound is played in succession per single trigger.");
                 TTip.SetToolTip(trackBarPan, $"Mouse middle button = center");
-                TTip.SetToolTip(pictureBoxPlay, $"Play the sound.{Environment.NewLine}Due to audio implementation, only the first 5 seconds of the wave will be played.");
+                TTip.SetToolTip(pictureBoxPlay, $"Play the sound.");
 
                 InitializeAppearance();
             }
