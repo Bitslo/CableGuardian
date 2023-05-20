@@ -31,6 +31,7 @@ namespace CableGuardian
         ToolStripSeparator TrayMenuSeparator1 = new ToolStripSeparator();
         ToolStripMenuItem TrayMenuAlarmIn = new ToolStripMenuItem("Alarm me in") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmRepeat = new ToolStripMenuItem("Repeat alarm") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmSettings = new ToolStripMenuItem("Alarm clock sound...") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmTest = new ToolStripMenuItem("Test alarm") { Tag = AlarmTag };
@@ -506,6 +507,7 @@ namespace CableGuardian
             TrayMenuTitle.Font = new Font(TrayMenuTitle.Font, FontStyle.Bold);
             TrayMenuTitle.ForeColor = Config.CGErrorColor;
             TrayMenuRotations.Font = new Font(TrayMenuRotations.Font, FontStyle.Bold);
+            TrayMenuAlarmRepeat.CheckOnClick = true;
 
             notifyIcon1.ContextMenuStrip = TrayMenu;
             TrayMenu.Items.Add(TrayMenuTitle);
@@ -516,6 +518,7 @@ namespace CableGuardian
             TrayMenu.Items.Add(TrayMenuSeparator1);
             TrayMenu.Items.Add(TrayMenuAlarmIn);
             TrayMenu.Items.Add(TrayMenuAlarmAt);
+            TrayMenu.Items.Add(TrayMenuAlarmRepeat);
             TrayMenu.Items.Add(TrayMenuAlarmClear);
             TrayMenu.Items.Add(TrayMenuAlarmTest);
             TrayMenu.Items.Add(TrayMenuAlarmSettings);
@@ -745,16 +748,33 @@ namespace CableGuardian
             OpenVRConn.CenterRawUpdated += (s, e) => { RefreshVRConnectionForActiveProfile(); };
 
             TrayMenuReset.Click += TrayMenutReset_Click;
-            TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;            
+            TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;
+            TrayMenuAlarmRepeat.MouseDown += TrayMenuAlarmRepeat_MouseDown;
             TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
             TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
+            TrayMenu.Closing += TrayMenu_Closing;
             TrayMenuAlarmSettings.Click += TrayMenuAlarmSettings_Click;
             TrayMenuAlarmTest.Click += (s, e) => { Config.Alarm.Play(); };
 
             AlarmTimer.Tick += AlarmTimer_Tick;
 
             SimpleMode_AddEventHandlers();
+        }
+
+        bool KeepTrayMenuOpenAfterItemClick = false;
+        private void TrayMenuAlarmRepeat_MouseDown(object sender, MouseEventArgs e)
+        {
+            KeepTrayMenuOpenAfterItemClick = true;
+        }
+
+        private void TrayMenu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked && KeepTrayMenuOpenAfterItemClick)
+            {
+                e.Cancel = true;
+            }
+            KeepTrayMenuOpenAfterItemClick = false;
         }
 
         private void CheckBoxStartMin_CheckedChanged(object sender, EventArgs e)
@@ -1148,62 +1168,76 @@ namespace CableGuardian
             notifyIcon1.Visible = true;
         }
 
+        int LastAlarmHourSelection, LastAlarmMinuteSelection;
+        bool LastAlarmSelectionIsTimeOfDay = false;
         private void TrayMenuAlarmInItem_Click(object sender, EventArgs e)
         {
-            AlarmTimer.Stop();
             ToolStripMenuItem item = sender as ToolStripMenuItem;
             ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
-            TimerHours = (int)parent.Tag;
-            TimerMinutes = (int)item.Tag;
+            LastAlarmSelectionIsTimeOfDay = false;
+            PlayAlarmIn(LastAlarmHourSelection = (int)parent.Tag, LastAlarmMinuteSelection = (int)item.Tag);
+        }
+
+        void PlayAlarmIn(int hours, int minutes, bool suppressNotification = false)
+        {
+            AlarmTimer.Stop();
+            TimerHours = hours;
+            TimerMinutes = minutes;
+            TimerSeconds = 0;
             AlarmTime = DateTime.Now.AddHours(TimerHours);
             AlarmTime = AlarmTime.AddMinutes(TimerMinutes);
 
             int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000);
             //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
 
-            SetAlarm(interval);
+            StartAlarmTimer(interval, suppressNotification);
         }
 
         private void TrayMenuAlarmAtItem_Click(object sender, EventArgs e)
-        {            
+        {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
             ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
-            int hours = (int)parent.Tag;
-            int minutes = (int)item.Tag;
+            LastAlarmSelectionIsTimeOfDay = true;
+            PlayAlarmAt(LastAlarmHourSelection = (int)parent.Tag, LastAlarmMinuteSelection = (int)item.Tag);
+        }
+
+        private void PlayAlarmAt(int hours, int minutes, bool suppressNotification = false, bool useNextDay = false)
+        {
             DateTime now = DateTime.Now;
+
             // No more AM/PM menu. The nearest one is chosen automatically.
             DateTime AlarmTimeAM = new DateTime(now.Year, now.Month, now.Day, hours, minutes, 0);
             DateTime AlarmTimePM = new DateTime(now.Year, now.Month, now.Day, (hours == 0) ? 12 : hours + 12, minutes, 0);
-            if (AlarmTimeAM < now)
+            if (AlarmTimeAM <= now || useNextDay)
                 AlarmTimeAM = AlarmTimeAM.AddDays(1);
-            if (AlarmTimePM < now)
+            if (AlarmTimePM <= now || useNextDay)
                 AlarmTimePM = AlarmTimePM.AddDays(1);
-                        
-            AlarmTime = (AlarmTimeAM < AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
-            
-            //AlarmTime = new DateTime(now.Year,now.Month,now.Day,hours,minutes,0);
-            //if (AlarmTime < now)
-            //    AlarmTime = AlarmTime.AddDays(1);
-                        
-            TimerHours = (AlarmTime - now).Hours;
-            TimerMinutes = (AlarmTime - now).Minutes;
-            TimerSeconds = (AlarmTime - now).Seconds;
+
+            if (useNextDay)
+                AlarmTime = (AlarmTimeAM > AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
+            else
+                AlarmTime = (AlarmTimeAM < AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
+
+            TimeSpan diff = AlarmTime - now;
+            TimerHours = (diff.Days * 24) + diff.Hours;
+            TimerMinutes = diff.Minutes;
+            TimerSeconds = diff.Seconds;
 
             int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000) + (TimerSeconds * 1000);
             //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
-           
-            SetAlarm(interval);         
+
+            StartAlarmTimer(interval, suppressNotification);
         }
 
-                        
-        void SetAlarm(int interval)
+
+        void StartAlarmTimer(int interval, bool suppressNotification = false)
         {
             AlarmTimer.Stop();
             if (interval > 0)
             {
                 AlarmTimer.Interval = interval;
                 AlarmTimer.Start();
-                if (Config.TrayMenuNotifications)
+                if (Config.TrayMenuNotifications && !suppressNotification)
                 {
                     ShowTemporaryTrayNotification(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min {TimerSeconds}s (@ {AlarmTime.ToShortTimeString()}).");
                 }
@@ -1238,13 +1272,28 @@ namespace CableGuardian
         private void PlayAlarm()
         {
             AlarmTimer.Stop();
-            TimerHours = TimerMinutes = TimerSeconds = 0;
             Config.Alarm.Play();            
-            pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
-            labelAlarmAt.Visible = false;
+
+            if (TrayMenuAlarmRepeat.Checked && (LastAlarmHourSelection > 0 || LastAlarmMinuteSelection > 0))
+            {
+                if (LastAlarmSelectionIsTimeOfDay)
+                {
+                    PlayAlarmAt(LastAlarmHourSelection, LastAlarmMinuteSelection, true, true);
+                }
+                else
+                {
+                    PlayAlarmIn(LastAlarmHourSelection, LastAlarmMinuteSelection, true);
+                }
+            }
+            else
+            {
+                TimerHours = TimerMinutes = TimerSeconds = 0;
+                pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
+                labelAlarmAt.Visible = false;
+            }
         }
 
-        
+
         private void CheckBoxConnLost_CheckedChanged(object sender, EventArgs e)
         {
             if (SkipFlaggedEventHandlers)
