@@ -1078,7 +1078,7 @@ namespace CableGuardian
             else
             {
                 TimeSpan remain = AlarmTime.Subtract(DateTime.Now);
-                TrayMenuAlarmIn.Text = $"Alarm me in {remain.Hours}h {remain.Minutes}min {remain.Seconds}s";
+                TrayMenuAlarmIn.Text = $"Alarm me in {(remain.Days * 24) + remain.Hours}h {remain.Minutes}min {remain.Seconds}s";
                 TrayMenuAlarmIn.ForeColor = Config.CGColor;
                 TrayMenuAlarmAt.Text = $"Alarm me @ {AlarmTime.ToShortTimeString()}";
                 TrayMenuAlarmAt.ForeColor = Config.CGColor;
@@ -1201,20 +1201,20 @@ namespace CableGuardian
             PlayAlarmAt(LastAlarmHourSelection = (int)parent.Tag, LastAlarmMinuteSelection = (int)item.Tag);
         }
 
-        private void PlayAlarmAt(int hours, int minutes, bool suppressNotification = false, bool useNextDay = false)
+        private void PlayAlarmAt(int hours, int minutes, bool suppressNotification = false, bool repeatTomorrow = false)
         {
             DateTime now = DateTime.Now;
 
             // No more AM/PM menu. The nearest one is chosen automatically.
             DateTime AlarmTimeAM = new DateTime(now.Year, now.Month, now.Day, hours, minutes, 0);
             DateTime AlarmTimePM = new DateTime(now.Year, now.Month, now.Day, (hours == 0) ? 12 : hours + 12, minutes, 0);
-            if (AlarmTimeAM <= now || useNextDay)
+            if (AlarmTimeAM <= now)
                 AlarmTimeAM = AlarmTimeAM.AddDays(1);
-            if (AlarmTimePM <= now || useNextDay)
+            if (AlarmTimePM <= now)
                 AlarmTimePM = AlarmTimePM.AddDays(1);
 
-            if (useNextDay)
-                AlarmTime = (AlarmTimeAM > AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
+            if (repeatTomorrow)
+                AlarmTime = AlarmTime.AddDays(1);
             else
                 AlarmTime = (AlarmTimeAM < AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
 
