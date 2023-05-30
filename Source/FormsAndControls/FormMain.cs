@@ -16,6 +16,7 @@ using System.Reflection;
 namespace CableGuardian
 {
     public enum VRAPI { OculusVR, OpenVR }
+    public enum AlarmType { Timer, AM, PM }
 
     public partial class FormMain : Form
     {
@@ -31,6 +32,7 @@ namespace CableGuardian
         ToolStripSeparator TrayMenuSeparator1 = new ToolStripSeparator();
         ToolStripMenuItem TrayMenuAlarmIn = new ToolStripMenuItem("Alarm me in") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmAt = new ToolStripMenuItem("Alarm me at") { Tag = AlarmTag };
+        ToolStripMenuItem TrayMenuAlarmPause = new ToolStripMenuItem("Pause timer on app quit") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmRepeat = new ToolStripMenuItem("Repeat alarm") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmClear = new ToolStripMenuItem("Cancel alarm") { Tag = AlarmTag };
         ToolStripMenuItem TrayMenuAlarmSettings = new ToolStripMenuItem("Alarm clock sound...") { Tag = AlarmTag };
@@ -47,8 +49,7 @@ namespace CableGuardian
 
         VRObserver Observer;
         internal static VRConnection ActiveConnection { get; private set; }
-        Timer AlarmTimer = new Timer();        
-        DateTime AlarmTime;
+        internal static Timer AlarmTimer = new Timer();                
         int TimerHours = 0;
         int TimerMinutes = 0;
         int TimerSeconds = 0;
@@ -184,6 +185,8 @@ namespace CableGuardian
                 if (Config.LoadedVersion < new Version("1.3.3.3"))
                     ShowHighlightsForUpdateAfter1332();
             }
+
+            StartUp_ResumeAlarm();
         }
 
         protected override void SetVisibleCore(bool value)
@@ -444,6 +447,8 @@ namespace CableGuardian
             checkBoxTrayNotifications.Checked = Config.TrayMenuNotifications;            
             checkBoxRememberRotation.Checked = Config.TurnCountMemoryMinutes > -1;
             numericUpDownRotMemory.Value = (Config.TurnCountMemoryMinutes > -1) ? Config.TurnCountMemoryMinutes : 0 ;
+            TrayMenuAlarmPause.Checked = Config.AlarmPauseOnQuit;
+            TrayMenuAlarmRepeat.Checked = Config.AlarmRepeat;
             SkipFlaggedEventHandlers = false;
             
             if (Program.CmdArgsLCase.Contains(Program.Arg_Maximized))
@@ -507,7 +512,10 @@ namespace CableGuardian
             TrayMenuTitle.Font = new Font(TrayMenuTitle.Font, FontStyle.Bold);
             TrayMenuTitle.ForeColor = Config.CGErrorColor;
             TrayMenuRotations.Font = new Font(TrayMenuRotations.Font, FontStyle.Bold);
+            TrayMenuAlarmPause.CheckOnClick = true;
             TrayMenuAlarmRepeat.CheckOnClick = true;
+            TrayMenuAlarmPause.Font = TrayMenuAlarmRepeat.Font = new Font(TrayMenuAlarmPause.Font, FontStyle.Italic);
+            TrayMenuAlarmPause.ForeColor = TrayMenuAlarmRepeat.ForeColor = Color.DarkGoldenrod; //Color.FromArgb(80,80,80);
 
             notifyIcon1.ContextMenuStrip = TrayMenu;
             TrayMenu.Items.Add(TrayMenuTitle);
@@ -518,6 +526,7 @@ namespace CableGuardian
             TrayMenu.Items.Add(TrayMenuSeparator1);
             TrayMenu.Items.Add(TrayMenuAlarmIn);
             TrayMenu.Items.Add(TrayMenuAlarmAt);
+            TrayMenu.Items.Add(TrayMenuAlarmPause);
             TrayMenu.Items.Add(TrayMenuAlarmRepeat);
             TrayMenu.Items.Add(TrayMenuAlarmClear);
             TrayMenu.Items.Add(TrayMenuAlarmTest);
@@ -749,7 +758,10 @@ namespace CableGuardian
 
             TrayMenuReset.Click += TrayMenutReset_Click;
             TrayMenuAlarmClear.Click += TrayMenuAlarmClear_Click;
-            TrayMenuAlarmRepeat.MouseDown += TrayMenuAlarmRepeat_MouseDown;
+            TrayMenuAlarmRepeat.MouseDown += TrayMenuAlarmCheckbox_MouseDown;
+            TrayMenuAlarmPause.MouseDown += TrayMenuAlarmCheckbox_MouseDown;
+            TrayMenuAlarmRepeat.CheckedChanged += TrayMenuAlarmRepeat_CheckedChanged;
+            TrayMenuAlarmPause.CheckedChanged += TrayMenuAlarmPause_CheckedChanged;
             TrayMenuGUI.Click += (s,e) => {if (Visible) MinimizeToTray(); else RestoreFromTray();};
             TrayMenuExit.Click += (s, e) => { Exit(); };
             TrayMenu.Opening += TrayMenu_Opening;
@@ -762,8 +774,24 @@ namespace CableGuardian
             SimpleMode_AddEventHandlers();
         }
 
+        private void TrayMenuAlarmPause_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.AlarmPauseOnQuit = TrayMenuAlarmPause.Checked;
+        }
+
+        private void TrayMenuAlarmRepeat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SkipFlaggedEventHandlers)
+                return;
+
+            Config.AlarmRepeat = TrayMenuAlarmRepeat.Checked;
+        }
+
         bool KeepTrayMenuOpenAfterItemClick = false;
-        private void TrayMenuAlarmRepeat_MouseDown(object sender, MouseEventArgs e)
+        private void TrayMenuAlarmCheckbox_MouseDown(object sender, MouseEventArgs e)
         {
             KeepTrayMenuOpenAfterItemClick = true;
         }
@@ -1077,10 +1105,10 @@ namespace CableGuardian
             }
             else
             {
-                TimeSpan remain = AlarmTime.Subtract(DateTime.Now);
+                TimeSpan remain = Config.AlarmTime.Subtract(DateTime.Now);
                 TrayMenuAlarmIn.Text = $"Alarm me in {(remain.Days * 24) + remain.Hours}h {remain.Minutes}min {remain.Seconds}s";
                 TrayMenuAlarmIn.ForeColor = Config.CGColor;
-                TrayMenuAlarmAt.Text = $"Alarm me @ {AlarmTime.ToShortTimeString()}";
+                TrayMenuAlarmAt.Text = $"Alarm me @ {Config.AlarmTime.ToShortTimeString()}";
                 TrayMenuAlarmAt.ForeColor = Config.CGColor;
                 TrayMenuAlarmClear.Text = $"Cancel alarm";
                 TrayMenuAlarmClear.Enabled = true;
@@ -1168,27 +1196,26 @@ namespace CableGuardian
             notifyIcon1.Visible = true;
         }
 
-        int LastAlarmHourSelection, LastAlarmMinuteSelection;
-        bool LastAlarmSelectionIsTimeOfDay = false;
         private void TrayMenuAlarmInItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
             ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
-            LastAlarmSelectionIsTimeOfDay = false;
-            PlayAlarmIn(LastAlarmHourSelection = (int)parent.Tag, LastAlarmMinuteSelection = (int)item.Tag);
+            PlayAlarmIn(Config.AlarmHourSelection = (int)parent.Tag, Config.AlarmMinuteSelection = (int)item.Tag, 0);
         }
 
-        void PlayAlarmIn(int hours, int minutes, bool suppressNotification = false)
+        void PlayAlarmIn(int hours, int minutes, int seconds, bool suppressNotification = false)
         {
             AlarmTimer.Stop();
             TimerHours = hours;
             TimerMinutes = minutes;
-            TimerSeconds = 0;
-            AlarmTime = DateTime.Now.AddHours(TimerHours);
-            AlarmTime = AlarmTime.AddMinutes(TimerMinutes);
+            TimerSeconds = seconds;
+            DateTime t = DateTime.Now.AddHours(TimerHours);
+            t = t.AddMinutes(TimerMinutes);
+            t = t.AddSeconds(TimerSeconds);
+            Config.AlarmTime = t;
+            Config.AlarmTyp = AlarmType.Timer;
 
-            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000);
-            //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
+            int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000) + (TimerSeconds * 1000);
 
             StartAlarmTimer(interval, suppressNotification);
         }
@@ -1197,12 +1224,12 @@ namespace CableGuardian
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
             ToolStripMenuItem parent = item.OwnerItem as ToolStripMenuItem;
-            LastAlarmSelectionIsTimeOfDay = true;
-            PlayAlarmAt(LastAlarmHourSelection = (int)parent.Tag, LastAlarmMinuteSelection = (int)item.Tag);
+            PlayAlarmAt(Config.AlarmHourSelection = (int)parent.Tag, Config.AlarmMinuteSelection = (int)item.Tag);
         }
 
-        private void PlayAlarmAt(int hours, int minutes, bool suppressNotification = false, bool repeatTomorrow = false)
+        private void PlayAlarmAt(int hours, int minutes, AlarmType? forceAMPM = null, bool suppressNotification = false, bool repeatTomorrow = false)
         {
+            AlarmType ampm = forceAMPM == null ? ampm = AlarmType.Timer : ampm = (AlarmType)forceAMPM;
             DateTime now = DateTime.Now;
 
             // No more AM/PM menu. The nearest one is chosen automatically.
@@ -1214,37 +1241,48 @@ namespace CableGuardian
                 AlarmTimePM = AlarmTimePM.AddDays(1);
 
             if (repeatTomorrow)
-                AlarmTime = AlarmTime.AddDays(1);
+            {
+                Config.AlarmTime = Config.AlarmTime.AddDays(1);
+            }
             else
-                AlarmTime = (AlarmTimeAM < AlarmTimePM) ? AlarmTimeAM : AlarmTimePM;
+            {
+                if (ampm == AlarmType.AM || (AlarmTimeAM < AlarmTimePM && ampm != AlarmType.PM))
+                {
+                    Config.AlarmTime = AlarmTimeAM;
+                    Config.AlarmTyp = AlarmType.AM;
+                }
+                else
+                {
+                    Config.AlarmTime = AlarmTimePM;
+                    Config.AlarmTyp = AlarmType.PM;
+                }
+            }
 
-            TimeSpan diff = AlarmTime - now;
+            TimeSpan diff = Config.AlarmTime - now;
             TimerHours = (diff.Days * 24) + diff.Hours;
             TimerMinutes = diff.Minutes;
             TimerSeconds = diff.Seconds;
 
             int interval = (TimerHours * 3600 * 1000) + (TimerMinutes * 60 * 1000) + (TimerSeconds * 1000);
-            //int interval = (TimerHours * 3600 * 10) + (TimerMinutes * 60 * 10); // for testing
 
             StartAlarmTimer(interval, suppressNotification);
         }
 
-
-        void StartAlarmTimer(int interval, bool suppressNotification = false)
+        void StartAlarmTimer(int interval_ms, bool suppressNotification = false)
         {
             AlarmTimer.Stop();
-            if (interval > 0)
+            if (interval_ms > 0)
             {
-                AlarmTimer.Interval = interval;
+                AlarmTimer.Interval = interval_ms;
                 AlarmTimer.Start();
                 if (Config.TrayMenuNotifications && !suppressNotification)
                 {
-                    ShowTemporaryTrayNotification(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min {TimerSeconds}s (@ {AlarmTime.ToShortTimeString()}).");
+                    ShowTemporaryTrayNotification(5000, Config.ProgramTitle, $"Alarm will go off in {TimerHours}h {TimerMinutes}min {TimerSeconds}s (@ {Config.AlarmTime.ToShortTimeString()}).");
                 }
 
                 pictureBoxAlarmClock.Image = Properties.Resources.AlarmClock_small;
 
-                labelAlarmAt.Text = $"AL @ {AlarmTime.ToShortTimeString()}";
+                labelAlarmAt.Text = $"AL @ {Config.AlarmTime.ToShortTimeString()}";
                 labelAlarmAt.Visible = true;
             }
             else
@@ -1274,15 +1312,15 @@ namespace CableGuardian
             AlarmTimer.Stop();
             Config.Alarm.Play();            
 
-            if (TrayMenuAlarmRepeat.Checked && (LastAlarmHourSelection > 0 || LastAlarmMinuteSelection > 0))
+            if (Config.AlarmRepeat && (Config.AlarmHourSelection > 0 || Config.AlarmMinuteSelection > 0))
             {
-                if (LastAlarmSelectionIsTimeOfDay)
+                if (Config.AlarmTyp == AlarmType.Timer)
                 {
-                    PlayAlarmAt(LastAlarmHourSelection, LastAlarmMinuteSelection, true, true);
+                    PlayAlarmIn(Config.AlarmHourSelection, Config.AlarmMinuteSelection, 0, true);
                 }
                 else
                 {
-                    PlayAlarmIn(LastAlarmHourSelection, LastAlarmMinuteSelection, true);
+                    PlayAlarmAt(Config.AlarmHourSelection, Config.AlarmMinuteSelection, null, true, true);
                 }
             }
             else
@@ -1291,6 +1329,69 @@ namespace CableGuardian
                 pictureBoxAlarmClock.Image = Properties.Resources.AlarmClockBW_small;
                 labelAlarmAt.Visible = false;
             }
+        }
+
+        void StartUp_ResumeAlarm()
+        {
+            if (!Config.AlarmActivateAtStartup)
+                return;
+
+            DateTime now = DateTime.Now;
+
+            if (Config.AlarmTyp == AlarmType.Timer)
+            {
+                int h, m, s;
+                if (Config.AlarmPauseOnQuit)
+                {
+                    // Resume countdown from the position where we left off
+                    GetTimeComponentsFromTotalSeconds(Config.AlarmRemainingSecondsAtStartup, out h, out m, out s);
+                }
+                else
+                {
+                    // Resume countdown as if it has been running the entire time
+                    if (Config.AlarmTime <= now)
+                    {
+                        if (Config.AlarmRepeat)
+                        {
+                            // Original timer has already reached zero, but repeat is on.
+                            // --> Simulate timer has been running in endless loop and continue from the current loop position.
+                            int elapsedS = (int)(now - Config.AlarmTime).TotalSeconds;
+                            int intervalS = Config.AlarmHourSelection * 3600 + Config.AlarmMinuteSelection * 60;
+                            int remainingS = intervalS > 0 ? intervalS - (elapsedS % intervalS) : 0;
+                            GetTimeComponentsFromTotalSeconds(remainingS, out h, out m, out s);
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // Original timer has not yet reached zero. Resume in the current position.
+                        TimeSpan diff = Config.AlarmTime - now;
+                        h = diff.Hours;
+                        m = diff.Minutes;
+                        s = diff.Seconds;
+                    }
+                }
+
+                PlayAlarmIn(h, m, s, true);
+            }
+            else
+            {
+                if (Config.AlarmTime <= now && !Config.AlarmRepeat)
+                    return; // alarm time has passed and repeat was not toggled
+
+                PlayAlarmAt(Config.AlarmHourSelection, Config.AlarmMinuteSelection, Config.AlarmTyp, true);
+            }
+        }
+
+        void GetTimeComponentsFromTotalSeconds(int totalSeconds, out int h, out int m, out int s)
+        {
+            h = totalSeconds / 3600;
+            s = totalSeconds % 3600;
+            m = s / 60;
+            s %= 60;
         }
 
 

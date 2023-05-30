@@ -47,6 +47,13 @@ namespace CableGuardian
             return (uint.TryParse(strValue, out output)) ? output : defaultValue;
         }
 
+        public static long GetElementValueLong(this XElement parent, string elementName, long defaultValue = 0)
+        {
+            string strValue = parent.GetElementValueOrNull(elementName);
+            long output;
+            return (long.TryParse(strValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out output)) ? output : defaultValue;
+        }
+
         public static double GetElementValueDouble(this XElement parent, string elementName, double defaultValue = 0)
         {
             string strValue = parent.GetElementValueOrNull(elementName);

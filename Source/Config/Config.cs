@@ -34,6 +34,14 @@ namespace CableGuardian
         public static bool TrayMenuNotifications { get; set; } = true;
         public static bool ShowResetMessageBox { get; set; } = true;
         public static CGActionWave Alarm { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
+        public static AlarmType AlarmTyp { get; set; } = AlarmType.Timer;
+        public static int AlarmHourSelection { get; set; }
+        public static int AlarmMinuteSelection { get; set; }
+        public static DateTime AlarmTime { get; set; } = DateTime.Now;
+        public static int AlarmRemainingSecondsAtStartup { get; set; }
+        public static bool AlarmActivateAtStartup { get; set; }
+        public static bool AlarmPauseOnQuit { get; set; }
+        public static bool AlarmRepeat { get; set; }
         public static XElement JingleXML_Legacy { get; private set; }
         public static CGActionWave ConnLost { get; private set; } = new CGActionWave(FormMain.WaveOutPool);
         public static bool PlayMountingSound_Legacy { get; set; } = false;
@@ -437,7 +445,25 @@ namespace CableGuardian
                 else
                     TurnCountMemoryMinutes = -1;
 
-                XElement xAlarm = xConfig.Element("Alarm");               
+                XElement xAlarm = xConfig.Element("Alarm");
+                if (Enum.TryParse(xAlarm.GetElementValueTrimmed("Type"), out AlarmType typ))
+                    AlarmTyp = typ;
+
+                AlarmActivateAtStartup = xAlarm.GetElementValueBool("WasActive");
+                AlarmPauseOnQuit = xAlarm.GetElementValueBool("PauseOnQuit");
+                AlarmRepeat = xAlarm.GetElementValueBool("Repeat");
+                AlarmHourSelection = xAlarm.GetElementValueInt("HourSelection");
+                AlarmMinuteSelection = xAlarm.GetElementValueInt("MinuteSelection");
+                try
+                {
+                    AlarmTime = DateTime.FromBinary(xAlarm.GetElementValueLong("AbsoluteTime"));
+                }
+                catch (Exception)
+                {
+                    AlarmTime = DateTime.Now;
+                }
+
+                AlarmRemainingSecondsAtStartup = xAlarm.GetElementValueInt("RemainingSeconds");
                 Alarm.LoadFromXml(xAlarm?.Element("CGActionWaveFile"));
 
                 JingleXML_Legacy = xConfig.Element("Jingle");
@@ -509,7 +535,16 @@ namespace CableGuardian
                                 new XElement("LastHalfTurn", FormMain.Tracker.CurrentHalfTurn.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("LastYawValue", FormMain.Tracker.YawValue.ToString(System.Globalization.CultureInfo.InvariantCulture)),
                                 new XElement("TurnCountMemoryMinutes", TurnCountMemoryMinutes.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-                                new XElement("Alarm", Alarm.GetXml()),                                                           
+                                 new XElement("Alarm",
+                                    new XElement("Type", AlarmTyp),
+                                    new XElement("HourSelection", AlarmHourSelection),
+                                    new XElement("MinuteSelection", AlarmMinuteSelection),
+                                    new XElement("AbsoluteTime", AlarmTime.ToBinary()),
+                                    new XElement("RemainingSeconds", (int)AlarmTime.Subtract(DateTime.Now).TotalSeconds),
+                                    new XElement("WasActive", FormMain.AlarmTimer.Enabled),
+                                    new XElement("PauseOnQuit", AlarmPauseOnQuit),
+                                    new XElement("Repeat", AlarmRepeat),
+                                    Alarm.GetXml()),
                                 new XElement("ExitWithSteamVR", ExitWithSteamVR),
                                 new XElement("WelcomeFormClosed", WelcomeFormClosed),
                                 new XElement("UseSimpleMode", UseSimpleMode),
